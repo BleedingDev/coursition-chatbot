@@ -16,6 +16,7 @@ import { Plus, Edit2, Trash2, Check, X, PanelRight } from "lucide-react";
 import { Markdown } from "@/components/markdown";
 import { SidebarProvider, Sidebar, SidebarRail } from "@/components/ui/sidebar";
 import { useNavigate, useParams } from "react-router-dom";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 function RagBasicUI() {
   const params = useParams<{ threadId?: string }>();
@@ -132,14 +133,14 @@ function RagBasicUI() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="relative h-full flex flex-row bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex-1 min-h-0">
+      <div className="relative h-full flex flex-row bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950 flex-1 min-h-0">
         <SidebarRail />
         {/* Sidebar - Chat History */}
         <Sidebar>
-          <aside className="fixed inset-y-0 left-0 w-64 bg-white/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
+          <aside className="fixed inset-y-0 left-0 w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
             <div className="p-4 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-slate-900">Chat History</h2>
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Chat History</h2>
               </div>
               <Button
                 size="sm"
@@ -163,8 +164,8 @@ function RagBasicUI() {
                       className={
                         "group w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-sm transition " +
                         (threadId === t._id
-                          ? "bg-slate-100 text-slate-900"
-                          : "bg-white hover:bg-slate-50 text-slate-800")
+                          ? "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100"
+                          : "bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-100")
                       }
                     >
                       <button
@@ -196,7 +197,7 @@ function RagBasicUI() {
                         ) : (
                           <>
                             <div className="truncate font-medium">{t.title || "Untitled"}</div>
-                            {t.summary && <div className="truncate text-xs text-slate-500">{t.summary}</div>}
+                            {t.summary && <div className="truncate text-xs text-slate-500 dark:text-slate-400">{t.summary}</div>}
                           </>
                         )}
                       </button>
@@ -237,7 +238,7 @@ function RagBasicUI() {
                 ))}
                 {activeThreads.length === 0 && (
                   <li>
-                    <div className="text-xs text-slate-500 px-3 py-2">No chats yet</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 px-3 py-2">No chats yet</div>
                   </li>
                 )}
               </ul>
@@ -264,9 +265,9 @@ function RagBasicUI() {
                           {/* Message */}
                           <div className={`flex items-end gap-2 ${message.message?.role === "user" ? "justify-end" : "justify-start"}`}>
                             {message.message?.role !== "user" && (
-                              <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-semibold shadow-sm">AI</div>
+                              <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center text-xs font-semibold shadow-sm">AI</div>
                             )}
-                            <div className={`rounded-2xl px-4 py-2 max-w-lg whitespace-pre-wrap shadow ${message.message?.role === "user" ? "bg-indigo-900 text-white" : "bg-slate-50 text-slate-900"}`}>
+                            <div className={`rounded-2xl px-4 py-2 max-w-lg whitespace-pre-wrap shadow ${message.message?.role === "user" ? "bg-indigo-900 text-white" : "bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100"}`}>
                               <MessageText text={message.text} streaming={message.streaming} invert={message.message?.role === "user"} />
                             </div>
                             {message.message?.role === "user" && (
@@ -276,28 +277,28 @@ function RagBasicUI() {
 
                           {/* Context Section (expandable) - shown after user message */}
                           {message.contextUsed && message.message?.role === "user" && (
-                            <div className="bg-slate-50 border border-slate-200 rounded-lg">
+                            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
                               <button
                                 onClick={() => toggleContextExpansion(message._id)}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-t-lg flex items-center justify-between"
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-t-lg flex items-center justify-between"
                               >
                                 <span>
                                   Context Used ({message.contextUsed.results.length} results)
                                 </span>
-                                <span className="text-slate-400">{expandedContexts.has(message._id) ? "−" : "+"}</span>
+                                <span className="text-slate-400 dark:text-slate-500">{expandedContexts.has(message._id) ? "−" : "+"}</span>
                               </button>
                               {expandedContexts.has(message._id) && (
                                 <div className="px-4 pb-4 space-y-2">
                                   {message.contextUsed.results.map((result, index) => (
-                                    <div key={index} className="bg-white border border-slate-200 rounded p-3 shadow-sm">
+                                    <div key={index} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-3 shadow-sm">
                                       <div className="flex items-center justify-between mb-2">
-                                        <div className="text-xs font-medium text-slate-600">
+                                        <div className="text-xs font-medium text-slate-600 dark:text-slate-400">
                                           Entry:{" "}
                                           {message.contextUsed!.entries.find((e) => e.entryId === result.entryId)?.key || "Unknown"}
                                         </div>
-                                        <div className="text-xs text-slate-500">Score: {result.score.toFixed(3)} | Order: {result.order}</div>
+                                        <div className="text-xs text-slate-500 dark:text-slate-400">Score: {result.score.toFixed(3)} | Order: {result.order}</div>
                                       </div>
-                                      <div className="text-sm text-slate-800 space-y-1">
+                                      <div className="text-sm text-slate-800 dark:text-slate-200 space-y-1">
                                         {result.content.map((content, contentIndex) => (
                                           <div key={contentIndex}>{content.text}</div>
                                         ))}
@@ -346,19 +347,19 @@ function RagBasicUI() {
 
         {/* Middle Panel - Entry Chunks */}
         {selectedEntry && (
-          <div className="fixed inset-y-0 left-[16rem] right-[20rem] bg-white/80 backdrop-blur-sm flex flex-col shadow-lg z-30">
+          <div className="fixed inset-y-0 left-[16rem] right-[20rem] bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-30">
             <div className="p-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900">Entry Chunks</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Entry Chunks</h2>
                 <button
                   onClick={() => setSelectedEntry(null)}
-                  className="text-slate-400 hover:text-slate-600 p-1"
+                  className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1"
                   title="Close chunks panel"
                 >
                   ✕
                 </button>
               </div>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {globalDocuments.results?.find((e) => e.entryId === selectedEntry)?.key || "Selected entry"}
               </p>
             </div>
@@ -367,16 +368,16 @@ function RagBasicUI() {
                 <div className="p-4 space-y-3">
                   {documentChunks.results.map((chunk) => (
                     <div key={selectedEntry + "-chunk-" + chunk.order} className="space-y-2">
-                      <div className="text-sm font-medium text-slate-500">Chunk {chunk.order}</div>
-                      <div className="bg-slate-50 rounded-lg p-4 shadow-sm">
-                        <div className="text-sm text-slate-800 leading-relaxed">{chunk.text}</div>
+                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Chunk {chunk.order}</div>
+                      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 shadow-sm">
+                        <div className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed">{chunk.text}</div>
                       </div>
                     </div>
                   ))}
                   {documentChunks.status === "CanLoadMore" && (
                     <button
                       onClick={() => documentChunks.loadMore(10)}
-                      className="w-full py-3 text-sm text-blue-600 hover:text-blue-800 border border-blue-200 rounded-lg hover:bg-blue-50 transition font-medium"
+                      className="w-full py-3 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 border border-blue-200 dark:border-slate-700 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition font-medium"
                     >
                       Load More Chunks
                     </button>
@@ -384,10 +385,10 @@ function RagBasicUI() {
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-full">
-                  <div className="text-center text-slate-500">
+                  <div className="text-center text-slate-500 dark:text-slate-400">
                     {documentChunks.status === "LoadingFirstPage" ? (
                       <>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-400 mx-auto mb-2"></div>
                         <p>Loading chunks...</p>
                       </>
                     ) : (
@@ -402,17 +403,17 @@ function RagBasicUI() {
 
         {/* Right Panel - Add Context */}
         {showContextPanel && (
-          <div className="fixed inset-y-0 right-0 w-80 bg-white/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
+          <div className="fixed inset-y-0 right-0 w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
             <div className="p-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">Add Context</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Add Context</h2>
             </div>
             <div className="px-4 space-y-3 w-full">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
                 <Input value={addContextForm.key} onChange={(e) => setAddContextForm((prev) => ({ ...prev, key: e.target.value }))} placeholder="Enter context title" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Text</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Text</label>
                 <Textarea value={addContextForm.text} onChange={(e) => setAddContextForm((prev) => ({ ...prev, text: e.target.value }))} rows={4} placeholder="Enter context body" />
               </div>
               <Button onClick={() => void handleAddContext()} disabled={isAddingContext || !addContextForm.key.trim() || !addContextForm.text.trim()} className="w-full">
@@ -421,20 +422,20 @@ function RagBasicUI() {
             </div>
             <div className="flex-1 overflow-y-auto min-h-0">
               <div className="p-4">
-                <h3 className="mb-3 font-medium text-slate-900">Context Entries</h3>
+                <h3 className="mb-3 font-medium text-slate-900 dark:text-slate-100">Context Entries</h3>
                 <div className="space-y-2">
                   {globalDocuments.results?.map((entry) => (
                     <div
                       key={entry.entryId}
-                      className={`p-3 rounded-md transition-colors cursor-pointer shadow-sm ${selectedEntry === entry.entryId ? "bg-indigo-50" : "bg-slate-50 hover:bg-slate-100"}`}
+                      className={`p-3 rounded-md transition-colors cursor-pointer shadow-sm ${selectedEntry === entry.entryId ? "bg-indigo-50 dark:bg-slate-800" : "bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800"}`}
                       onClick={() => setSelectedEntry(entry.entryId)}
                     >
-                      <div className="text-sm font-medium text-slate-900 truncate">{entry.title || entry.key}</div>
-                      <div className="text-xs text-slate-500 mt-1">Status: {entry.status}</div>
+                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{entry.title || entry.key}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Status: {entry.status}</div>
                     </div>
                   ))}
                   {globalDocuments.results?.length === 0 && (
-                    <div className="text-sm text-slate-500 text-center py-4">No context entries yet</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">No context entries yet</div>
                   )}
                 </div>
               </div>
@@ -453,6 +454,9 @@ function RagBasicUI() {
           >
             <PanelRight className="h-4 w-4" />
           </Button>
+        </div>
+        <div className="pointer-events-none">
+          <ThemeToggle className="fixed right-16 top-3 z-[60] shadow" />
         </div>
       </div>
       {error && <div className="text-red-500 text-center">{error.message}</div>}

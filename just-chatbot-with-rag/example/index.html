@@ -18,3 +18,13 @@
     <script type="module" src="/ui/main.tsx"></script>
   </body>
 </html>
+    <script>
+      (function() {
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const dark = stored ? stored === 'dark' : prefersDark;
+          document.documentElement.classList.toggle('dark', dark);
+        } catch {}
+      })();
+    </script>

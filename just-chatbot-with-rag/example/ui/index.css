@@ -3,13 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --color-light: #ffffff;
-  --color-dark: #171717;
+  --bg: #f8fafc; /* slate-50 */
+  --fg: #0f172a; /* slate-900 */
 }
 
-.accent-text {
-  @apply text-slate-600;
+.dark :root {
+  --bg: #0b1220; /* near slate-950 but warmer */
+  --fg: #e5e7eb; /* slate-200 */
 }
+
+.accent-text { @apply text-slate-600 dark:text-slate-300; }
 
 .button {
   @apply bg-gradient-to-r bg-blue-500;
@@ -32,8 +35,8 @@ body {
     "Segoe UI Emoji",
     "Segoe UI Symbol",
     "Noto Color Emoji";
-  color: var(--color-dark);
-  background: var(--color-light);
+  color: var(--fg);
+  background: var(--bg);
 }
 
 .input-field {

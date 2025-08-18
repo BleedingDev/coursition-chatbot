@@ -8,7 +8,7 @@ const baseComponents: Partial<Components> = {
   code: ({ inline, children, ...props }) => {
     if (inline) {
       return (
-        <code className="rounded bg-slate-100 px-1 py-0.5 text-[0.9em]" {...props}>
+        <code className="rounded bg-slate-100 dark:bg-slate-700/70 px-1 py-0.5 text-[0.9em]" {...props}>
           {children}
         </code>
       );
@@ -33,9 +33,11 @@ const baseComponents: Partial<Components> = {
 type MarkdownProps = { children: string; invert?: boolean };
 
 const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const effectiveInvert = invert || isDark;
   const a = ({ children, ...props }: any) => (
     <a
-      className={invert ? "text-indigo-100 underline-offset-4 hover:underline" : "text-indigo-900 underline-offset-4 hover:underline"}
+      className={effectiveInvert ? "text-indigo-200 underline-offset-4 hover:underline" : "text-indigo-900 underline-offset-4 hover:underline"}
       target="_blank"
       rel="noreferrer"
       {...props}
@@ -46,7 +48,7 @@ const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
   const components: Partial<Components> = { ...baseComponents, a };
 
   return (
-    <div className={`prose ${invert ? "prose-invert" : "prose-slate"} prose-p:my-2 prose-pre:my-2 max-w-none`}>
+    <div className={`prose ${effectiveInvert ? "prose-invert" : "prose-slate"} prose-p:my-2 prose-pre:my-2 max-w-none`}>
       <ReactMarkdown components={components}>{children}</ReactMarkdown>
     </div>
   );
