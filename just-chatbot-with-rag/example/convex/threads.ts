@@ -88,6 +88,29 @@ export const updateThreadTitle = action({
   },
 });
 
+export const renameThread = mutation({
+  args: { threadId: v.string(), title: v.string() },
+  handler: async (ctx, { threadId, title }) => {
+    await authorizeThreadAccess(ctx, threadId, true);
+    const updated = await ctx.runMutation(components.agent.threads.updateThread, {
+      threadId,
+      patch: { title },
+    });
+    return updated._id;
+  },
+});
+
+export const archiveThread = mutation({
+  args: { threadId: v.string() },
+  handler: async (ctx, { threadId }) => {
+    await authorizeThreadAccess(ctx, threadId, true);
+    await ctx.runMutation(components.agent.threads.updateThread, {
+      threadId,
+      patch: { status: "archived" },
+    });
+  },
+});
+
 export async function authorizeThreadAccess(
   ctx: QueryCtx | MutationCtx | ActionCtx,
   threadId: string,
