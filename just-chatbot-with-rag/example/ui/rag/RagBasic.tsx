@@ -14,13 +14,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Edit2, Trash2, Check, X, PanelRight } from "lucide-react";
 import { Markdown } from "@/components/markdown";
-import { SidebarProvider, Sidebar, SidebarRail, useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, SidebarRail } from "@/components/ui/sidebar";
 import { useNavigate, useParams } from "react-router-dom";
 
 function RagBasicUI() {
   const params = useParams<{ threadId?: string }>();
   const navigate = useNavigate();
-  const { toggleSidebar } = useSidebar();
   const [selectedEntry, setSelectedEntry] = useState<EntryId | null>(null);
   const [threadId, setThreadId] = useState<string | undefined>(params.threadId);
   const createThread = useMutation(api.threads.createNewThread);
@@ -28,7 +27,7 @@ function RagBasicUI() {
     if (threadId) return;
     void createThread({ title: "RAG Thread" }).then((id) => {
       setThreadId(id);
-      navigate(`/rag-basic/${id}`, { replace: true });
+      navigate(`/${id}`, { replace: true });
     });
   }, [createThread, threadId, navigate]);
 
@@ -147,12 +146,10 @@ function RagBasicUI() {
                 onClick={() => {
                   void createThread({ title: "New Chat" }).then((id) => {
                     setThreadId(id);
-                    try {
-                      (window as any).history.pushState(null, "", `/rag-basic/${id}`);
-                    } catch {}
-                  });
-                }}
-                aria-label="New Chat"
+                  try { (window as any).history.pushState(null, "", `/${id}`); } catch {}
+                });
+              }}
+              aria-label="New Chat"
               >
                 <Plus className="h-4 w-4" />
                 <span className="sr-only">New Chat</span>
@@ -174,7 +171,7 @@ function RagBasicUI() {
                         className="flex-1 min-w-0 text-left"
                         onClick={() => {
                           setThreadId(t._id);
-                          navigate(`/rag-basic/${t._id}`);
+                          navigate(`/${t._id}`);
                         }}
                         title={t.title || "Untitled"}
                       >
@@ -224,9 +221,7 @@ function RagBasicUI() {
                               void archiveThreadMutation({ threadId: t._id }).then(() => {
                                 if (threadId === t._id) {
                                   setThreadId(undefined);
-                                  try {
-                                    (window as any).history.replaceState(null, "", "/rag-basic");
-                                  } catch {}
+                                  try { (window as any).history.replaceState(null, "", "/"); } catch {}
                                 }
                               });
                             }}
@@ -338,12 +333,10 @@ function RagBasicUI() {
                   onClick={() => {
                     void createThread({ title: "RAG Thread" }).then((id) => {
                       setThreadId(id);
-                      try {
-                        (window as any).history.pushState(null, "", `/rag-basic/${id}`);
-                      } catch {}
-                    });
-                  }}
-                >
+                    try { (window as any).history.pushState(null, "", `/${id}`); } catch {}
+                  });
+                }}
+              >
                   Start over
                 </Button>
               </form>
