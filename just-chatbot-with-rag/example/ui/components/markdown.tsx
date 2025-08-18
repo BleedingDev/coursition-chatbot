@@ -19,15 +19,6 @@ const baseComponents: Partial<Components> = {
       </pre>
     );
   },
-  ul: ({ children, ...props }) => (
-    <ul className="list-disc pl-6 my-2 space-y-1" {...props}>{children}</ul>
-  ),
-  ol: ({ children, ...props }) => (
-    <ol className="list-decimal pl-6 my-2 space-y-1" {...props}>{children}</ol>
-  ),
-  strong: ({ children, ...props }) => (
-    <strong className="font-semibold" {...props}>{children}</strong>
-  ),
 };
 
 type MarkdownProps = { children: string; invert?: boolean };
@@ -48,7 +39,29 @@ const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
   const components: Partial<Components> = { ...baseComponents, a };
 
   return (
-    <div className={`prose ${effectiveInvert ? "prose-invert" : "prose-slate"} prose-p:my-2 prose-pre:my-2 max-w-none`}>
+    <div
+      className={
+        `prose ${effectiveInvert ? "prose-invert" : "prose-slate"} max-w-none ` +
+        [
+          // Tighten vertical rhythm
+          "prose-p:my-1 prose-p:leading-relaxed",
+          "prose-headings:my-1",
+          "prose-ul:my-1 prose-ol:my-1 prose-li:my-0",
+          "prose-pre:my-2",
+          "prose-code:my-0",
+          "prose-blockquote:my-2",
+          "prose-hr:my-2",
+          "prose-img:my-2",
+          // Remove outer margins within chat bubbles
+          "first:prose-p:mt-0 last:prose-p:mb-0",
+          "first:prose-ul:mt-0 last:prose-ul:mb-0",
+          "first:prose-ol:mt-0 last:prose-ol:mb-0",
+          "first:prose-pre:mt-0 last:prose-pre:mb-0",
+          "first:prose-blockquote:mt-0 last:prose-blockquote:mb-0",
+          "first:prose-headings:mt-0 last:prose-headings:mb-0",
+        ].join(" ")
+      }
+    >
       <ReactMarkdown components={components}>{children}</ReactMarkdown>
     </div>
   );

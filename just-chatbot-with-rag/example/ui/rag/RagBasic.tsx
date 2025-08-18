@@ -267,7 +267,7 @@ function RagBasicUI() {
                             {message.message?.role !== "user" && (
                               <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center text-xs font-semibold shadow-sm">AI</div>
                             )}
-                            <div className={`rounded-2xl px-4 py-2 max-w-lg whitespace-pre-wrap shadow ${message.message?.role === "user" ? "bg-indigo-900 text-white" : "bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100"}`}>
+                            <div className={`rounded-2xl px-4 py-2 max-w-lg shadow ${message.message?.role === "user" ? "bg-indigo-900 text-white" : "bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100"}`}>
                               <MessageText text={message.text} streaming={message.streaming} invert={message.message?.role === "user"} />
                             </div>
                             {message.message?.role === "user" && (
