@@ -3,11 +3,6 @@ import { ConvexProvider, ConvexReactClient } from "convex/react";
 import "./index.css";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
-import ChatBasic from "./chat/ChatBasic";
-import ChatStreaming from "./chat/ChatStreaming";
-import FilesImages from "./files/FilesImages";
-import RateLimiting from "./rate_limiting/RateLimiting";
-import { WeatherFashion } from "./workflows/WeatherFashion";
 import RagBasic from "./rag/RagBasic";
 import { useEffect } from "react";
 import { useMutation, usePaginatedQuery } from "convex/react";
@@ -30,12 +25,6 @@ export function App() {
           <Routes>
             <Route path="/" element={<RootRedirect />} />
             <Route path=":threadId" element={<RagBasic />} />
-            {/* Keep other examples reachable if directly navigated */}
-            <Route path="/chat-basic" element={<ChatBasic />} />
-            <Route path="/chat-streaming" element={<ChatStreaming />} />
-            <Route path="/files-images" element={<FilesImages />} />
-            <Route path="/rate-limiting" element={<RateLimiting />} />
-            <Route path="/weather-fashion" element={<WeatherFashion />} />
           </Routes>
         </main>
         <Toaster />
