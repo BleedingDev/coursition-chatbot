@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script>
+      var base = "/agent";
+      var path = location.pathname + location.search + location.hash;
+      if (path === base || path.startsWith(base + "/")) {
+        // Store the original path for the SPA to restore
+        sessionStorage.setItem(
+          "redirectPath",
+          path + location.search + location.hash,
+        );
+        window.location.replace(base + "/");
+      }
+    </script>
+  </head>
+
+  <body>
+    Redirecting...
+  </body>
+</html>
