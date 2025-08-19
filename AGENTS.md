@@ -1,20 +1,20 @@
 # Repository Guidelines
 
 ## Scope & Goal
-- Objective: migrate the beautiful UI from `ui-chatbot-template/` into the example app at `just-chatbot-with-rag/example` without changing Convex agent logic. Use `chat-example.jpeg` as the visual target.
-- Constraint: do not modify library logic under `just-chatbot-with-rag/src` (e.g., `mapping.ts`, `validators.ts`, `shared.ts`, `component/*`). All work happens in the example UI.
+- Objective: migrate the beautiful UI from `ui-chatbot-template/` into the example app at `lms-chatbot-with-rag/example` without changing Convex agent logic. Use `chat-example.jpeg` as the visual target.
+- Constraint: do not modify library logic under `lms-chatbot-with-rag/src` (e.g., `mapping.ts`, `validators.ts`, `shared.ts`, `component/*`). All work happens in the example UI.
 
 ## Project Structure & Module Organization
-- Work here: `just-chatbot-with-rag/example/`
+- Work here: `lms-chatbot-with-rag/example/`
   - Entry: `index.html` → `ui/main.tsx` (Vite + React Router).
   - Views: `ui/rag/*`, `ui/workflows/*`, `ui/files/*`, shared UI in `ui/components/*` and `ui/index.css`.
   - Backend (Convex): `example/convex/*` (do not change function contracts).
 - Reference only: `ui-chatbot-template/` for UI patterns, Tailwind classes, and components. Do not modify or commit changes there.
 
 ## Build, Test, and Development Commands
-- Run example: `cd just-chatbot-with-rag/example && npm run dev` (starts Vite + Convex). From package root: `cd just-chatbot-with-rag && npm run example`.
-- Library build/tests (when needed): `cd just-chatbot-with-rag && npm run build && npm test`.
-- Lint example: `cd just-chatbot-with-rag/example && npm run lint`.
+- Run example: `cd lms-chatbot-with-rag/example && npm run dev` (starts Vite + Convex). From package root: `cd lms-chatbot-with-rag && npm run example`.
+- Library build/tests (when needed): `cd lms-chatbot-with-rag && npm run build && npm test`.
+- Lint example: `cd lms-chatbot-with-rag/example && npm run lint`.
 
 ## Coding Style & Naming Conventions
 - TypeScript + React + Tailwind in the example; Prettier/ESLint configured. Follow existing Tailwind tokens in `ui/index.css` and `tailwind.config.js`.
