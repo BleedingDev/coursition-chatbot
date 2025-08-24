@@ -1,11 +1,12 @@
 // See the docs at https://docs.convex.dev/agents/rate-limiting
-import { v } from 'convex/values';
-import { getAuthUserId } from '../utils';
-import { query, QueryCtx } from '../_generated/server';
+
 import { fetchContextMessages } from '@convex-dev/agent';
+import { v } from 'convex/values';
 import { components } from '../_generated/api';
+import type { DataModel } from '../_generated/dataModel';
+import { type QueryCtx, query } from '../_generated/server';
+import { getAuthUserId } from '../utils';
 import { rateLimiter } from './rateLimiting';
-import { DataModel } from '../_generated/dataModel';
 
 // This allows us to have a reactive query on the client for when we can send
 // the next message.

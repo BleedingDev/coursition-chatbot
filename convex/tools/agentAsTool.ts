@@ -1,9 +1,10 @@
 // See the docs at https://docs.convex.dev/agents/tools
-import { components } from '../_generated/api';
+
 import { Agent, createTool, stepCountIs } from '@convex-dev/agent';
-import z from 'zod/v3';
-import { action } from '../_generated/server';
 import { tool } from 'ai';
+import z from 'zod/v3';
+import { components } from '../_generated/api';
+import { action } from '../_generated/server';
 import { defaultConfig } from '../agents/config';
 
 export const runAgentAsTool = action({

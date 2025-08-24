@@ -1,8 +1,9 @@
 // See the docs at https://docs.convex.dev/agents/usage-tracking
-import { internalMutation } from '../_generated/server';
+
+import { type UsageHandler, vProviderMetadata } from '@convex-dev/agent';
 import { v } from 'convex/values';
-import { UsageHandler, vProviderMetadata } from '@convex-dev/agent';
 import { internal } from '../_generated/api';
+import { internalMutation } from '../_generated/server';
 
 export function getBillingPeriod(at: number) {
   const now = new Date(at);

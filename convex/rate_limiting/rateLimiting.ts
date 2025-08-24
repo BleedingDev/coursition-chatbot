@@ -1,15 +1,15 @@
 // See the docs at https://docs.convex.dev/agents/rate-limiting
-import { Agent, saveMessage, UsageHandler } from '@convex-dev/agent';
-import { components, internal } from '../_generated/api';
-import { languageModel, textEmbeddingModel } from '../modelsForDemo';
-import { internalAction, mutation } from '../_generated/server';
-import { v } from 'convex/values';
+import { Agent, saveMessage, type UsageHandler } from '@convex-dev/agent';
 import { MINUTE, RateLimiter, SECOND } from '@convex-dev/rate-limiter';
+import { v } from 'convex/values';
+import { components, internal } from '../_generated/api';
+import { internalAction, mutation } from '../_generated/server';
+import { defaultConfig } from '../agents/config';
+import { languageModel, textEmbeddingModel } from '../modelsForDemo';
+import { authorizeThreadAccess } from '../threads';
 import { usageHandler as normalUsageHandler } from '../usage_tracking/usageHandler';
 import { getAuthUserId } from '../utils';
-import { authorizeThreadAccess } from '../threads';
 import { estimateTokens } from './utils';
-import { defaultConfig } from '../agents/config';
 
 export const rateLimiter = new RateLimiter(components.rateLimiter, {
   sendMessage: {
@@ -23,9 +23,9 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     kind: 'token bucket',
     period: MINUTE,
     rate: 2000,
-    capacity: 10000,
+    capacity: 10_000,
   },
-  globalSendMessage: { kind: 'token bucket', period: MINUTE, rate: 1_000 },
+  globalSendMessage: { kind: 'token bucket', period: MINUTE, rate: 1000 },
   globalTokenUsage: { kind: 'token bucket', period: MINUTE, rate: 100_000 },
 });
 

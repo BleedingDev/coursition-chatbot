@@ -1,7 +1,8 @@
 // See the docs at https://docs.convex.dev/agents/usage-tracking
-import { internalMutation, MutationCtx } from '../_generated/server';
+
 import { v } from 'convex/values';
 import { internal } from '../_generated/api';
+import { internalMutation, type MutationCtx } from '../_generated/server';
 import { getBillingPeriod } from './usageHandler';
 
 const HOUR_IN_MS = 60 * 60 * 1000;
@@ -91,7 +92,7 @@ export const generateInvoices = internalMutation({
   },
 });
 
-const MILLION = 1000000;
+const MILLION = 1_000_000;
 
 const PRICING: Record<
   string,

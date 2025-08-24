@@ -1,14 +1,15 @@
 // See the docs at https://docs.convex.dev/agents/messages
+
+import { groq } from '@ai-sdk/groq';
 import { Agent } from '@convex-dev/agent';
+import { stepCountIs, tool } from 'ai';
+import { v } from 'convex/values';
+import z from 'zod/v3';
 import { components } from '../_generated/api';
 import { action } from '../_generated/server';
-import { v } from 'convex/values';
-import { authorizeThreadAccess } from '../threads';
-import { storyAgent } from '../agents/story';
-import { stepCountIs, tool } from 'ai';
-import { groq } from '@ai-sdk/groq';
-import z from 'zod/v3';
 import { defaultConfig } from '../agents/config';
+import { storyAgent } from '../agents/story';
+import { authorizeThreadAccess } from '../threads';
 
 const reasoningModel = groq('qwen/qwen3-32b');
 

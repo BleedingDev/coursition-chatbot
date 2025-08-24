@@ -1,15 +1,16 @@
 // See the docs at https://docs.convex.dev/agents/messages
+
+import { abortStream, listStreams } from '@convex-dev/agent';
+import { smoothStream } from 'ai';
 import { v } from 'convex/values';
 import { components } from '../_generated/api';
 import {
-  query,
   action,
-  mutation,
   internalMutation,
+  mutation,
+  query,
 } from '../_generated/server';
-import { abortStream, listStreams } from '@convex-dev/agent';
 import { agent } from '../agents/simple';
-import { smoothStream } from 'ai';
 import { authorizeThreadAccess } from '../threads';
 
 /**

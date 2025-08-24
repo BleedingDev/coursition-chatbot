@@ -1,6 +1,6 @@
 import { httpRouter } from 'convex/server';
-import { streamOverHttp } from './chat/streaming';
 import { corsRouter } from 'convex-helpers/server/cors';
+import { streamOverHttp } from './chat/streaming';
 
 const http = httpRouter();
 

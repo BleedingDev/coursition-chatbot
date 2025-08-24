@@ -1,6 +1,7 @@
 // See the docs at https://docs.convex.dev/agents/getting-started
-import { components } from '../_generated/api';
+
 import { Agent } from '@convex-dev/agent';
+import { components } from '../_generated/api';
 import { defaultConfig } from './config';
 
 // Define an agent similarly to the AI SDK

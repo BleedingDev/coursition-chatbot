@@ -1,11 +1,16 @@
 // See the docs at https://docs.convex.dev/agents/files
-import { Agent, createThread, saveMessage, storeFile } from '@convex-dev/agent';
+import {
+  Agent,
+  createThread,
+  getFile,
+  saveMessage,
+  storeFile,
+} from '@convex-dev/agent';
+import { v } from 'convex/values';
 import { components, internal } from '../_generated/api';
 import { action, internalAction, mutation } from '../_generated/server';
-import { v } from 'convex/values';
-import { getFile } from '@convex-dev/agent';
-import { getAuthUserId } from '../utils';
 import { defaultConfig } from '../agents/config';
+import { getAuthUserId } from '../utils';
 
 // Define an agent similarly to the AI SDK
 export const fileAgent = new Agent(components.agent, {

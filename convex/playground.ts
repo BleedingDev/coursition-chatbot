@@ -1,10 +1,10 @@
 // See the docs at https://docs.convex.dev/agents/playground
 import { definePlaygroundAPI } from '@convex-dev/agent';
 import { components } from './_generated/api';
-import { weatherAgent } from './agents/weather';
 import { fashionAgent } from './agents/fashion';
-import { storyAgent } from './agents/story';
 import { agent as basicAgent } from './agents/simple';
+import { storyAgent } from './agents/story';
+import { weatherAgent } from './agents/weather';
 import { fileAgent } from './files/addFile';
 import { rateLimitedAgent } from './rate_limiting/rateLimiting';
 

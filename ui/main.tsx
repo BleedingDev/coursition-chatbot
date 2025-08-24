@@ -1,12 +1,12 @@
-import { createRoot } from 'react-dom/client';
 import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { createRoot } from 'react-dom/client';
 import './index.css';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { useMutation, usePaginatedQuery } from 'convex/react';
+import { useEffect } from 'react';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { api } from '../convex/_generated/api';
 import { Toaster } from './components/ui/toaster';
 import RagBasic from './rag/RagBasic';
-import { useEffect } from 'react';
-import { useMutation, usePaginatedQuery } from 'convex/react';
-import { api } from '../convex/_generated/api';
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
@@ -19,12 +19,12 @@ createRoot(document.getElementById('root')!).render(
 export function App() {
   return (
     <BrowserRouter>
-      <div className="h-screen flex flex-col">
+      <div className="flex h-screen flex-col">
         {/* Header removed per request */}
-        <main className="flex-1 h-full overflow-scroll">
+        <main className="h-full flex-1 overflow-scroll">
           <Routes>
-            <Route path="/" element={<RootRedirect />} />
-            <Route path=":threadId" element={<RagBasic />} />
+            <Route element={<RootRedirect />} path="/" />
+            <Route element={<RagBasic />} path=":threadId" />
           </Routes>
         </main>
         <Toaster />

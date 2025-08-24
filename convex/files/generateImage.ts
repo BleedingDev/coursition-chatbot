@@ -1,9 +1,9 @@
 // See the docs at https://docs.convex.dev/agents/files
 import { createThread, saveMessage } from '@convex-dev/agent';
-import { components } from '../_generated/api';
-import { internalAction } from '../_generated/server';
 import { v } from 'convex/values';
 import OpenAI from 'openai';
+import { components } from '../_generated/api';
+import { internalAction } from '../_generated/server';
 import { getAuthUserId } from '../utils';
 
 /**

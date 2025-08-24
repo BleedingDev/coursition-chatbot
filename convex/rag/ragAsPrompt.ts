@@ -3,8 +3,8 @@ import { RAG } from '@convex-dev/rag';
 import { v } from 'convex/values';
 import { components, internal } from '../_generated/api';
 import { action, internalAction, mutation } from '../_generated/server';
-import { textEmbeddingModel } from '../modelsForDemo';
 import { agent } from '../agents/simple';
+import { textEmbeddingModel } from '../modelsForDemo';
 import { authorizeThreadAccess } from '../threads';
 
 export const rag = new RAG(components.rag, {

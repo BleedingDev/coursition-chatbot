@@ -1,6 +1,6 @@
+import { PanelLeft } from 'lucide-react';
 import React from 'react';
 import { Button } from './button';
-import { PanelLeft } from 'lucide-react';
 
 type SidebarContextType = {
   open: boolean;
@@ -71,15 +71,15 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 export function SidebarRail({ className = '' }: { className?: string }) {
   const { open, toggleSidebar } = useSidebar();
   return (
-    <div className={'pointer-events-none ' + className}>
+    <div className={'pointer-events-none' + className}>
       <Button
-        type="button"
-        size="icon"
-        variant="secondary"
-        onClick={toggleSidebar}
         aria-label={open ? 'Hide sidebar' : 'Show sidebar'}
         className={`pointer-events-auto fixed ${open ? 'left-[17rem]' : 'left-3'} top-3 z-[60] shadow`}
+        onClick={toggleSidebar}
+        size="icon"
         title={open ? 'Hide sidebar' : 'Show sidebar'}
+        type="button"
+        variant="secondary"
       >
         <PanelLeft className="h-4 w-4" />
       </Button>
@@ -97,9 +97,9 @@ export function SidebarTrigger({
   const { toggleSidebar } = useSidebar();
   return (
     <button
-      type="button"
-      onClick={toggleSidebar}
       className={className}
+      onClick={toggleSidebar}
+      type="button"
       {...props}
     >
       {children}

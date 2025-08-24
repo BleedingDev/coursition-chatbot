@@ -1,8 +1,9 @@
 // import { openrouter } from "@openrouter/ai-sdk-provider";
-import type { EmbeddingModel } from 'ai';
-import type { LanguageModelV2 } from '@ai-sdk/provider';
-import { openai } from '@ai-sdk/openai';
+
 import { groq } from '@ai-sdk/groq';
+import { openai } from '@ai-sdk/openai';
+import type { LanguageModelV2 } from '@ai-sdk/provider';
+import type { EmbeddingModel } from 'ai';
 
 let languageModel: LanguageModelV2;
 let textEmbeddingModel: EmbeddingModel<string>;

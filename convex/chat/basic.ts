@@ -1,11 +1,12 @@
 // See the docs at https://docs.convex.dev/agents/messages
+
+import { listMessages, saveMessage } from '@convex-dev/agent';
+import { paginationOptsValidator } from 'convex/server';
+import { v } from 'convex/values';
 import { components, internal } from '../_generated/api';
 import { action, internalAction, mutation, query } from '../_generated/server';
-import { listMessages, saveMessage } from '@convex-dev/agent';
-import { v } from 'convex/values';
 import { agent } from '../agents/simple';
 import { authorizeThreadAccess } from '../threads';
-import { paginationOptsValidator } from 'convex/server';
 
 /**
  * OPTION 1 (BASIC):

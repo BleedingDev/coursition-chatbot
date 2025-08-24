@@ -1,10 +1,15 @@
 // See the docs at https://docs.convex.dev/agents/human-agents
 import {
-  saveMessage,
   listMessages,
+  saveMessage,
   syncStreams,
   vStreamArgs,
 } from '@convex-dev/agent';
+import { tool } from 'ai';
+import { paginationOptsValidator } from 'convex/server';
+import { v } from 'convex/values';
+import { z } from 'zod/v3';
+import { components } from '../_generated/api';
 import {
   action,
   internalAction,
@@ -12,13 +17,8 @@ import {
   mutation,
   query,
 } from '../_generated/server';
-import { v } from 'convex/values';
-import { components } from '../_generated/api';
-import { paginationOptsValidator } from 'convex/server';
-import { authorizeThreadAccess } from '../threads';
-import { z } from 'zod/v3';
-import { tool } from 'ai';
 import { agent } from '../agents/simple';
+import { authorizeThreadAccess } from '../threads';
 
 /**
  * ===============================

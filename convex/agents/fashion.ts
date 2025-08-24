@@ -1,7 +1,7 @@
 // See the docs at https://docs.convex.dev/agents/getting-started
 import { Agent, createTool, stepCountIs } from '@convex-dev/agent';
-import { components } from '../_generated/api';
 import { z } from 'zod/v3';
+import { components } from '../_generated/api';
 import { defaultConfig } from './config';
 
 export const fashionAgent = new Agent(components.agent, {
@@ -20,7 +20,7 @@ export const fashionAgent = new Agent(components.agent, {
           userId: ctx.userId,
           threadId: ctx.threadId,
           search: args.search,
-          information: `The user likes to look stylish`,
+          information: 'The user likes to look stylish',
         };
       },
     }),

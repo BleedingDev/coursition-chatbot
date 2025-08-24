@@ -1,22 +1,22 @@
-import { useAction, useMutation, usePaginatedQuery } from 'convex/react';
 import {
   optimisticallySendMessage,
   useSmoothText,
   useThreadMessages,
 } from '@convex-dev/agent/react';
-import { api } from '../../convex/_generated/api';
+import type { EntryId } from '@convex-dev/rag';
+import { useAction, useMutation, usePaginatedQuery } from 'convex/react';
+import { Check, Edit2, PanelRight, Plus, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { EntryId } from '@convex-dev/rag';
-import { toast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Edit2, Trash2, Check, X, PanelRight } from 'lucide-react';
-import { Markdown } from '@/components/markdown';
-import { SidebarProvider, Sidebar, SidebarRail } from '@/components/ui/sidebar';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Markdown } from '@/components/markdown';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Sidebar, SidebarProvider, SidebarRail } from '@/components/ui/sidebar';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/hooks/use-toast';
+import { api } from '../../convex/_generated/api';
 
 function RagBasicUI() {
   const params = useParams<{ threadId?: string }>();
@@ -86,7 +86,7 @@ function RagBasicUI() {
 
   // Handle adding context
   const handleAddContext = useCallback(async () => {
-    if (!addContextForm.key.trim() || !addContextForm.text.trim()) return;
+    if (!(addContextForm.key.trim() && addContextForm.text.trim())) return;
 
     setIsAddingContext(true);
     try {
@@ -138,20 +138,20 @@ function RagBasicUI() {
   }, []);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="relative h-full flex flex-row bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950 flex-1 min-h-0">
+    <div className="flex h-full flex-col">
+      <div className="relative flex h-full min-h-0 flex-1 flex-row bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
         <SidebarRail />
         {/* Sidebar - Chat History */}
         <Sidebar>
-          <aside className="fixed inset-y-0 left-0 w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
-            <div className="p-4 flex items-center justify-between gap-2">
+          <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-white/80 shadow-lg backdrop-blur-sm dark:bg-slate-900/80">
+            <div className="flex items-center justify-between gap-2 p-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                <h2 className="font-semibold text-slate-900 text-sm dark:text-slate-100">
                   Chat History
                 </h2>
               </div>
               <Button
-                size="sm"
+                aria-label="New Chat"
                 onClick={() => {
                   void createThread({ title: 'New Chat' }).then((id) => {
                     setThreadId(id);
@@ -160,26 +160,26 @@ function RagBasicUI() {
                     } catch {}
                   });
                 }}
-                aria-label="New Chat"
+                size="sm"
               >
                 <Plus className="h-4 w-4" />
                 <span className="sr-only">New Chat</span>
               </Button>
             </div>
-            <div className="flex-1 overflow-y-auto min-h-0">
-              <ul className="p-2 space-y-1">
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <ul className="space-y-1 p-2">
                 {activeThreads.map((t) => (
                   <li key={t._id}>
                     <div
                       className={
-                        'group w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-sm transition ' +
+                        'group flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition' +
                         (threadId === t._id
                           ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-                          : 'bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-100')
+                          : 'bg-white text-slate-800 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800')
                       }
                     >
                       <button
-                        className="flex-1 min-w-0 text-left"
+                        className="min-w-0 flex-1 text-left"
                         onClick={() => {
                           setThreadId(t._id);
                           navigate(`/${t._id}`);
@@ -189,12 +189,12 @@ function RagBasicUI() {
                         {editingId === t._id ? (
                           <div className="flex items-center gap-2">
                             <Input
-                              value={editingTitle}
-                              onChange={(e) => setEditingTitle(e.target.value)}
                               className="h-8"
+                              onChange={(e) => setEditingTitle(e.target.value)}
+                              value={editingTitle}
                             />
                             <Button
-                              size="sm"
+                              aria-label="Save"
                               onClick={() => {
                                 const title = editingTitle.trim();
                                 if (!title) return setEditingId(null);
@@ -203,15 +203,15 @@ function RagBasicUI() {
                                   title,
                                 }).then(() => setEditingId(null));
                               }}
-                              aria-label="Save"
+                              size="sm"
                             >
                               <Check className="h-4 w-4" />
                             </Button>
                             <Button
+                              aria-label="Cancel"
+                              onClick={() => setEditingId(null)}
                               size="sm"
                               variant="secondary"
-                              onClick={() => setEditingId(null)}
-                              aria-label="Cancel"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -222,7 +222,7 @@ function RagBasicUI() {
                               {t.title || 'Untitled'}
                             </div>
                             {t.summary && (
-                              <div className="truncate text-xs text-slate-500 dark:text-slate-400">
+                              <div className="truncate text-slate-500 text-xs dark:text-slate-400">
                                 {t.summary}
                               </div>
                             )}
@@ -230,22 +230,21 @@ function RagBasicUI() {
                         )}
                       </button>
                       {editingId !== t._id && (
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
                           <Button
-                            size="sm"
-                            variant="secondary"
+                            aria-label="Rename"
                             onClick={() => {
                               setEditingId(t._id);
                               setEditingTitle(t.title || '');
                             }}
-                            aria-label="Rename"
+                            size="sm"
                             title="Rename"
+                            variant="secondary"
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
                           <Button
-                            size="sm"
-                            variant="secondary"
+                            aria-label="Delete"
                             onClick={() => {
                               void archiveThreadMutation({
                                 threadId: t._id,
@@ -262,8 +261,9 @@ function RagBasicUI() {
                                 }
                               });
                             }}
-                            aria-label="Delete"
+                            size="sm"
                             title="Delete"
+                            variant="secondary"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -274,7 +274,7 @@ function RagBasicUI() {
                 ))}
                 {activeThreads.length === 0 && (
                   <li>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 px-3 py-2">
+                    <div className="px-3 py-2 text-slate-500 text-xs dark:text-slate-400">
                       No chats yet
                     </div>
                   </li>
@@ -285,43 +285,43 @@ function RagBasicUI() {
         </Sidebar>
 
         {/* Main Chat Area */}
-        <main className="flex-1 flex flex-col items-center justify-center p-8 h-full min-h-0">
-          <Card className="w-full max-w-2xl h-full min-h-0 flex flex-col justify-end">
+        <main className="flex h-full min-h-0 flex-1 flex-col items-center justify-center p-8">
+          <Card className="flex h-full min-h-0 w-full max-w-2xl flex-col justify-end">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-3 text-base">
-                <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold shadow-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white shadow-sm">
                   R
                 </div>
                 <span className="flex-1">RAG Chat</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-3 h-full min-h-0 justify-end">
+            <CardContent className="flex h-full min-h-0 flex-col justify-end gap-3">
               {listMessages.results && listMessages.results.length > 0 && (
-                <div className="flex flex-col gap-4 overflow-y-auto mb-2 flex-1 min-h-0 pr-2">
+                <div className="mb-2 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-2">
                   {listMessages.results.map(
                     (message) =>
                       message.text && (
-                        <div key={message._id} className="space-y-2">
+                        <div className="space-y-2" key={message._id}>
                           {/* Message */}
                           <div
                             className={`flex items-end gap-2 ${message.message?.role === 'user' ? 'justify-end' : 'justify-start'}`}
                           >
                             {message.message?.role !== 'user' && (
-                              <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center text-xs font-semibold shadow-sm">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 font-semibold text-slate-700 text-xs shadow-sm dark:bg-slate-700 dark:text-slate-200">
                                 AI
                               </div>
                             )}
                             <div
-                              className={`rounded-2xl px-4 py-2 max-w-lg shadow ${message.message?.role === 'user' ? 'bg-indigo-900 text-white' : 'bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100'}`}
+                              className={`max-w-lg rounded-2xl px-4 py-2 shadow ${message.message?.role === 'user' ? 'bg-indigo-900 text-white' : 'bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100'}`}
                             >
                               <MessageText
-                                text={message.text}
-                                streaming={message.streaming}
                                 invert={message.message?.role === 'user'}
+                                streaming={message.streaming}
+                                text={message.text}
                               />
                             </div>
                             {message.message?.role === 'user' && (
-                              <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold shadow-sm">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white text-xs shadow-sm">
                                 U
                               </div>
                             )}
@@ -330,12 +330,12 @@ function RagBasicUI() {
                           {/* Context Section (expandable) - shown after user message */}
                           {message.contextUsed &&
                             message.message?.role === 'user' && (
-                              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                              <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
                                 <button
+                                  className="flex w-full items-center justify-between rounded-t-lg px-4 py-2 text-left font-medium text-slate-700 text-sm hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                                   onClick={() =>
                                     toggleContextExpansion(message._id)
                                   }
-                                  className="w-full px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-t-lg flex items-center justify-between"
                                 >
                                   <span>
                                     Context Used (
@@ -349,27 +349,27 @@ function RagBasicUI() {
                                   </span>
                                 </button>
                                 {expandedContexts.has(message._id) && (
-                                  <div className="px-4 pb-4 space-y-2">
+                                  <div className="space-y-2 px-4 pb-4">
                                     {message.contextUsed.results.map(
                                       (result, index) => (
                                         <div
+                                          className="rounded border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900"
                                           key={index}
-                                          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-3 shadow-sm"
                                         >
-                                          <div className="flex items-center justify-between mb-2">
-                                            <div className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                          <div className="mb-2 flex items-center justify-between">
+                                            <div className="font-medium text-slate-600 text-xs dark:text-slate-400">
                                               Entry:{' '}
                                               {message.contextUsed!.entries.find(
                                                 (e) =>
                                                   e.entryId === result.entryId
                                               )?.key || 'Unknown'}
                                             </div>
-                                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                                            <div className="text-slate-500 text-xs dark:text-slate-400">
                                               Score: {result.score.toFixed(3)} |
                                               Order: {result.order}
                                             </div>
                                           </div>
-                                          <div className="text-sm text-slate-800 dark:text-slate-200 space-y-1">
+                                          <div className="space-y-1 text-slate-800 text-sm dark:text-slate-200">
                                             {result.content.map(
                                               (content, contentIndex) => (
                                                 <div key={contentIndex}>
@@ -391,24 +391,22 @@ function RagBasicUI() {
                 </div>
               )}
               <form
-                className="flex gap-2 items-center pt-2"
+                className="flex items-center gap-2 pt-2"
                 onSubmit={(e) => {
                   e.preventDefault();
                   onSendClicked();
                 }}
               >
                 <Input
-                  value={prompt}
+                  className="flex-1"
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="Ask using the added context…"
-                  className="flex-1"
+                  value={prompt}
                 />
-                <Button type="submit" disabled={!prompt.trim() || !threadId}>
+                <Button disabled={!(prompt.trim() && threadId)} type="submit">
                   Send
                 </Button>
                 <Button
-                  variant="secondary"
-                  title="Start over"
                   onClick={() => {
                     void createThread({ title: 'RAG Thread' }).then((id) => {
                       setThreadId(id);
@@ -417,6 +415,8 @@ function RagBasicUI() {
                       } catch {}
                     });
                   }}
+                  title="Start over"
+                  variant="secondary"
                 >
                   Start over
                 </Button>
@@ -427,39 +427,39 @@ function RagBasicUI() {
 
         {/* Middle Panel - Entry Chunks */}
         {selectedEntry && (
-          <div className="fixed inset-y-0 left-[16rem] right-[20rem] bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-30">
+          <div className="fixed inset-y-0 right-[20rem] left-[16rem] z-30 flex flex-col bg-white/80 shadow-lg backdrop-blur-sm dark:bg-slate-900/80">
             <div className="p-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                <h2 className="font-semibold text-lg text-slate-900 dark:text-slate-100">
                   Entry Chunks
                 </h2>
                 <button
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                   onClick={() => setSelectedEntry(null)}
-                  className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1"
                   title="Close chunks panel"
                 >
                   ✕
                 </button>
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="mt-1 text-slate-600 text-sm dark:text-slate-400">
                 {globalDocuments.results?.find(
                   (e) => e.entryId === selectedEntry
                 )?.key || 'Selected entry'}
               </p>
             </div>
-            <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="min-h-0 flex-1 overflow-y-auto">
               {documentChunks.results && documentChunks.results.length > 0 ? (
-                <div className="p-4 space-y-3">
+                <div className="space-y-3 p-4">
                   {documentChunks.results.map((chunk) => (
                     <div
-                      key={selectedEntry + '-chunk-' + chunk.order}
                       className="space-y-2"
+                      key={selectedEntry + '-chunk-' + chunk.order}
                     >
-                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                      <div className="font-medium text-slate-500 text-sm dark:text-slate-400">
                         Chunk {chunk.order}
                       </div>
-                      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 shadow-sm">
-                        <div className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
+                      <div className="rounded-lg bg-slate-50 p-4 shadow-sm dark:bg-slate-800">
+                        <div className="text-slate-800 text-sm leading-relaxed dark:text-slate-200">
                           {chunk.text}
                         </div>
                       </div>
@@ -467,19 +467,19 @@ function RagBasicUI() {
                   ))}
                   {documentChunks.status === 'CanLoadMore' && (
                     <button
+                      className="w-full rounded-lg border border-blue-200 py-3 font-medium text-blue-600 text-sm transition hover:bg-blue-50 hover:text-blue-800 dark:border-slate-700 dark:text-blue-400 dark:hover:bg-slate-800 dark:hover:text-blue-300"
                       onClick={() => documentChunks.loadMore(10)}
-                      className="w-full py-3 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 border border-blue-200 dark:border-slate-700 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition font-medium"
                     >
                       Load More Chunks
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex h-full items-center justify-center">
                   <div className="text-center text-slate-500 dark:text-slate-400">
                     {documentChunks.status === 'LoadingFirstPage' ? (
                       <>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-400 mx-auto mb-2"></div>
+                        <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-indigo-400 border-b-2" />
                         <p>Loading chunks...</p>
                       </>
                     ) : (
@@ -494,19 +494,18 @@ function RagBasicUI() {
 
         {/* Right Panel - Add Context */}
         {showContextPanel && (
-          <div className="fixed inset-y-0 right-0 w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
-            <div className="p-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+          <div className="fixed inset-y-0 right-0 z-40 flex w-80 flex-col bg-white/80 shadow-lg backdrop-blur-sm dark:bg-slate-900/80">
+            <div className="flex items-center justify-between p-4">
+              <h2 className="mb-4 font-semibold text-lg text-slate-900 dark:text-slate-100">
                 Add Context
               </h2>
             </div>
-            <div className="px-4 space-y-3 w-full">
+            <div className="w-full space-y-3 px-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="mb-1 block font-medium text-slate-700 text-sm dark:text-slate-300">
                   Title
                 </label>
                 <Input
-                  value={addContextForm.key}
                   onChange={(e) =>
                     setAddContextForm((prev) => ({
                       ...prev,
@@ -514,37 +513,38 @@ function RagBasicUI() {
                     }))
                   }
                   placeholder="Enter context title"
+                  value={addContextForm.key}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="mb-1 block font-medium text-slate-700 text-sm dark:text-slate-300">
                   Text
                 </label>
                 <Textarea
-                  value={addContextForm.text}
                   onChange={(e) =>
                     setAddContextForm((prev) => ({
                       ...prev,
                       text: e.target.value,
                     }))
                   }
-                  rows={4}
                   placeholder="Enter context body"
+                  rows={4}
+                  value={addContextForm.text}
                 />
               </div>
               <Button
-                onClick={() => void handleAddContext()}
+                className="w-full"
                 disabled={
                   isAddingContext ||
                   !addContextForm.key.trim() ||
                   !addContextForm.text.trim()
                 }
-                className="w-full"
+                onClick={() => void handleAddContext()}
               >
                 {isAddingContext ? 'Adding...' : 'Add Context'}
               </Button>
             </div>
-            <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="min-h-0 flex-1 overflow-y-auto">
               <div className="p-4">
                 <h3 className="mb-3 font-medium text-slate-900 dark:text-slate-100">
                   Context Entries
@@ -552,20 +552,20 @@ function RagBasicUI() {
                 <div className="space-y-2">
                   {globalDocuments.results?.map((entry) => (
                     <div
+                      className={`cursor-pointer rounded-md p-3 shadow-sm transition-colors ${selectedEntry === entry.entryId ? 'bg-indigo-50 dark:bg-slate-800' : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800'}`}
                       key={entry.entryId}
-                      className={`p-3 rounded-md transition-colors cursor-pointer shadow-sm ${selectedEntry === entry.entryId ? 'bg-indigo-50 dark:bg-slate-800' : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800'}`}
                       onClick={() => setSelectedEntry(entry.entryId)}
                     >
-                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                      <div className="truncate font-medium text-slate-900 text-sm dark:text-slate-100">
                         {entry.title || entry.key}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      <div className="mt-1 text-slate-500 text-xs dark:text-slate-400">
                         Status: {entry.status}
                       </div>
                     </div>
                   ))}
                   {globalDocuments.results?.length === 0 && (
-                    <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
+                    <div className="py-4 text-center text-slate-500 text-sm dark:text-slate-400">
                       No context entries yet
                     </div>
                   )}
@@ -576,24 +576,24 @@ function RagBasicUI() {
         )}
         <div className="pointer-events-none">
           <Button
-            type="button"
-            size="icon"
-            variant="secondary"
-            onClick={() => setShowContextPanel((v) => !v)}
             aria-label={
               showContextPanel ? 'Hide context panel' : 'Show context panel'
             }
             className={`pointer-events-auto fixed ${showContextPanel ? 'right-[21rem]' : 'right-3'} top-3 z-[60] shadow`}
+            onClick={() => setShowContextPanel((v) => !v)}
+            size="icon"
             title={showContextPanel ? 'Hide context' : 'Show context'}
+            type="button"
+            variant="secondary"
           >
             <PanelRight className="h-4 w-4" />
           </Button>
         </div>
         <div className="pointer-events-none">
-          <ThemeToggle className="fixed right-16 top-3 z-[60] shadow" />
+          <ThemeToggle className="fixed top-3 right-16 z-[60] shadow" />
         </div>
       </div>
-      {error && <div className="text-red-500 text-center">{error.message}</div>}
+      {error && <div className="text-center text-red-500">{error.message}</div>}
     </div>
   );
 }

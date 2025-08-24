@@ -6,8 +6,8 @@ const Separator = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
-    ref={ref}
     className={cn('shrink-0 bg-slate-200', className)}
+    ref={ref}
     {...props}
   />
 ));

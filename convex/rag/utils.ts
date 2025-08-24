@@ -8,10 +8,10 @@ import {
 import { vEntryId, vSearchEntry, vSearchResult } from '@convex-dev/rag';
 import { paginationOptsValidator } from 'convex/server';
 import { v } from 'convex/values';
+import { components } from '../_generated/api';
 import { internalMutation, query } from '../_generated/server';
 import { getAuthUserId } from '../utils';
 import { rag } from './ragAsPrompt';
-import { components } from '../_generated/api';
 
 /**
  * Lists messages for a thread including the context used to generate them,

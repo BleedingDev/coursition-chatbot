@@ -1,12 +1,13 @@
 // See the docs at https://docs.convex.dev/agents/workflows
-import { WorkflowId, WorkflowManager } from '@convex-dev/workflow';
+
 import { createThread, saveMessage, stepCountIs } from '@convex-dev/agent';
-import { components, internal } from '../_generated/api';
-import { action, mutation } from '../_generated/server';
+import { type WorkflowId, WorkflowManager } from '@convex-dev/workflow';
 import { v } from 'convex/values';
 import { z } from 'zod/v3';
-import { weatherAgent } from '../agents/weather';
+import { components, internal } from '../_generated/api';
+import { action, mutation } from '../_generated/server';
 import { fashionAgent } from '../agents/fashion';
+import { weatherAgent } from '../agents/weather';
 import { getAuthUserId } from '../utils';
 
 /**
@@ -35,7 +36,7 @@ export const getAdvice = action({
     await fashionAgent.generateText(
       ctx,
       { threadId, userId },
-      { prompt: `What should I wear based on the weather?` }
+      { prompt: 'What should I wear based on the weather?' }
     );
   },
 });
@@ -67,7 +68,7 @@ export const weatherAgentWorkflow = workflow.define({
     );
     const fashionQ = await saveMessage(step, components.agent, {
       threadId,
-      prompt: `What should I wear based on the weather?`,
+      prompt: 'What should I wear based on the weather?',
     });
     const fashion = await step.runAction(
       internal.workflows.chaining.getFashionAdvice,

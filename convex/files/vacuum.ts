@@ -1,8 +1,9 @@
 // See the docs at https://docs.convex.dev/agents/files
-import { internalMutation } from '../_generated/server';
+
 import { v } from 'convex/values';
 import { components, internal } from '../_generated/api';
-import { Id } from '../_generated/dataModel';
+import type { Id } from '../_generated/dataModel';
+import { internalMutation } from '../_generated/server';
 
 const THRESHOLD_MS = 1000 * 60 * 60 * 24; // 24 hours
 

@@ -9,7 +9,7 @@ const baseComponents: Partial<Components> = {
     if (inline) {
       return (
         <code
-          className="rounded bg-slate-100 dark:bg-slate-700/70 px-1 py-0.5 text-[0.9em]"
+          className="rounded bg-slate-100 px-1 py-0.5 text-[0.9em] dark:bg-slate-700/70"
           {...props}
         >
           {children}
@@ -18,7 +18,7 @@ const baseComponents: Partial<Components> = {
     }
     return (
       <pre
-        className="overflow-x-auto rounded-lg bg-slate-950 text-slate-100 p-3 text-sm"
+        className="overflow-x-auto rounded-lg bg-slate-950 p-3 text-slate-100 text-sm"
         {...props}
       >
         <code>{children}</code>
@@ -41,8 +41,8 @@ const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
           ? 'text-indigo-200 underline-offset-4 hover:underline'
           : 'text-indigo-900 underline-offset-4 hover:underline'
       }
-      target="_blank"
       rel="noreferrer"
+      target="_blank"
       {...props}
     >
       {children}
@@ -53,12 +53,12 @@ const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
   return (
     <div
       className={
-        `prose ${effectiveInvert ? 'prose-invert' : 'prose-slate'} max-w-none ` +
+        `prose ${effectiveInvert ? 'prose-invert' : 'prose-slate'} max-w-none` +
         [
           // Tighten vertical rhythm
           'prose-p:my-1 prose-p:leading-relaxed',
           'prose-headings:my-1',
-          'prose-ul:my-1 prose-ol:my-1 prose-li:my-0',
+          'prose-li:my-0 prose-ol:my-1 prose-ul:my-1',
           'prose-pre:my-2',
           'prose-code:my-0',
           'prose-blockquote:my-2',

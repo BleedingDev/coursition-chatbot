@@ -1,25 +1,25 @@
 // See the docs at https://docs.convex.dev/agents/threads
-import { components } from './_generated/api';
 
-import { v } from 'convex/values';
-import {
-  action,
-  ActionCtx,
-  mutation,
-  MutationCtx,
-  query,
-  QueryCtx,
-} from './_generated/server.js';
-import { paginationOptsValidator } from 'convex/server';
 import {
   createThread,
   getThreadMetadata,
   saveMessage,
   vMessage,
 } from '@convex-dev/agent';
-import { getAuthUserId } from './utils';
-import { agent } from './agents/simple';
+import { paginationOptsValidator } from 'convex/server';
+import { v } from 'convex/values';
 import { z } from 'zod/v3';
+import { components } from './_generated/api';
+import {
+  type ActionCtx,
+  action,
+  type MutationCtx,
+  mutation,
+  type QueryCtx,
+  query,
+} from './_generated/server.js';
+import { agent } from './agents/simple';
+import { getAuthUserId } from './utils';
 
 export const listThreads = query({
   args: {

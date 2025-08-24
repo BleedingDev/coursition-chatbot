@@ -1,8 +1,9 @@
 // See the docs at https://docs.convex.dev/agents/context
-import { components } from '../_generated/api';
+
 import { createTool, fetchContextMessages } from '@convex-dev/agent';
-import z from 'zod/v3';
 import { embed } from 'ai';
+import z from 'zod/v3';
+import { components } from '../_generated/api';
 import { textEmbeddingModel } from '../modelsForDemo';
 
 /**

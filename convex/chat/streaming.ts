@@ -1,6 +1,8 @@
 // See the docs at https://docs.convex.dev/agents/messages
-import { paginationOptsValidator } from 'convex/server';
+
 import { listMessages, syncStreams, vStreamArgs } from '@convex-dev/agent';
+import { paginationOptsValidator } from 'convex/server';
+import { v } from 'convex/values';
 import { components, internal } from '../_generated/api';
 import {
   action,
@@ -9,9 +11,8 @@ import {
   mutation,
   query,
 } from '../_generated/server';
-import { v } from 'convex/values';
-import { authorizeThreadAccess } from '../threads';
 import { storyAgent } from '../agents/story';
+import { authorizeThreadAccess } from '../threads';
 
 /**
  * OPTION 1:
