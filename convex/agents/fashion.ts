@@ -14,6 +14,7 @@ export const fashionAgent = new Agent(components.agent, {
       args: z.object({
         search: z.string().describe('Which preferences are requested'),
       }),
+      // biome-ignore lint/suspicious/useAwait: Interface requires async
       handler: async (ctx, args) => {
         console.log('getting user preferences', args);
         return {

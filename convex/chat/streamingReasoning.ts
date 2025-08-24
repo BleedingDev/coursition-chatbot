@@ -44,6 +44,7 @@ export const streamReasoning = action({
             inputSchema: z.object({
               question: z.string().describe('The question to ask the friend'),
             }),
+            // biome-ignore lint/suspicious/useAwait: Interface requires async
             execute: async ({ question }) => {
               console.log('asking a friend', question);
               return "I'm sorry I can't help you. Stop asking me questions.";
