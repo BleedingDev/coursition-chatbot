@@ -28,8 +28,8 @@ export const sendMessage = action({
             title: z.string().describe('The title of the context'),
             text: z.string().describe('The text body of the context'),
           }),
-          handler: async (ctx, args) => {
-            await rag.add(ctx, {
+          handler: async (toolCtx, args) => {
+            await rag.add(toolCtx, {
               namespace: userId,
               title: args.title,
               text: args.text,
@@ -43,24 +43,22 @@ export const sendMessage = action({
               .string()
               .describe("Describe the context you're looking for"),
           }),
-          handler: async (ctx, args) => {
-            const context = await rag.search(ctx, {
+          handler: async (searchCtx, args) => {
+            const context = await rag.search(searchCtx, {
               namespace: userId,
               query: args.query,
               limit: 5,
             });
             // To show the context in the demo UI, we record the context used
-            await ctx.runMutation(internal.rag.utils.recordContextUsed, {
+            await searchCtx.runMutation(internal.rag.utils.recordContextUsed, {
               messageId: promptMessageId,
               entries: context.entries,
               results: context.results,
             });
-            return (
-              `Found results in ${context.entries
-                .map((e) => e.title || null)
-                .filter((t) => t !== null)
-                .join(', ')}` + `Here is the context:\n\n ${context.text}`
-            );
+            return `Found results in ${context.entries
+              .map((e) => e.title || null)
+              .filter((t) => t !== null)
+              .join(', ')}. Here is the context:\n\n ${context.text}`;
           },
         }),
       },

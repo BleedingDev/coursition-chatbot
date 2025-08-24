@@ -90,9 +90,9 @@ export const ask = action({
     );
     const supportRequests = result.toolCalls
       .filter((tc) => tc.toolName === 'askHuman' && !tc.dynamic)
-      .map(({ toolCallId, input: { question } }) => ({
+      .map(({ toolCallId, input: { question: questionText } }) => ({
         toolCallId,
-        question,
+        question: questionText,
       }));
     if (supportRequests.length > 0) {
       // Do something so the support agent knows they need to respond,

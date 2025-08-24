@@ -10,7 +10,12 @@ import RagBasic from './rag/RagBasic';
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+createRoot(rootElement).render(
   <ConvexProvider client={convex}>
     <App />
   </ConvexProvider>
@@ -50,9 +55,13 @@ function RootRedirect() {
     }
     // If no active thread yet and initial page loaded, create one
     if (threads.status !== 'LoadingFirstPage') {
-      void createThread({ title: 'RAG Thread' }).then((id) => {
-        navigate(`/${id}`, { replace: true });
-      });
+      createThread({ title: 'RAG Thread' })
+        .then((id) => {
+          navigate(`/${id}`, { replace: true });
+        })
+        .catch(() => {
+          console.error('Error creating thread');
+        });
     }
   }, [threads.results, threads.status, navigate, createThread]);
 

@@ -34,7 +34,8 @@ const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
     typeof document !== 'undefined' &&
     document.documentElement.classList.contains('dark');
   const effectiveInvert = invert || isDark;
-  const a = ({ children, ...props }: any) => (
+  const a = ({ children: aChildren, ...props }: React.ComponentProps<'a'>) => (
+    // biome-ignore lint/nursery/useAnchorHref: Problem with react-markdown types.
     <a
       className={
         effectiveInvert
@@ -45,7 +46,7 @@ const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
       target="_blank"
       {...props}
     >
-      {children}
+      {aChildren}
     </a>
   );
   const components: Partial<Components> = { ...baseComponents, a };

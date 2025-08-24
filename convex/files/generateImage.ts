@@ -47,7 +47,7 @@ export const replyWithImage = internalAction({
     if (!image.ok) {
       throw new Error(`Failed to fetch image. ${JSON.stringify(image)}`);
     }
-    const mediaType = image.headers.get('content-type')!;
+    const mediaType = image.headers.get('content-type');
     if (!mediaType) {
       throw new Error(
         `No MIME type found. Response: ${JSON.stringify(image.headers)}`

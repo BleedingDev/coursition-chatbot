@@ -45,12 +45,15 @@ export const runAgentAsTool = action({
           z.literal('doSomethingElse'),
         ]),
       }),
-      handler: async (ctx, args) => {
+      handler: async (toolCtx, args) => {
         // Create a nested thread to call the agent with tools
-        const { thread } = await agentWithTools.createThread(ctx, {
-          userId: ctx.userId,
-        });
-        const result = await thread.generateText({
+        const { thread: nestedThread } = await agentWithTools.createThread(
+          toolCtx,
+          {
+            userId: toolCtx.userId,
+          }
+        );
+        const result = await nestedThread.generateText({
           messages: [
             {
               role: 'assistant',

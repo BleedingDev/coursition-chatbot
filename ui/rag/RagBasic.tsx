@@ -99,8 +99,8 @@ function RagBasicUI() {
         text: addContextForm.text.trim(),
       });
       setAddContextForm({ key: '', text: '' });
-    } catch (error) {
-      console.error('Error adding context:', error);
+    } catch (contextError) {
+      console.error('Error adding context:', contextError);
     } finally {
       setIsAddingContext(false);
     }
@@ -123,8 +123,8 @@ function RagBasicUI() {
     sendMessage({
       threadId,
       prompt: prompt.trim(),
-    }).catch((error) => {
-      setError(error);
+    }).catch((sendError) => {
+      setError(sendError);
       setPrompt(prompt);
     });
   }, [sendMessage, threadId, prompt]);
