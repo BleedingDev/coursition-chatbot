@@ -1,7 +1,7 @@
 // See the docs at https://docs.convex.dev/agents/usage-tracking
-import { vProviderMetadata, vUsage } from "@convex-dev/agent";
-import { defineTable } from "convex/server";
-import { v } from "convex/values";
+import { vProviderMetadata, vUsage } from '@convex-dev/agent';
+import { defineTable } from 'convex/server';
+import { v } from 'convex/values';
 
 // If you want to track usage on a granular level, you could do something like this:
 export default {
@@ -21,16 +21,16 @@ export default {
     // You can then fetch all the usage at the end of the billing period
     // and calculate the total cost.
     billingPeriod: v.string(), // When the usage period ended
-  }).index("billingPeriod_userId", ["billingPeriod", "userId"]),
+  }).index('billingPeriod_userId', ['billingPeriod', 'userId']),
 
   invoices: defineTable({
     userId: v.string(),
     billingPeriod: v.string(),
     amount: v.number(),
     status: v.union(
-      v.literal("pending"),
-      v.literal("paid"),
-      v.literal("failed"),
+      v.literal('pending'),
+      v.literal('paid'),
+      v.literal('failed')
     ),
-  }).index("billingPeriod_userId", ["billingPeriod", "userId"]),
+  }).index('billingPeriod_userId', ['billingPeriod', 'userId']),
 };

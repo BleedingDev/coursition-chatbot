@@ -4,14 +4,14 @@ import {
   listMessages,
   syncStreams,
   vStreamArgs,
-} from "@convex-dev/agent";
-import { vEntryId, vSearchEntry, vSearchResult } from "@convex-dev/rag";
-import { paginationOptsValidator } from "convex/server";
-import { v } from "convex/values";
-import { internalMutation, query } from "../_generated/server";
-import { getAuthUserId } from "../utils";
-import { rag } from "./ragAsPrompt";
-import { components } from "../_generated/api";
+} from '@convex-dev/agent';
+import { vEntryId, vSearchEntry, vSearchResult } from '@convex-dev/rag';
+import { paginationOptsValidator } from 'convex/server';
+import { v } from 'convex/values';
+import { internalMutation, query } from '../_generated/server';
+import { getAuthUserId } from '../utils';
+import { rag } from './ragAsPrompt';
+import { components } from '../_generated/api';
 
 /**
  * Lists messages for a thread including the context used to generate them,
@@ -29,7 +29,7 @@ export const listMessagesWithContext = query({
       threadId: args.threadId,
     });
     if (threadMetadata.userId && threadMetadata.userId !== userId) {
-      throw new Error("You are not authorized to access this thread");
+      throw new Error('You are not authorized to access this thread');
     }
 
     const results = await listMessages(ctx, components.agent, {
@@ -47,10 +47,10 @@ export const listMessagesWithContext = query({
         results.page.map(async (message) => ({
           ...message,
           contextUsed: await ctx.db
-            .query("contextUsed")
-            .withIndex("messageId", (q) => q.eq("messageId", message._id))
+            .query('contextUsed')
+            .withIndex('messageId', (q) => q.eq('messageId', message._id))
             .first(),
-        })),
+        }))
       ),
     };
   },
@@ -62,10 +62,10 @@ export const listEntries = query({
   },
   handler: async (ctx, args) => {
     const namespace = await rag.getNamespace(ctx, {
-      namespace: "global",
+      namespace: 'global',
     });
     if (!namespace) {
-      return { page: [], isDone: true, continueCursor: "" };
+      return { page: [], isDone: true, continueCursor: '' };
     }
     const results = await rag.list(ctx, {
       namespaceId: namespace.namespaceId,
@@ -96,6 +96,6 @@ export const recordContextUsed = internalMutation({
     results: v.array(vSearchResult),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("contextUsed", args);
+    await ctx.db.insert('contextUsed', args);
   },
 });

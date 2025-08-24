@@ -1,20 +1,20 @@
 // See the docs at https://docs.convex.dev/agents/messages
-import { Agent } from "@convex-dev/agent";
-import { components } from "../_generated/api";
-import { action } from "../_generated/server";
-import { v } from "convex/values";
-import { authorizeThreadAccess } from "../threads";
-import { storyAgent } from "../agents/story";
-import { stepCountIs, tool } from "ai";
-import { groq } from "@ai-sdk/groq";
-import z from "zod/v3";
-import { defaultConfig } from "../agents/config";
+import { Agent } from '@convex-dev/agent';
+import { components } from '../_generated/api';
+import { action } from '../_generated/server';
+import { v } from 'convex/values';
+import { authorizeThreadAccess } from '../threads';
+import { storyAgent } from '../agents/story';
+import { stepCountIs, tool } from 'ai';
+import { groq } from '@ai-sdk/groq';
+import z from 'zod/v3';
+import { defaultConfig } from '../agents/config';
 
-const reasoningModel = groq("qwen/qwen3-32b");
+const reasoningModel = groq('qwen/qwen3-32b');
 
 const streamingReasoningAgent = new Agent(components.agent, {
-  name: "Streaming Reasoning Agent",
-  instructions: "Think about the question and answer it.",
+  name: 'Streaming Reasoning Agent',
+  instructions: 'Think about the question and answer it.',
   ...defaultConfig,
   stopWhen: stepCountIs(3),
   languageModel: reasoningModel,
@@ -24,33 +24,33 @@ export const streamReasoning = action({
   args: {},
   handler: async (ctx, args) => {
     const { thread } = await streamingReasoningAgent.createThread(ctx, {
-      title: "Streaming Reasoning",
+      title: 'Streaming Reasoning',
     });
     const result = await thread.streamText(
       {
-        prompt: "What is the best flavor of ice cream?",
+        prompt: 'What is the best flavor of ice cream?',
         providerOptions: {
           groq: {
-            reasoningEffort: "default",
-            reasoningFormat: "parsed",
+            reasoningEffort: 'default',
+            reasoningFormat: 'parsed',
             // parallelToolCalls: true, // Enable parallel function calling (default: true)
             // user: 'user-123', // Unique identifier for end-user (optional)
           },
         },
         tools: {
           say: tool({
-            description: "Ask a friend for their favorite flavor of ice cream",
+            description: 'Ask a friend for their favorite flavor of ice cream',
             inputSchema: z.object({
-              question: z.string().describe("The question to ask the friend"),
+              question: z.string().describe('The question to ask the friend'),
             }),
             execute: async ({ question }) => {
-              console.log("asking a friend", question);
+              console.log('asking a friend', question);
               return "I'm sorry I can't help you. Stop asking me questions.";
             },
           }),
         },
       },
-      { saveStreamDeltas: { chunking: "line" } },
+      { saveStreamDeltas: { chunking: 'line' } }
     );
     for await (const chunk of result.toUIMessageStream()) {
       console.log(chunk);
@@ -70,7 +70,7 @@ export const streamOneShot = action({
     const { thread } = await storyAgent.continueThread(ctx, { threadId });
     const result = await thread.streamText(
       { prompt },
-      { saveStreamDeltas: true },
+      { saveStreamDeltas: true }
     );
     // We don't need to return anything, as the response is saved as deltas
     // in the database and clients are subscribed to the stream.

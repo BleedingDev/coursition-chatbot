@@ -1,21 +1,21 @@
 // See the docs at https://docs.convex.dev/agents/getting-started
-import { Agent, createTool, stepCountIs } from "@convex-dev/agent";
-import { components } from "../_generated/api";
-import { z } from "zod/v3";
-import { defaultConfig } from "./config";
+import { Agent, createTool, stepCountIs } from '@convex-dev/agent';
+import { components } from '../_generated/api';
+import { z } from 'zod/v3';
+import { defaultConfig } from './config';
 
 export const fashionAgent = new Agent(components.agent, {
-  name: "Fashion Agent",
+  name: 'Fashion Agent',
   instructions:
-    "You give fashion advice for a place a user is visiting, based on the weather.",
+    'You give fashion advice for a place a user is visiting, based on the weather.',
   tools: {
     getUserPreferences: createTool({
-      description: "Get clothing preferences for a user",
+      description: 'Get clothing preferences for a user',
       args: z.object({
-        search: z.string().describe("Which preferences are requested"),
+        search: z.string().describe('Which preferences are requested'),
       }),
       handler: async (ctx, args) => {
-        console.log("getting user preferences", args);
+        console.log('getting user preferences', args);
         return {
           userId: ctx.userId,
           threadId: ctx.threadId,

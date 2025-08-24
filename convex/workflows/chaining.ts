@@ -1,13 +1,13 @@
 // See the docs at https://docs.convex.dev/agents/workflows
-import { WorkflowId, WorkflowManager } from "@convex-dev/workflow";
-import { createThread, saveMessage, stepCountIs } from "@convex-dev/agent";
-import { components, internal } from "../_generated/api";
-import { action, mutation } from "../_generated/server";
-import { v } from "convex/values";
-import { z } from "zod/v3";
-import { weatherAgent } from "../agents/weather";
-import { fashionAgent } from "../agents/fashion";
-import { getAuthUserId } from "../utils";
+import { WorkflowId, WorkflowManager } from '@convex-dev/workflow';
+import { createThread, saveMessage, stepCountIs } from '@convex-dev/agent';
+import { components, internal } from '../_generated/api';
+import { action, mutation } from '../_generated/server';
+import { v } from 'convex/values';
+import { z } from 'zod/v3';
+import { weatherAgent } from '../agents/weather';
+import { fashionAgent } from '../agents/fashion';
+import { getAuthUserId } from '../utils';
 
 /**
  * OPTION 1: Chain agent calls in a single action.
@@ -28,14 +28,14 @@ export const getAdvice = action({
     await weatherAgent.generateText(
       ctx,
       { threadId, userId },
-      { prompt: `What is the weather in ${location}?` },
+      { prompt: `What is the weather in ${location}?` }
     );
 
     // This includes previous message history from the thread automatically.
     await fashionAgent.generateText(
       ctx,
       { threadId, userId },
-      { prompt: `What should I wear based on the weather?` },
+      { prompt: `What should I wear based on the weather?` }
     );
   },
 });
@@ -63,7 +63,7 @@ export const weatherAgentWorkflow = workflow.define({
     const forecast = await step.runAction(
       internal.workflows.chaining.getForecast,
       { promptMessageId: weatherQ.messageId, threadId },
-      { retry: true },
+      { retry: true }
     );
     const fashionQ = await saveMessage(step, components.agent, {
       threadId,
@@ -75,10 +75,10 @@ export const weatherAgentWorkflow = workflow.define({
       {
         retry: { maxAttempts: 5, initialBackoffMs: 1000, base: 2 },
         // runAfter: 2 * 1000, // To add artificial delay
-      },
+      }
     );
-    console.log("Weather forecast:", forecast);
-    console.log("Fashion advice:", fashion.object);
+    console.log('Weather forecast:', forecast);
+    console.log('Fashion advice:', fashion.object);
   },
 });
 
@@ -86,7 +86,7 @@ export const startWorkflow = mutation({
   args: { location: v.string() },
   handler: async (
     ctx,
-    { location },
+    { location }
     // It's best practice to annotate return types on all functions involved
     // in workflows, as circular types are common.
   ): Promise<{ threadId: string; workflowId: WorkflowId }> => {
@@ -98,7 +98,7 @@ export const startWorkflow = mutation({
     const workflowId = await workflow.start(
       ctx,
       internal.workflows.chaining.weatherAgentWorkflow,
-      { location, threadId },
+      { location, threadId }
     );
     return { threadId, workflowId };
   },

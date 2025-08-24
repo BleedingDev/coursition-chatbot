@@ -1,18 +1,18 @@
-import { httpRouter } from "convex/server";
-import { streamOverHttp } from "./chat/streaming";
-import { corsRouter } from "convex-helpers/server/cors";
+import { httpRouter } from 'convex/server';
+import { streamOverHttp } from './chat/streaming';
+import { corsRouter } from 'convex-helpers/server/cors';
 
 const http = httpRouter();
 
 const cors = corsRouter(http, {
   allowCredentials: true,
-  allowedHeaders: ["Authorization", "Content-Type"],
-  exposedHeaders: ["Content-Type", "Content-Length", "X-Message-Id"],
+  allowedHeaders: ['Authorization', 'Content-Type'],
+  exposedHeaders: ['Content-Type', 'Content-Length', 'X-Message-Id'],
 });
 
 cors.route({
-  path: "/streamText",
-  method: "POST",
+  path: '/streamText',
+  method: 'POST',
   handler: streamOverHttp,
 });
 

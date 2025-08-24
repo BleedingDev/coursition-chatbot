@@ -1,7 +1,7 @@
 // See the docs at https://docs.convex.dev/agents/threads
-import { components } from "./_generated/api";
+import { components } from './_generated/api';
 
-import { v } from "convex/values";
+import { v } from 'convex/values';
 import {
   action,
   ActionCtx,
@@ -9,17 +9,17 @@ import {
   MutationCtx,
   query,
   QueryCtx,
-} from "./_generated/server.js";
-import { paginationOptsValidator } from "convex/server";
+} from './_generated/server.js';
+import { paginationOptsValidator } from 'convex/server';
 import {
   createThread,
   getThreadMetadata,
   saveMessage,
   vMessage,
-} from "@convex-dev/agent";
-import { getAuthUserId } from "./utils";
-import { agent } from "./agents/simple";
-import { z } from "zod/v3";
+} from '@convex-dev/agent';
+import { getAuthUserId } from './utils';
+import { agent } from './agents/simple';
+import { z } from 'zod/v3';
 
 export const listThreads = query({
   args: {
@@ -29,7 +29,7 @@ export const listThreads = query({
     const userId = await getAuthUserId(ctx);
     const threads = await ctx.runQuery(
       components.agent.threads.listThreadsByUserId,
-      { userId, paginationOpts: args.paginationOpts },
+      { userId, paginationOpts: args.paginationOpts }
     );
     return threads;
   },
@@ -73,16 +73,16 @@ export const updateThreadTitle = action({
       object: { title, summary },
     } = await thread.generateObject(
       {
-        mode: "json",
+        mode: 'json',
         schemaDescription:
           "Generate a title and summary for the thread. The title should be a single sentence that captures the main topic of the thread. The summary should be a short description of the thread that could be used to describe it to someone who hasn't read it.",
         schema: z.object({
-          title: z.string().describe("The new title for the thread"),
-          summary: z.string().describe("The new summary for the thread"),
+          title: z.string().describe('The new title for the thread'),
+          summary: z.string().describe('The new summary for the thread'),
         }),
-        prompt: "Generate a title and summary for this thread.",
+        prompt: 'Generate a title and summary for this thread.',
       },
-      { storageOptions: { saveMessages: "none" } },
+      { storageOptions: { saveMessages: 'none' } }
     );
     await thread.updateMetadata({ title, summary });
   },
@@ -92,10 +92,13 @@ export const renameThread = mutation({
   args: { threadId: v.string(), title: v.string() },
   handler: async (ctx, { threadId, title }) => {
     await authorizeThreadAccess(ctx, threadId, true);
-    const updated = await ctx.runMutation(components.agent.threads.updateThread, {
-      threadId,
-      patch: { title },
-    });
+    const updated = await ctx.runMutation(
+      components.agent.threads.updateThread,
+      {
+        threadId,
+        patch: { title },
+      }
+    );
     return updated._id;
   },
 });
@@ -106,7 +109,7 @@ export const archiveThread = mutation({
     await authorizeThreadAccess(ctx, threadId, true);
     await ctx.runMutation(components.agent.threads.updateThread, {
       threadId,
-      patch: { status: "archived" },
+      patch: { status: 'archived' },
     });
   },
 });
@@ -114,18 +117,18 @@ export const archiveThread = mutation({
 export async function authorizeThreadAccess(
   ctx: QueryCtx | MutationCtx | ActionCtx,
   threadId: string,
-  requireUser?: boolean,
+  requireUser?: boolean
 ) {
   const userId = await getAuthUserId(ctx);
   if (requireUser && !userId) {
-    throw new Error("Unauthorized: user is required");
+    throw new Error('Unauthorized: user is required');
   }
   const { userId: threadUserId } = await getThreadMetadata(
     ctx,
     components.agent,
-    { threadId },
+    { threadId }
   );
   if (requireUser && threadUserId !== userId) {
-    throw new Error("Unauthorized: user does not match thread user");
+    throw new Error('Unauthorized: user does not match thread user');
   }
 }

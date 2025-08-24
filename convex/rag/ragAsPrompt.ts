@@ -1,11 +1,11 @@
 // See the docs at https://docs.convex.dev/agents/rag
-import { RAG } from "@convex-dev/rag";
-import { v } from "convex/values";
-import { components, internal } from "../_generated/api";
-import { action, internalAction, mutation } from "../_generated/server";
-import { textEmbeddingModel } from "../modelsForDemo";
-import { agent } from "../agents/simple";
-import { authorizeThreadAccess } from "../threads";
+import { RAG } from '@convex-dev/rag';
+import { v } from 'convex/values';
+import { components, internal } from '../_generated/api';
+import { action, internalAction, mutation } from '../_generated/server';
+import { textEmbeddingModel } from '../modelsForDemo';
+import { agent } from '../agents/simple';
+import { authorizeThreadAccess } from '../threads';
 
 export const rag = new RAG(components.rag, {
   textEmbeddingModel,
@@ -21,7 +21,7 @@ export const addContext = action({
   handler: async (ctx, args) => {
     // TODO: Add authorization
     await rag.add(ctx, {
-      namespace: "global", // Could set a per-user namespace here
+      namespace: 'global', // Could set a per-user namespace here
       title: args.title,
       key: args.title,
       text: args.text,
@@ -46,7 +46,7 @@ export const answerQuestionViaRAG = internalAction({
 
     // Search the RAG index for context.
     const context = await rag.search(ctx, {
-      namespace: "global",
+      namespace: 'global',
       query: rawPrompt,
       limit: 2,
       chunkContext: { before: 1, after: 1 },
@@ -65,7 +65,7 @@ export const answerQuestionViaRAG = internalAction({
       // in place of the promptMessageId's message, but still be considered
       // a response to the promptMessageId message (raw prompt).
       { prompt, promptMessageId, system },
-      { saveStreamDeltas: true }, // to enable streaming the response via websockets.
+      { saveStreamDeltas: true } // to enable streaming the response via websockets.
     );
     // To show the context in the demo UI, we record the context used
     await ctx.runMutation(internal.rag.utils.recordContextUsed, {
@@ -95,7 +95,7 @@ export const askQuestion = mutation({
     await ctx.scheduler.runAfter(
       0,
       internal.rag.ragAsPrompt.answerQuestionViaRAG,
-      { threadId, prompt, promptMessageId: messageId },
+      { threadId, prompt, promptMessageId: messageId }
     );
   },
 });

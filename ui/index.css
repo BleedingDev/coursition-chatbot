@@ -12,7 +12,9 @@
   --fg: #e5e7eb; /* slate-200 */
 }
 
-.accent-text { @apply text-slate-600 dark:text-slate-300; }
+.accent-text {
+  @apply text-slate-600 dark:text-slate-300;
+}
 
 .button {
   @apply bg-gradient-to-r bg-blue-500;

@@ -1,17 +1,17 @@
 // See the docs at https://docs.convex.dev/agents/messages
-import { paginationOptsValidator } from "convex/server";
-import { listMessages, syncStreams, vStreamArgs } from "@convex-dev/agent";
-import { components, internal } from "../_generated/api";
+import { paginationOptsValidator } from 'convex/server';
+import { listMessages, syncStreams, vStreamArgs } from '@convex-dev/agent';
+import { components, internal } from '../_generated/api';
 import {
   action,
   httpAction,
   internalAction,
   mutation,
   query,
-} from "../_generated/server";
-import { v } from "convex/values";
-import { authorizeThreadAccess } from "../threads";
-import { storyAgent } from "../agents/story";
+} from '../_generated/server';
+import { v } from 'convex/values';
+import { authorizeThreadAccess } from '../threads';
+import { storyAgent } from '../agents/story';
 
 /**
  * OPTION 1:
@@ -25,7 +25,7 @@ export const streamOneShot = action({
     const { thread } = await storyAgent.continueThread(ctx, { threadId });
     const result = await thread.streamText(
       { prompt },
-      { saveStreamDeltas: true },
+      { saveStreamDeltas: true }
     );
     // We don't need to return anything, as the response is saved as deltas
     // in the database and clients are subscribed to the stream.
@@ -67,7 +67,7 @@ export const streamAsync = internalAction({
     const result = await thread.streamText(
       { promptMessageId },
       // more custom delta options (`true` uses defaults)
-      { saveStreamDeltas: { chunking: "word", throttleMs: 100 } },
+      { saveStreamDeltas: { chunking: 'word', throttleMs: 100 } }
     );
     // We need to make sure the stream finishes - by awaiting each chunk
     // or using this call to consume it all.
@@ -92,7 +92,7 @@ export const listThreadMessages = query({
     const streams = await syncStreams(ctx, components.agent, {
       threadId,
       streamArgs,
-      includeStatuses: ["aborted", "streaming"],
+      includeStatuses: ['aborted', 'streaming'],
     });
     // Here you could filter out / modify the stream of deltas / filter out
     // deltas.
@@ -172,7 +172,7 @@ export const streamOverHttp = httpAction(async (ctx, request) => {
   const response = result.toTextStreamResponse();
   // Set this so the client can try to de-dupe showing the streamed message and
   // the final result.
-  response.headers.set("X-Message-Id", result.promptMessageId);
+  response.headers.set('X-Message-Id', result.promptMessageId);
   return response;
 });
 

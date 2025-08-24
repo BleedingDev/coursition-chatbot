@@ -1,16 +1,16 @@
 // See the docs at https://docs.convex.dev/agents/messages
-import { v } from "convex/values";
-import { components } from "../_generated/api";
+import { v } from 'convex/values';
+import { components } from '../_generated/api';
 import {
   query,
   action,
   mutation,
   internalMutation,
-} from "../_generated/server";
-import { abortStream, listStreams } from "@convex-dev/agent";
-import { agent } from "../agents/simple";
-import { smoothStream } from "ai";
-import { authorizeThreadAccess } from "../threads";
+} from '../_generated/server';
+import { abortStream, listStreams } from '@convex-dev/agent';
+import { agent } from '../agents/simple';
+import { smoothStream } from 'ai';
+import { authorizeThreadAccess } from '../threads';
 
 /**
  * Abort a stream by its order
@@ -23,12 +23,12 @@ export const abortStreamByOrder = mutation({
       await abortStream(ctx, components.agent, {
         threadId,
         order,
-        reason: "Aborting explicitly",
+        reason: 'Aborting explicitly',
       })
     ) {
-      console.log("Aborted stream", threadId, order);
+      console.log('Aborted stream', threadId, order);
     } else {
-      console.log("No stream found", threadId, order);
+      console.log('No stream found', threadId, order);
     }
   },
 });
@@ -38,17 +38,17 @@ export const streamThenAbortAsync = action({
   args: {},
   handler: async (ctx) => {
     const { thread, threadId } = await agent.createThread(ctx, {
-      title: "Thread with aborted message",
+      title: 'Thread with aborted message',
     });
     const result = await thread.streamText(
       {
-        prompt: "Write an essay on the importance of effusive dialogue",
-        experimental_transform: smoothStream({ chunking: "line" }),
+        prompt: 'Write an essay on the importance of effusive dialogue',
+        experimental_transform: smoothStream({ chunking: 'line' }),
         onError: (error) => {
           console.error(error);
         },
       },
-      { saveStreamDeltas: { chunking: "line" } },
+      { saveStreamDeltas: { chunking: 'line' } }
     );
     let canceled = false;
     try {
@@ -58,13 +58,13 @@ export const streamThenAbortAsync = action({
           await abortStream(ctx, components.agent, {
             threadId,
             order: result.order,
-            reason: "Aborting explicitly",
+            reason: 'Aborting explicitly',
           });
           canceled = true;
         }
       }
     } catch (error) {
-      console.warn("Catching what should be an AbortError", error);
+      console.warn('Catching what should be an AbortError', error);
     }
   },
 });
@@ -85,14 +85,14 @@ export const abortStreamByStreamId = internalMutation({
   handler: async (ctx, { threadId }) => {
     const streams = await listStreams(ctx, components.agent, { threadId });
     for (const stream of streams) {
-      console.log("Aborting stream", stream);
+      console.log('Aborting stream', stream);
       await abortStream(ctx, components.agent, {
-        reason: "Aborting via async call",
+        reason: 'Aborting via async call',
         streamId: stream.streamId,
       });
     }
     if (!streams.length) {
-      console.log("No streams found");
+      console.log('No streams found');
     }
   },
 });
@@ -105,16 +105,16 @@ export const streamThenUseAbortSignal = action({
   args: {},
   handler: async (ctx) => {
     const { thread } = await agent.createThread(ctx, {
-      title: "Thread using abortSignal",
+      title: 'Thread using abortSignal',
     });
     const abortController = new AbortController();
     const result = await thread.streamText(
       {
-        prompt: "Write an essay on the importance of effusive dialogue",
+        prompt: 'Write an essay on the importance of effusive dialogue',
         abortSignal: abortController.signal,
-        experimental_transform: smoothStream({ chunking: "line" }),
+        experimental_transform: smoothStream({ chunking: 'line' }),
       },
-      { saveStreamDeltas: { chunking: "line" } },
+      { saveStreamDeltas: { chunking: 'line' } }
     );
     setTimeout(() => {
       abortController.abort();
@@ -124,7 +124,7 @@ export const streamThenUseAbortSignal = action({
         console.log(chunk);
       }
     } catch (error) {
-      console.warn("Catching what should be an AbortError", error);
+      console.warn('Catching what should be an AbortError', error);
     }
     await result.consumeStream();
   },

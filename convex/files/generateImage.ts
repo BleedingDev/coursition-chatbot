@@ -1,10 +1,10 @@
 // See the docs at https://docs.convex.dev/agents/files
-import { createThread, saveMessage } from "@convex-dev/agent";
-import { components } from "../_generated/api";
-import { internalAction } from "../_generated/server";
-import { v } from "convex/values";
-import OpenAI from "openai";
-import { getAuthUserId } from "../utils";
+import { createThread, saveMessage } from '@convex-dev/agent';
+import { components } from '../_generated/api';
+import { internalAction } from '../_generated/server';
+import { v } from 'convex/values';
+import OpenAI from 'openai';
+import { getAuthUserId } from '../utils';
 
 /**
  * Generating images
@@ -22,35 +22,35 @@ export const replyWithImage = internalAction({
     const userId = await getAuthUserId(ctx);
     const threadId = await createThread(ctx, components.agent, {
       userId,
-      title: "Image for: " + prompt,
+      title: 'Image for: ' + prompt,
     });
     // Save the user message
     await saveMessage(ctx, components.agent, { threadId, prompt });
 
     // Generate the image
-    const provider = "openai";
-    const model = "dall-e-2";
+    const provider = 'openai';
+    const model = 'dall-e-2';
     const imgResponse = await new OpenAI().images.generate({
       model,
       prompt,
-      size: "256x256",
-      response_format: "url",
+      size: '256x256',
+      response_format: 'url',
     });
     const url = imgResponse.data?.[0].url;
     if (!url) {
       throw new Error(
-        "No image URL found. Response: " + JSON.stringify(imgResponse),
+        'No image URL found. Response: ' + JSON.stringify(imgResponse)
       );
     }
-    console.debug("short-lived url:", url);
+    console.debug('short-lived url:', url);
     const image = await fetch(url);
     if (!image.ok) {
-      throw new Error("Failed to fetch image. " + JSON.stringify(image));
+      throw new Error('Failed to fetch image. ' + JSON.stringify(image));
     }
-    const mediaType = image.headers.get("content-type")!;
+    const mediaType = image.headers.get('content-type')!;
     if (!mediaType) {
       throw new Error(
-        "No MIME type found. Response: " + JSON.stringify(image.headers),
+        'No MIME type found. Response: ' + JSON.stringify(image.headers)
       );
     }
 
@@ -58,10 +58,10 @@ export const replyWithImage = internalAction({
     const { message } = await saveMessage(ctx, components.agent, {
       threadId,
       message: {
-        role: "assistant",
+        role: 'assistant',
         content: [
           {
-            type: "file",
+            type: 'file',
             // NOTE: passing in the bytes directly!
             // It will be saved automatically in file storage.
             data: await image.arrayBuffer(),

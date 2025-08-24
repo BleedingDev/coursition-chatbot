@@ -4,21 +4,21 @@ import {
   listMessages,
   syncStreams,
   vStreamArgs,
-} from "@convex-dev/agent";
+} from '@convex-dev/agent';
 import {
   action,
   internalAction,
   internalMutation,
   mutation,
   query,
-} from "../_generated/server";
-import { v } from "convex/values";
-import { components } from "../_generated/api";
-import { paginationOptsValidator } from "convex/server";
-import { authorizeThreadAccess } from "../threads";
-import { z } from "zod/v3";
-import { tool } from "ai";
-import { agent } from "../agents/simple";
+} from '../_generated/server';
+import { v } from 'convex/values';
+import { components } from '../_generated/api';
+import { paginationOptsValidator } from 'convex/server';
+import { authorizeThreadAccess } from '../threads';
+import { z } from 'zod/v3';
+import { tool } from 'ai';
+import { agent } from '../agents/simple';
 
 /**
  * ===============================
@@ -41,7 +41,7 @@ export const sendMessageFromHumanAgent = internalMutation({
       threadId: args.threadId,
       agentName: args.agentName,
       message: {
-        role: "assistant",
+        role: 'assistant',
         content: args.message,
       },
     });
@@ -71,9 +71,9 @@ export const sendMessageFromUser = mutation({
  */
 
 export const askHuman = tool({
-  description: "Ask a human a question",
+  description: 'Ask a human a question',
   inputSchema: z.object({
-    question: z.string().describe("The question to ask the human"),
+    question: z.string().describe('The question to ask the human'),
   }),
 });
 
@@ -86,10 +86,10 @@ export const ask = action({
       {
         prompt: question,
         tools: { askHuman },
-      },
+      }
     );
     const supportRequests = result.toolCalls
-      .filter((tc) => tc.toolName === "askHuman" && !tc.dynamic)
+      .filter((tc) => tc.toolName === 'askHuman' && !tc.dynamic)
       .map(({ toolCallId, input: { question } }) => ({
         toolCallId,
         question,
@@ -122,18 +122,18 @@ export const humanResponseAsToolCall = internalAction({
     await agent.saveMessage(ctx, {
       threadId: args.threadId,
       message: {
-        role: "tool",
+        role: 'tool',
         content: [
           {
-            type: "tool-result",
-            output: { type: "text", value: args.response },
+            type: 'tool-result',
+            output: { type: 'text', value: args.response },
             toolCallId: args.toolCallId,
-            toolName: "askHuman",
+            toolName: 'askHuman',
           },
         ],
       },
       metadata: {
-        provider: "human",
+        provider: 'human',
         providerMetadata: {
           human: { name: args.humanName },
         },
@@ -143,7 +143,7 @@ export const humanResponseAsToolCall = internalAction({
     await agent.generateText(
       ctx,
       { threadId: args.threadId },
-      { promptMessageId: args.promptMessageId },
+      { promptMessageId: args.promptMessageId }
     );
   },
 });

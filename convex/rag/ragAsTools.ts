@@ -1,13 +1,13 @@
 // See the docs at https://docs.convex.dev/agents/rag
-import { createTool } from "@convex-dev/agent";
-import { RAG } from "@convex-dev/rag";
-import { v } from "convex/values";
-import { z } from "zod/v3";
-import { components, internal } from "../_generated/api";
-import { action } from "../_generated/server";
-import { agent } from "../agents/simple";
-import { getAuthUserId } from "../utils";
-import { textEmbeddingModel } from "../modelsForDemo";
+import { createTool } from '@convex-dev/agent';
+import { RAG } from '@convex-dev/rag';
+import { v } from 'convex/values';
+import { z } from 'zod/v3';
+import { components, internal } from '../_generated/api';
+import { action } from '../_generated/server';
+import { agent } from '../agents/simple';
+import { getAuthUserId } from '../utils';
+import { textEmbeddingModel } from '../modelsForDemo';
 
 const rag = new RAG(components.rag, {
   textEmbeddingModel,
@@ -23,10 +23,10 @@ export const sendMessage = action({
       prompt,
       tools: {
         addContext: createTool({
-          description: "Store information to search later via RAG",
+          description: 'Store information to search later via RAG',
           args: z.object({
-            title: z.string().describe("The title of the context"),
-            text: z.string().describe("The text body of the context"),
+            title: z.string().describe('The title of the context'),
+            text: z.string().describe('The text body of the context'),
           }),
           handler: async (ctx, args) => {
             await rag.add(ctx, {
@@ -37,7 +37,7 @@ export const sendMessage = action({
           },
         }),
         searchContext: createTool({
-          description: "Search for context related to this user prompt",
+          description: 'Search for context related to this user prompt',
           args: z.object({
             query: z
               .string()
@@ -59,7 +59,7 @@ export const sendMessage = action({
               `Found results in ${context.entries
                 .map((e) => e.title || null)
                 .filter((t) => t !== null)
-                .join(", ")}` + `Here is the context:\n\n ${context.text}`
+                .join(', ')}` + `Here is the context:\n\n ${context.text}`
             );
           },
         }),

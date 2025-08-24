@@ -1,22 +1,22 @@
-import { useAction, useMutation, usePaginatedQuery } from "convex/react";
+import { useAction, useMutation, usePaginatedQuery } from 'convex/react';
 import {
   optimisticallySendMessage,
   useSmoothText,
   useThreadMessages,
-} from "@convex-dev/agent/react";
-import { api } from "../../convex/_generated/api";
-import { useCallback, useEffect, useState } from "react";
-import { EntryId } from "@convex-dev/rag";
-import { toast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Edit2, Trash2, Check, X, PanelRight } from "lucide-react";
-import { Markdown } from "@/components/markdown";
-import { SidebarProvider, Sidebar, SidebarRail } from "@/components/ui/sidebar";
-import { useNavigate, useParams } from "react-router-dom";
-import { ThemeToggle } from "@/components/theme-toggle";
+} from '@convex-dev/agent/react';
+import { api } from '../../convex/_generated/api';
+import { useCallback, useEffect, useState } from 'react';
+import { EntryId } from '@convex-dev/rag';
+import { toast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Plus, Edit2, Trash2, Check, X, PanelRight } from 'lucide-react';
+import { Markdown } from '@/components/markdown';
+import { SidebarProvider, Sidebar, SidebarRail } from '@/components/ui/sidebar';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 function RagBasicUI() {
   const params = useParams<{ threadId?: string }>();
@@ -26,7 +26,7 @@ function RagBasicUI() {
   const createThread = useMutation(api.threads.createNewThread);
   useEffect(() => {
     if (threadId) return;
-    void createThread({ title: "RAG Thread" }).then((id) => {
+    void createThread({ title: 'RAG Thread' }).then((id) => {
       setThreadId(id);
       navigate(`/${id}`, { replace: true });
     });
@@ -37,45 +37,51 @@ function RagBasicUI() {
 
   // Context form state
   const [addContextForm, setAddContextForm] = useState({
-    key: "",
-    text: "",
+    key: '',
+    text: '',
   });
   const [isAddingContext, setIsAddingContext] = useState(false);
 
   // Chat state
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState('');
   const [expandedContexts, setExpandedContexts] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   // Actions and queries
   const addContext = useAction(api.rag.ragAsPrompt.addContext);
   const sendMessage = useMutation(
-    api.rag.ragAsPrompt.askQuestion,
+    api.rag.ragAsPrompt.askQuestion
   ).withOptimisticUpdate(
-    optimisticallySendMessage(api.rag.utils.listMessagesWithContext),
+    optimisticallySendMessage(api.rag.utils.listMessagesWithContext)
   );
   const listMessages = useThreadMessages(
     api.rag.utils.listMessagesWithContext,
-    threadId ? { threadId } : "skip",
-    { initialNumItems: 10, stream: true },
+    threadId ? { threadId } : 'skip',
+    { initialNumItems: 10, stream: true }
   );
   const globalDocuments = usePaginatedQuery(
     api.rag.utils.listEntries,
     {},
-    { initialNumItems: 10 },
+    { initialNumItems: 10 }
   );
   const documentChunks = usePaginatedQuery(
     api.rag.utils.listChunks,
-    selectedEntry ? { entryId: selectedEntry } : "skip",
-    { initialNumItems: 10 },
+    selectedEntry ? { entryId: selectedEntry } : 'skip',
+    { initialNumItems: 10 }
   );
-  const threads = usePaginatedQuery(api.threads.listThreads, {}, { initialNumItems: 30 });
-  const activeThreads = (threads.results ?? []).filter((t) => t.status === "active");
+  const threads = usePaginatedQuery(
+    api.threads.listThreads,
+    {},
+    { initialNumItems: 30 }
+  );
+  const activeThreads = (threads.results ?? []).filter(
+    (t) => t.status === 'active'
+  );
   const renameThreadMutation = useMutation(api.threads.renameThread);
   const archiveThreadMutation = useMutation(api.threads.archiveThread);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingTitle, setEditingTitle] = useState<string>("");
+  const [editingTitle, setEditingTitle] = useState<string>('');
   const [showContextPanel, setShowContextPanel] = useState<boolean>(true);
 
   // Handle adding context
@@ -88,9 +94,9 @@ function RagBasicUI() {
         title: addContextForm.key.trim(),
         text: addContextForm.text.trim(),
       });
-      setAddContextForm({ key: "", text: "" });
+      setAddContextForm({ key: '', text: '' });
     } catch (error) {
-      console.error("Error adding context:", error);
+      console.error('Error adding context:', error);
     } finally {
       setIsAddingContext(false);
     }
@@ -102,18 +108,18 @@ function RagBasicUI() {
 
     if (!threadId) {
       toast({
-        title: "Thread ID is not set",
-        description: "Please create a thread first",
+        title: 'Thread ID is not set',
+        description: 'Please create a thread first',
       });
       return;
     }
-    setPrompt("");
+    setPrompt('');
     sendMessage({
       threadId,
       prompt: prompt.trim(),
     }).catch((error) => {
       setError(error);
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
       setPrompt(prompt);
     });
   }, [sendMessage, threadId, prompt]);
@@ -140,17 +146,21 @@ function RagBasicUI() {
           <aside className="fixed inset-y-0 left-0 w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
             <div className="p-4 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Chat History</h2>
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  Chat History
+                </h2>
               </div>
               <Button
                 size="sm"
                 onClick={() => {
-                  void createThread({ title: "New Chat" }).then((id) => {
+                  void createThread({ title: 'New Chat' }).then((id) => {
                     setThreadId(id);
-                  try { (window as any).history.pushState(null, "", `/${id}`); } catch {}
-                });
-              }}
-              aria-label="New Chat"
+                    try {
+                      (window as any).history.pushState(null, '', `/${id}`);
+                    } catch {}
+                  });
+                }}
+                aria-label="New Chat"
               >
                 <Plus className="h-4 w-4" />
                 <span className="sr-only">New Chat</span>
@@ -162,10 +172,10 @@ function RagBasicUI() {
                   <li key={t._id}>
                     <div
                       className={
-                        "group w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-sm transition " +
+                        'group w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-sm transition ' +
                         (threadId === t._id
-                          ? "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100"
-                          : "bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-100")
+                          ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
+                          : 'bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-100')
                       }
                     >
                       <button
@@ -174,30 +184,48 @@ function RagBasicUI() {
                           setThreadId(t._id);
                           navigate(`/${t._id}`);
                         }}
-                        title={t.title || "Untitled"}
+                        title={t.title || 'Untitled'}
                       >
                         {editingId === t._id ? (
                           <div className="flex items-center gap-2">
-                            <Input value={editingTitle} onChange={(e) => setEditingTitle(e.target.value)} className="h-8" />
+                            <Input
+                              value={editingTitle}
+                              onChange={(e) => setEditingTitle(e.target.value)}
+                              className="h-8"
+                            />
                             <Button
                               size="sm"
                               onClick={() => {
                                 const title = editingTitle.trim();
                                 if (!title) return setEditingId(null);
-                                void renameThreadMutation({ threadId: t._id, title }).then(() => setEditingId(null));
+                                void renameThreadMutation({
+                                  threadId: t._id,
+                                  title,
+                                }).then(() => setEditingId(null));
                               }}
                               aria-label="Save"
                             >
                               <Check className="h-4 w-4" />
                             </Button>
-                            <Button size="sm" variant="secondary" onClick={() => setEditingId(null)} aria-label="Cancel">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => setEditingId(null)}
+                              aria-label="Cancel"
+                            >
                               <X className="h-4 w-4" />
                             </Button>
                           </div>
                         ) : (
                           <>
-                            <div className="truncate font-medium">{t.title || "Untitled"}</div>
-                            {t.summary && <div className="truncate text-xs text-slate-500 dark:text-slate-400">{t.summary}</div>}
+                            <div className="truncate font-medium">
+                              {t.title || 'Untitled'}
+                            </div>
+                            {t.summary && (
+                              <div className="truncate text-xs text-slate-500 dark:text-slate-400">
+                                {t.summary}
+                              </div>
+                            )}
                           </>
                         )}
                       </button>
@@ -208,7 +236,7 @@ function RagBasicUI() {
                             variant="secondary"
                             onClick={() => {
                               setEditingId(t._id);
-                              setEditingTitle(t.title || "");
+                              setEditingTitle(t.title || '');
                             }}
                             aria-label="Rename"
                             title="Rename"
@@ -219,10 +247,18 @@ function RagBasicUI() {
                             size="sm"
                             variant="secondary"
                             onClick={() => {
-                              void archiveThreadMutation({ threadId: t._id }).then(() => {
+                              void archiveThreadMutation({
+                                threadId: t._id,
+                              }).then(() => {
                                 if (threadId === t._id) {
                                   setThreadId(undefined);
-                                  try { (window as any).history.replaceState(null, "", "/"); } catch {}
+                                  try {
+                                    (window as any).history.replaceState(
+                                      null,
+                                      '',
+                                      '/'
+                                    );
+                                  } catch {}
                                 }
                               });
                             }}
@@ -238,7 +274,9 @@ function RagBasicUI() {
                 ))}
                 {activeThreads.length === 0 && (
                   <li>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 px-3 py-2">No chats yet</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 px-3 py-2">
+                      No chats yet
+                    </div>
                   </li>
                 )}
               </ul>
@@ -251,7 +289,9 @@ function RagBasicUI() {
           <Card className="w-full max-w-2xl h-full min-h-0 flex flex-col justify-end">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-3 text-base">
-                <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold shadow-sm">R</div>
+                <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold shadow-sm">
+                  R
+                </div>
                 <span className="flex-1">RAG Chat</span>
               </CardTitle>
             </CardHeader>
@@ -263,54 +303,90 @@ function RagBasicUI() {
                       message.text && (
                         <div key={message._id} className="space-y-2">
                           {/* Message */}
-                          <div className={`flex items-end gap-2 ${message.message?.role === "user" ? "justify-end" : "justify-start"}`}>
-                            {message.message?.role !== "user" && (
-                              <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center text-xs font-semibold shadow-sm">AI</div>
+                          <div
+                            className={`flex items-end gap-2 ${message.message?.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                          >
+                            {message.message?.role !== 'user' && (
+                              <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center text-xs font-semibold shadow-sm">
+                                AI
+                              </div>
                             )}
-                            <div className={`rounded-2xl px-4 py-2 max-w-lg shadow ${message.message?.role === "user" ? "bg-indigo-900 text-white" : "bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100"}`}>
-                              <MessageText text={message.text} streaming={message.streaming} invert={message.message?.role === "user"} />
+                            <div
+                              className={`rounded-2xl px-4 py-2 max-w-lg shadow ${message.message?.role === 'user' ? 'bg-indigo-900 text-white' : 'bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100'}`}
+                            >
+                              <MessageText
+                                text={message.text}
+                                streaming={message.streaming}
+                                invert={message.message?.role === 'user'}
+                              />
                             </div>
-                            {message.message?.role === "user" && (
-                              <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold shadow-sm">U</div>
+                            {message.message?.role === 'user' && (
+                              <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold shadow-sm">
+                                U
+                              </div>
                             )}
                           </div>
 
                           {/* Context Section (expandable) - shown after user message */}
-                          {message.contextUsed && message.message?.role === "user" && (
-                            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
-                              <button
-                                onClick={() => toggleContextExpansion(message._id)}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-t-lg flex items-center justify-between"
-                              >
-                                <span>
-                                  Context Used ({message.contextUsed.results.length} results)
-                                </span>
-                                <span className="text-slate-400 dark:text-slate-500">{expandedContexts.has(message._id) ? "−" : "+"}</span>
-                              </button>
-                              {expandedContexts.has(message._id) && (
-                                <div className="px-4 pb-4 space-y-2">
-                                  {message.contextUsed.results.map((result, index) => (
-                                    <div key={index} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-3 shadow-sm">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <div className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                                          Entry:{" "}
-                                          {message.contextUsed!.entries.find((e) => e.entryId === result.entryId)?.key || "Unknown"}
+                          {message.contextUsed &&
+                            message.message?.role === 'user' && (
+                              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                                <button
+                                  onClick={() =>
+                                    toggleContextExpansion(message._id)
+                                  }
+                                  className="w-full px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-t-lg flex items-center justify-between"
+                                >
+                                  <span>
+                                    Context Used (
+                                    {message.contextUsed.results.length}{' '}
+                                    results)
+                                  </span>
+                                  <span className="text-slate-400 dark:text-slate-500">
+                                    {expandedContexts.has(message._id)
+                                      ? '−'
+                                      : '+'}
+                                  </span>
+                                </button>
+                                {expandedContexts.has(message._id) && (
+                                  <div className="px-4 pb-4 space-y-2">
+                                    {message.contextUsed.results.map(
+                                      (result, index) => (
+                                        <div
+                                          key={index}
+                                          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-3 shadow-sm"
+                                        >
+                                          <div className="flex items-center justify-between mb-2">
+                                            <div className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                              Entry:{' '}
+                                              {message.contextUsed!.entries.find(
+                                                (e) =>
+                                                  e.entryId === result.entryId
+                                              )?.key || 'Unknown'}
+                                            </div>
+                                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                                              Score: {result.score.toFixed(3)} |
+                                              Order: {result.order}
+                                            </div>
+                                          </div>
+                                          <div className="text-sm text-slate-800 dark:text-slate-200 space-y-1">
+                                            {result.content.map(
+                                              (content, contentIndex) => (
+                                                <div key={contentIndex}>
+                                                  {content.text}
+                                                </div>
+                                              )
+                                            )}
+                                          </div>
                                         </div>
-                                        <div className="text-xs text-slate-500 dark:text-slate-400">Score: {result.score.toFixed(3)} | Order: {result.order}</div>
-                                      </div>
-                                      <div className="text-sm text-slate-800 dark:text-slate-200 space-y-1">
-                                        {result.content.map((content, contentIndex) => (
-                                          <div key={contentIndex}>{content.text}</div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          )}
+                                      )
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
                         </div>
-                      ),
+                      )
                   )}
                 </div>
               )}
@@ -327,17 +403,21 @@ function RagBasicUI() {
                   placeholder="Ask using the added context…"
                   className="flex-1"
                 />
-                <Button type="submit" disabled={!prompt.trim() || !threadId}>Send</Button>
+                <Button type="submit" disabled={!prompt.trim() || !threadId}>
+                  Send
+                </Button>
                 <Button
                   variant="secondary"
                   title="Start over"
                   onClick={() => {
-                    void createThread({ title: "RAG Thread" }).then((id) => {
+                    void createThread({ title: 'RAG Thread' }).then((id) => {
                       setThreadId(id);
-                    try { (window as any).history.pushState(null, "", `/${id}`); } catch {}
-                  });
-                }}
-              >
+                      try {
+                        (window as any).history.pushState(null, '', `/${id}`);
+                      } catch {}
+                    });
+                  }}
+                >
                   Start over
                 </Button>
               </form>
@@ -350,7 +430,9 @@ function RagBasicUI() {
           <div className="fixed inset-y-0 left-[16rem] right-[20rem] bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-30">
             <div className="p-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Entry Chunks</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  Entry Chunks
+                </h2>
                 <button
                   onClick={() => setSelectedEntry(null)}
                   className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1"
@@ -360,21 +442,30 @@ function RagBasicUI() {
                 </button>
               </div>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                {globalDocuments.results?.find((e) => e.entryId === selectedEntry)?.key || "Selected entry"}
+                {globalDocuments.results?.find(
+                  (e) => e.entryId === selectedEntry
+                )?.key || 'Selected entry'}
               </p>
             </div>
             <div className="flex-1 overflow-y-auto min-h-0">
               {documentChunks.results && documentChunks.results.length > 0 ? (
                 <div className="p-4 space-y-3">
                   {documentChunks.results.map((chunk) => (
-                    <div key={selectedEntry + "-chunk-" + chunk.order} className="space-y-2">
-                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Chunk {chunk.order}</div>
+                    <div
+                      key={selectedEntry + '-chunk-' + chunk.order}
+                      className="space-y-2"
+                    >
+                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Chunk {chunk.order}
+                      </div>
                       <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 shadow-sm">
-                        <div className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed">{chunk.text}</div>
+                        <div className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
+                          {chunk.text}
+                        </div>
                       </div>
                     </div>
                   ))}
-                  {documentChunks.status === "CanLoadMore" && (
+                  {documentChunks.status === 'CanLoadMore' && (
                     <button
                       onClick={() => documentChunks.loadMore(10)}
                       className="w-full py-3 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 border border-blue-200 dark:border-slate-700 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition font-medium"
@@ -386,7 +477,7 @@ function RagBasicUI() {
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center text-slate-500 dark:text-slate-400">
-                    {documentChunks.status === "LoadingFirstPage" ? (
+                    {documentChunks.status === 'LoadingFirstPage' ? (
                       <>
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-400 mx-auto mb-2"></div>
                         <p>Loading chunks...</p>
@@ -405,37 +496,78 @@ function RagBasicUI() {
         {showContextPanel && (
           <div className="fixed inset-y-0 right-0 w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col shadow-lg z-40">
             <div className="p-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Add Context</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Add Context
+              </h2>
             </div>
             <div className="px-4 space-y-3 w-full">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
-                <Input value={addContextForm.key} onChange={(e) => setAddContextForm((prev) => ({ ...prev, key: e.target.value }))} placeholder="Enter context title" />
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Title
+                </label>
+                <Input
+                  value={addContextForm.key}
+                  onChange={(e) =>
+                    setAddContextForm((prev) => ({
+                      ...prev,
+                      key: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter context title"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Text</label>
-                <Textarea value={addContextForm.text} onChange={(e) => setAddContextForm((prev) => ({ ...prev, text: e.target.value }))} rows={4} placeholder="Enter context body" />
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Text
+                </label>
+                <Textarea
+                  value={addContextForm.text}
+                  onChange={(e) =>
+                    setAddContextForm((prev) => ({
+                      ...prev,
+                      text: e.target.value,
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Enter context body"
+                />
               </div>
-              <Button onClick={() => void handleAddContext()} disabled={isAddingContext || !addContextForm.key.trim() || !addContextForm.text.trim()} className="w-full">
-                {isAddingContext ? "Adding..." : "Add Context"}
+              <Button
+                onClick={() => void handleAddContext()}
+                disabled={
+                  isAddingContext ||
+                  !addContextForm.key.trim() ||
+                  !addContextForm.text.trim()
+                }
+                className="w-full"
+              >
+                {isAddingContext ? 'Adding...' : 'Add Context'}
               </Button>
             </div>
             <div className="flex-1 overflow-y-auto min-h-0">
               <div className="p-4">
-                <h3 className="mb-3 font-medium text-slate-900 dark:text-slate-100">Context Entries</h3>
+                <h3 className="mb-3 font-medium text-slate-900 dark:text-slate-100">
+                  Context Entries
+                </h3>
                 <div className="space-y-2">
                   {globalDocuments.results?.map((entry) => (
                     <div
                       key={entry.entryId}
-                      className={`p-3 rounded-md transition-colors cursor-pointer shadow-sm ${selectedEntry === entry.entryId ? "bg-indigo-50 dark:bg-slate-800" : "bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800"}`}
+                      className={`p-3 rounded-md transition-colors cursor-pointer shadow-sm ${selectedEntry === entry.entryId ? 'bg-indigo-50 dark:bg-slate-800' : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800'}`}
                       onClick={() => setSelectedEntry(entry.entryId)}
                     >
-                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{entry.title || entry.key}</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Status: {entry.status}</div>
+                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                        {entry.title || entry.key}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Status: {entry.status}
+                      </div>
                     </div>
                   ))}
                   {globalDocuments.results?.length === 0 && (
-                    <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">No context entries yet</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
+                      No context entries yet
+                    </div>
                   )}
                 </div>
               </div>
@@ -448,9 +580,11 @@ function RagBasicUI() {
             size="icon"
             variant="secondary"
             onClick={() => setShowContextPanel((v) => !v)}
-            aria-label={showContextPanel ? "Hide context panel" : "Show context panel"}
-            className={`pointer-events-auto fixed ${showContextPanel ? "right-[21rem]" : "right-3"} top-3 z-[60] shadow`}
-            title={showContextPanel ? "Hide context" : "Show context"}
+            aria-label={
+              showContextPanel ? 'Hide context panel' : 'Show context panel'
+            }
+            className={`pointer-events-auto fixed ${showContextPanel ? 'right-[21rem]' : 'right-3'} top-3 z-[60] shadow`}
+            title={showContextPanel ? 'Hide context' : 'Show context'}
           >
             <PanelRight className="h-4 w-4" />
           </Button>
@@ -464,7 +598,15 @@ function RagBasicUI() {
   );
 }
 
-function MessageText({ text, streaming, invert }: { text: string; streaming?: boolean; invert?: boolean }) {
+function MessageText({
+  text,
+  streaming,
+  invert,
+}: {
+  text: string;
+  streaming?: boolean;
+  invert?: boolean;
+}) {
   const [smoothText] = useSmoothText(text, { startStreaming: streaming });
   return <Markdown invert={invert}>{smoothText}</Markdown>;
 }

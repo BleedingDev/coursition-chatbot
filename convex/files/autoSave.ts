@@ -1,7 +1,7 @@
 // See the docs at https://docs.convex.dev/agents/files
-import { v } from "convex/values";
-import { action } from "../_generated/server";
-import { agent } from "../agents/simple";
+import { v } from 'convex/values';
+import { action } from '../_generated/server';
+import { agent } from '../agents/simple';
 
 /**
  * This is a simple example of how to use the automatic file saving.
@@ -22,12 +22,12 @@ export const askAboutImage = action({
       prompt,
       messages: [
         {
-          role: "user",
+          role: 'user',
           content: [
             // You can pass the data in directly. It will automatically store
             // it in file storage and pass around the URL.
-            { type: "image", image, mediaType },
-            { type: "text", text: prompt },
+            { type: 'image', image, mediaType },
+            { type: 'text', text: prompt },
           ],
         },
       ],

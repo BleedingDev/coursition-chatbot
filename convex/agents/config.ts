@@ -1,7 +1,7 @@
-import { type Config } from "@convex-dev/agent";
-import { languageModel, textEmbeddingModel } from "../modelsForDemo";
-import { rawRequestResponseHandler } from "../debugging/rawRequestResponseHandler";
-import { usageHandler } from "../usage_tracking/usageHandler";
+import { type Config } from '@convex-dev/agent';
+import { languageModel, textEmbeddingModel } from '../modelsForDemo';
+import { rawRequestResponseHandler } from '../debugging/rawRequestResponseHandler';
+import { usageHandler } from '../usage_tracking/usageHandler';
 
 export const defaultConfig = {
   languageModel,
