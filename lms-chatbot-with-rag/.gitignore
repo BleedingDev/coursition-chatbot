@@ -21,3 +21,5 @@ react/package.json
 
 # Generated files
 */_generated/
+src/component/_generated/
+src/client/_generated/
