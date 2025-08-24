@@ -5,7 +5,6 @@ import { v } from 'convex/values';
 import { components, internal } from '../_generated/api';
 import { internalAction, mutation } from '../_generated/server';
 import { defaultConfig } from '../agents/config';
-import { languageModel, textEmbeddingModel } from '../modelsForDemo';
 import { authorizeThreadAccess } from '../threads';
 import { usageHandler as normalUsageHandler } from '../usage_tracking/usageHandler';
 import { getAuthUserId } from '../utils';

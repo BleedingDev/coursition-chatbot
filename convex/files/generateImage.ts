@@ -22,7 +22,7 @@ export const replyWithImage = internalAction({
     const userId = await getAuthUserId(ctx);
     const threadId = await createThread(ctx, components.agent, {
       userId,
-      title: 'Image for: ' + prompt,
+      title: `Image for: ${prompt}`,
     });
     // Save the user message
     await saveMessage(ctx, components.agent, { threadId, prompt });
@@ -39,18 +39,18 @@ export const replyWithImage = internalAction({
     const url = imgResponse.data?.[0].url;
     if (!url) {
       throw new Error(
-        'No image URL found. Response: ' + JSON.stringify(imgResponse)
+        `No image URL found. Response: ${JSON.stringify(imgResponse)}`
       );
     }
     console.debug('short-lived url:', url);
     const image = await fetch(url);
     if (!image.ok) {
-      throw new Error('Failed to fetch image. ' + JSON.stringify(image));
+      throw new Error(`Failed to fetch image. ${JSON.stringify(image)}`);
     }
     const mediaType = image.headers.get('content-type')!;
     if (!mediaType) {
       throw new Error(
-        'No MIME type found. Response: ' + JSON.stringify(image.headers)
+        `No MIME type found. Response: ${JSON.stringify(image.headers)}`
       );
     }
 

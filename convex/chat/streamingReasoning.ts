@@ -23,7 +23,7 @@ const streamingReasoningAgent = new Agent(components.agent, {
 
 export const streamReasoning = action({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const { thread } = await streamingReasoningAgent.createThread(ctx, {
       title: 'Streaming Reasoning',
     });

@@ -1,6 +1,13 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
   "extends": ["ultracite"],
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noConsole": "warn"
+      }
+    }
+  },
   "json": {
     "parser": {
       "allowComments": true

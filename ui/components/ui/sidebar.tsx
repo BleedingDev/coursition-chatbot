@@ -11,7 +11,9 @@ const SidebarContext = React.createContext<SidebarContextType | null>(null);
 
 export function useSidebar() {
   const ctx = React.useContext(SidebarContext);
-  if (!ctx) throw new Error('useSidebar must be used within SidebarProvider');
+  if (!ctx) {
+    throw new Error('useSidebar must be used within SidebarProvider');
+  }
   return ctx;
 }
 
@@ -27,7 +29,9 @@ export function SidebarProvider({
   const [open, setOpen] = React.useState<boolean>(() => {
     try {
       const m = document.cookie.match(new RegExp(`${COOKIE}=([^;]+)`));
-      if (m && (m[1] === 'true' || m[1] === 'false')) return m[1] === 'true';
+      if (m && (m[1] === 'true' || m[1] === 'false')) {
+        return m[1] === 'true';
+      }
     } catch {}
     return defaultOpen;
   });
@@ -64,14 +68,16 @@ export function SidebarProvider({
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
   const { open } = useSidebar();
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
   return <>{children}</>;
 }
 
 export function SidebarRail({ className = '' }: { className?: string }) {
   const { open, toggleSidebar } = useSidebar();
   return (
-    <div className={'pointer-events-none' + className}>
+    <div className={`pointer-events-none${className}`}>
       <Button
         aria-label={open ? 'Hide sidebar' : 'Show sidebar'}
         className={`pointer-events-auto fixed ${open ? 'left-[17rem]' : 'left-3'} top-3 z-[60] shadow`}

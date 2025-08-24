@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 
 // Lightweight Markdown renderer styled with Tailwind Typography.

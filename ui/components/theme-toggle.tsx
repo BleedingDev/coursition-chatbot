@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 function getInitialTheme(): 'light' | 'dark' {
   try {
     const stored = localStorage.getItem('theme');
-    if (stored === 'light' || stored === 'dark') return stored;
-    return window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
+    if (stored === 'light' || stored === 'dark') {
+      return stored;
+    }
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
   } catch {
@@ -29,7 +30,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   return (
     <Button
       aria-label="Toggle theme"
-      className={'pointer-events-auto' + className}
+      className={`pointer-events-auto${className}`}
       onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
       size="icon"
       title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}

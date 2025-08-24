@@ -25,7 +25,9 @@ function RagBasicUI() {
   const [threadId, setThreadId] = useState<string | undefined>(params.threadId);
   const createThread = useMutation(api.threads.createNewThread);
   useEffect(() => {
-    if (threadId) return;
+    if (threadId) {
+      return;
+    }
     void createThread({ title: 'RAG Thread' }).then((id) => {
       setThreadId(id);
       navigate(`/${id}`, { replace: true });
@@ -86,7 +88,9 @@ function RagBasicUI() {
 
   // Handle adding context
   const handleAddContext = useCallback(async () => {
-    if (!(addContextForm.key.trim() && addContextForm.text.trim())) return;
+    if (!(addContextForm.key.trim() && addContextForm.text.trim())) {
+      return;
+    }
 
     setIsAddingContext(true);
     try {
@@ -104,7 +108,9 @@ function RagBasicUI() {
 
   // Handle sending message
   const onSendClicked = useCallback(() => {
-    if (!prompt.trim()) return;
+    if (!prompt.trim()) {
+      return;
+    }
 
     if (!threadId) {
       toast({
@@ -119,7 +125,6 @@ function RagBasicUI() {
       prompt: prompt.trim(),
     }).catch((error) => {
       setError(error);
-      console.error('Error sending message:', error);
       setPrompt(prompt);
     });
   }, [sendMessage, threadId, prompt]);
@@ -197,7 +202,9 @@ function RagBasicUI() {
                               aria-label="Save"
                               onClick={() => {
                                 const title = editingTitle.trim();
-                                if (!title) return setEditingId(null);
+                                if (!title) {
+                                  return setEditingId(null);
+                                }
                                 void renameThreadMutation({
                                   threadId: t._id,
                                   title,
@@ -359,7 +366,7 @@ function RagBasicUI() {
                                           <div className="mb-2 flex items-center justify-between">
                                             <div className="font-medium text-slate-600 text-xs dark:text-slate-400">
                                               Entry:{' '}
-                                              {message.contextUsed!.entries.find(
+                                              {message.contextUsed?.entries.find(
                                                 (e) =>
                                                   e.entryId === result.entryId
                                               )?.key || 'Unknown'}
@@ -453,7 +460,7 @@ function RagBasicUI() {
                   {documentChunks.results.map((chunk) => (
                     <div
                       className="space-y-2"
-                      key={selectedEntry + '-chunk-' + chunk.order}
+                      key={`${selectedEntry}-chunk-${chunk.order}`}
                     >
                       <div className="font-medium text-slate-500 text-sm dark:text-slate-400">
                         Chunk {chunk.order}
