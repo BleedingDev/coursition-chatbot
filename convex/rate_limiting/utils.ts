@@ -18,6 +18,7 @@ export const { getRateLimit, getServerTime } = rateLimiter.hookAPI<DataModel>(
 // Used to show the client know what its usage was.
 export const getPreviousUsage = query({
   args: { threadId: v.optional(v.string()) },
+  // biome-ignore lint/suspicious/useAwait: Interface requires async
   handler: async (ctx, args) => {
     // Get usage not accounting for the new question. Do that client-side.
     return estimateTokens(ctx, args.threadId, '');

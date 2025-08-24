@@ -28,7 +28,7 @@ function RagBasicUI() {
     if (threadId) {
       return;
     }
-    void createThread({ title: 'RAG Thread' }).then((id) => {
+    createThread({ title: 'RAG Thread' }).then((id) => {
       setThreadId(id);
       navigate(`/${id}`, { replace: true });
     });
@@ -158,11 +158,13 @@ function RagBasicUI() {
               <Button
                 aria-label="New Chat"
                 onClick={() => {
-                  void createThread({ title: 'New Chat' }).then((id) => {
+                  createThread({ title: 'New Chat' }).then((id) => {
                     setThreadId(id);
                     try {
-                      (window as any).history.pushState(null, '', `/${id}`);
-                    } catch {}
+                      window.history.pushState(null, '', `/${id}`);
+                    } catch {
+                      console.error('Failed to update URL');
+                    }
                   });
                 }}
                 size="sm"
@@ -190,6 +192,7 @@ function RagBasicUI() {
                           navigate(`/${t._id}`);
                         }}
                         title={t.title || 'Untitled'}
+                        type="button"
                       >
                         {editingId === t._id ? (
                           <div className="flex items-center gap-2">
@@ -205,7 +208,7 @@ function RagBasicUI() {
                                 if (!title) {
                                   return setEditingId(null);
                                 }
-                                void renameThreadMutation({
+                                renameThreadMutation({
                                   threadId: t._id,
                                   title,
                                 }).then(() => setEditingId(null));
@@ -253,18 +256,16 @@ function RagBasicUI() {
                           <Button
                             aria-label="Delete"
                             onClick={() => {
-                              void archiveThreadMutation({
+                              archiveThreadMutation({
                                 threadId: t._id,
                               }).then(() => {
                                 if (threadId === t._id) {
                                   setThreadId(undefined);
                                   try {
-                                    (window as any).history.replaceState(
-                                      null,
-                                      '',
-                                      '/'
-                                    );
-                                  } catch {}
+                                    window.history.replaceState(null, '', '/');
+                                  } catch {
+                                    console.error('Failed to update URL');
+                                  }
                                 }
                               });
                             }}
@@ -343,6 +344,7 @@ function RagBasicUI() {
                                   onClick={() =>
                                     toggleContextExpansion(message._id)
                                   }
+                                  type="button"
                                 >
                                   <span>
                                     Context Used (
@@ -415,11 +417,13 @@ function RagBasicUI() {
                 </Button>
                 <Button
                   onClick={() => {
-                    void createThread({ title: 'RAG Thread' }).then((id) => {
+                    createThread({ title: 'RAG Thread' }).then((id) => {
                       setThreadId(id);
                       try {
-                        (window as any).history.pushState(null, '', `/${id}`);
-                      } catch {}
+                        window.history.pushState(null, '', `/${id}`);
+                      } catch {
+                        console.error('Failed to update URL');
+                      }
                     });
                   }}
                   title="Start over"
@@ -444,6 +448,7 @@ function RagBasicUI() {
                   className="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                   onClick={() => setSelectedEntry(null)}
                   title="Close chunks panel"
+                  type="button"
                 >
                   ✕
                 </button>
@@ -476,6 +481,7 @@ function RagBasicUI() {
                     <button
                       className="w-full rounded-lg border border-blue-200 py-3 font-medium text-blue-600 text-sm transition hover:bg-blue-50 hover:text-blue-800 dark:border-slate-700 dark:text-blue-400 dark:hover:bg-slate-800 dark:hover:text-blue-300"
                       onClick={() => documentChunks.loadMore(10)}
+                      type="button"
                     >
                       Load More Chunks
                     </button>
@@ -509,10 +515,14 @@ function RagBasicUI() {
             </div>
             <div className="w-full space-y-3 px-4">
               <div>
-                <label className="mb-1 block font-medium text-slate-700 text-sm dark:text-slate-300">
+                <label
+                  className="mb-1 block font-medium text-slate-700 text-sm dark:text-slate-300"
+                  htmlFor="context-title"
+                >
                   Title
                 </label>
                 <Input
+                  id="context-title"
                   onChange={(e) =>
                     setAddContextForm((prev) => ({
                       ...prev,
@@ -524,10 +534,14 @@ function RagBasicUI() {
                 />
               </div>
               <div>
-                <label className="mb-1 block font-medium text-slate-700 text-sm dark:text-slate-300">
+                <label
+                  className="mb-1 block font-medium text-slate-700 text-sm dark:text-slate-300"
+                  htmlFor="context-textarea"
+                >
                   Text
                 </label>
                 <Textarea
+                  id="context-textarea"
                   onChange={(e) =>
                     setAddContextForm((prev) => ({
                       ...prev,
@@ -546,7 +560,7 @@ function RagBasicUI() {
                   !addContextForm.key.trim() ||
                   !addContextForm.text.trim()
                 }
-                onClick={() => void handleAddContext()}
+                onClick={() => handleAddContext()}
               >
                 {isAddingContext ? 'Adding...' : 'Add Context'}
               </Button>
@@ -558,10 +572,11 @@ function RagBasicUI() {
                 </h3>
                 <div className="space-y-2">
                   {globalDocuments.results?.map((entry) => (
-                    <div
+                    <button
                       className={`cursor-pointer rounded-md p-3 shadow-sm transition-colors ${selectedEntry === entry.entryId ? 'bg-indigo-50 dark:bg-slate-800' : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800'}`}
                       key={entry.entryId}
                       onClick={() => setSelectedEntry(entry.entryId)}
+                      type="button"
                     >
                       <div className="truncate font-medium text-slate-900 text-sm dark:text-slate-100">
                         {entry.title || entry.key}
@@ -569,7 +584,7 @@ function RagBasicUI() {
                       <div className="mt-1 text-slate-500 text-xs dark:text-slate-400">
                         Status: {entry.status}
                       </div>
-                    </div>
+                    </button>
                   ))}
                   {globalDocuments.results?.length === 0 && (
                     <div className="py-4 text-center text-slate-500 text-sm dark:text-slate-400">

@@ -76,6 +76,7 @@ export const streamThenAbortAsync = action({
 
 export const list = query({
   args: { threadId: v.string() },
+  // biome-ignore lint/suspicious/useAwait: Interface requires async
   handler: async (ctx, { threadId }) => {
     return listStreams(ctx, components.agent, { threadId });
   },

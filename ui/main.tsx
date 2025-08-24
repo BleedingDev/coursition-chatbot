@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { api } from '../convex/_generated/api';
 import { Toaster } from './components/ui/toaster';
-import RagBasic from './rag/RagBasic';
+import RagBasic from './rag/rag-basic';
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 

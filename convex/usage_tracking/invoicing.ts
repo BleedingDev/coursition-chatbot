@@ -7,8 +7,8 @@ import { getBillingPeriod } from './usageHandler';
 
 const HOUR_IN_MS = 60 * 60 * 1000;
 
-const provider = v.string();
-const model = v.string();
+const providerValue = v.string();
+const modelValue = v.string();
 /**
  * Called from a cron monthly to calculate the
  * invoices for the previous billing period
@@ -21,9 +21,9 @@ export const generateInvoices = internalMutation({
       v.object({
         userId: v.string(),
         usage: v.record(
-          provider,
+          providerValue,
           v.record(
-            model,
+            modelValue,
             v.object({
               inputTokens: v.number(),
               outputTokens: v.number(),

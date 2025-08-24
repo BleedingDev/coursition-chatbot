@@ -15,6 +15,7 @@ export const searchMessages = createTool({
   args: z.object({
     query: z.string().describe('The query to search for'),
   }),
+  // biome-ignore lint/suspicious/useAwait: Interface requires async
   handler: async (ctx, { query }) => {
     return fetchContextMessages(ctx, components.agent, {
       userId: ctx.userId,

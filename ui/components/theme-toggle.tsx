@@ -23,7 +23,9 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
     const isDark = theme === 'dark';
     try {
       localStorage.setItem('theme', theme);
-    } catch {}
+    } catch {
+      console.error('Failed to save theme');
+    }
     document.documentElement.classList.toggle('dark', isDark);
   }, [theme]);
 

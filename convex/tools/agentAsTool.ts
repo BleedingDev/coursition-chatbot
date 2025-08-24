@@ -17,7 +17,7 @@ export const runAgentAsTool = action({
         doSomething: tool({
           description: 'Call this function when asked to do something',
           inputSchema: z.object({}),
-          // biome-ignore lint/suspicious/useAwait: <explanation>
+          // biome-ignore lint/suspicious/useAwait: Interface requires async
           execute: async (_args, options) => {
             console.log('doingSomething', options.toolCallId);
             return 'hello';
@@ -26,7 +26,7 @@ export const runAgentAsTool = action({
         doSomethingElse: tool({
           description: 'Call this function when asked to do something else',
           inputSchema: z.object({}),
-          // biome-ignore lint/suspicious/useAwait: <explanation>
+          // biome-ignore lint/suspicious/useAwait: Interface requires async
           execute: async (_args, options) => {
             console.log('doSomethingElse', options.toolCallId);
             return 'hello';

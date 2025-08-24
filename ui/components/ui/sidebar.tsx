@@ -32,7 +32,9 @@ export function SidebarProvider({
       if (m && (m[1] === 'true' || m[1] === 'false')) {
         return m[1] === 'true';
       }
-    } catch {}
+    } catch {
+      console.error('Failed to read cookie');
+    }
     return defaultOpen;
   });
 
@@ -42,7 +44,9 @@ export function SidebarProvider({
         const next = !v;
         try {
           document.cookie = `${COOKIE}=${String(next)}; path=/; max-age=${60 * 60 * 24 * 7}`;
-        } catch {}
+        } catch {
+          console.error('Failed to update cookie');
+        }
         return next;
       }),
     []
