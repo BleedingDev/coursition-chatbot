@@ -1,63 +1,74 @@
+import js from "@eslint/js";
 import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
-import reactPlugin from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
 
-export default [
-  { files: ["src/**/*.{js,mjs,cjs,ts,tsx}"] },
+export default tseslint.config(
   {
-    ignores: ["dist/**", "eslint.config.js", "setup.cjs", "**/_generated/"],
-  },
-  {
-    languageOptions: {
-      globals: globals.worker,
-      parser: tseslint.parser,
-
-      parserOptions: {
-        project: true,
-        tsconfigRootDir: ".",
-      },
-    },
-  },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
-    files: [
-      "src/react/**/*.{jsx,tsx}",
-      "src/react/**/*.js",
-      "src/react/**/*.ts",
+    ignores: [
+      "dist",
+      "eslint.config.js",
+      "convex/_generated",
+      "postcss.config.js",
+      "tailwind.config.js",
+      "vite.config.ts",
     ],
-    plugins: { react: reactPlugin, "react-hooks": reactHooks },
-    settings: {
-      react: {
-        version: "detect",
-      },
-    },
-    rules: {
-      ...reactPlugin.configs["recommended"].rules,
-      "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off",
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-    },
   },
   {
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
+    ],
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+      parserOptions: {
+        project: [
+          "./tsconfig.node.json",
+          "./tsconfig.app.json",
+          "./convex/tsconfig.json",
+        ],
+      },
+    },
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+    },
     rules: {
-      "@typescript-eslint/no-floating-promises": "error",
-      "eslint-comments/no-unused-disable": "off",
-
-      // allow (_arg: number) => {} and const _foo = 1;
-      "no-unused-vars": "off",
-      "no-unused-private-class-members": "warn",
-      "@typescript-eslint/no-unused-vars": [
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": [
         "warn",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-        },
+        { allowConstantExport: true },
       ],
+      // All of these overrides ease getting into
+      // TypeScript, and can be removed for stricter
+      // linting down the line.
+
+      // Only warn on unused variables, and ignore variables starting with `_`
+      "@typescript-eslint/no-unused-vars": "off",
+
+      // Allow escaping the compiler
+      "@typescript-eslint/ban-ts-comment": "error",
+
+      // Allow explicit `any`s
+      "@typescript-eslint/no-explicit-any": "off",
+
+      // START: Allow implicit `any`s
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      // END: Allow implicit `any`s
+
+      // Allow async functions without await
+      // for consistency (esp. Convex `handler`s)
+      "@typescript-eslint/require-await": "off",
     },
   },
-];
+);

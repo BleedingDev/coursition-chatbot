@@ -1,5 +1,7 @@
+!**/glob-import/dir/node_modules
 .DS_Store
 .idea
+*.cpuprofile
 *.local
 *.log
 /.vscode/
@@ -8,18 +10,8 @@ dist
 dist-ssr
 explorations
 node_modules
+playground-temp
+temp
+TODOs.md
 .eslintcache
-# components are libraries!
-# package-lock.json
-
-# this is a package-json-redirect stub dir, see https://github.com/andrewbranch/example-subpath-exports-ts-compat?tab=readme-ov-file
-react/package.json
-# npm pack output
-*.tgz
-
-*.tsbuildinfo
-
-# Generated files
-*/_generated/
-src/component/_generated/
-src/client/_generated/
+_generated/

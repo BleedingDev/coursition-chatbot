@@ -1,33 +1,14 @@
 {
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "strict": true,
-    "jsx": "react-jsx",
-
-    "target": "ESNext",
-    "lib": ["ES2021", "dom", "dom.iterable"],
-    "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
-    // We enforce stricter module resolution for Node16 compatibility
-    // But when building we use Bundler & ESNext for ESM
-    "module": "Node16",
-    "moduleResolution": "NodeNext",
-    // See these docs to get this working:
-    //https://github.com/xixixao/convex-typescript-plugin/
-    // "plugins": [{ "name": "@xixixao/convex-typescript-plugin" }],
-    "paths": { "@convex-dev/agent": ["./src/client/index.ts"] },
-
-    "assumeChangesOnlyAffectDirectDependencies": false,
-    "composite": true,
-    "rootDir": "./src",
-    "isolatedModules": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true
-  },
-  "include": ["./src/**/*"]
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["ui/*"],
+      "@example/*": ["../examples/*"]
+    }
+  }
 }
