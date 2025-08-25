@@ -1,46 +1,17 @@
 import { memo } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 
-// Lightweight Markdown renderer styled with Tailwind Typography.
-// Accepts `invert` to render readable text on dark backgrounds.
-
-const baseComponents: Partial<Components> = {
-  code: ({ inline, children, ...props }) => {
-    if (inline) {
-      return (
-        <code
-          className="rounded bg-slate-100 px-1 py-0.5 text-[0.9em] dark:bg-slate-700/70"
-          {...props}
-        >
-          {children}
-        </code>
-      );
-    }
-    return (
-      <pre
-        className="overflow-x-auto rounded-lg bg-slate-950 p-3 text-slate-100 text-sm"
-        {...props}
-      >
-        <code>{children}</code>
-      </pre>
-    );
-  },
-};
-
 type MarkdownProps = { children: string; invert?: boolean };
 
 const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
-  const isDark =
-    typeof document !== 'undefined' &&
-    document.documentElement.classList.contains('dark');
-  const effectiveInvert = invert || isDark;
+  const effectiveInvert = Boolean(invert);
   const a = ({ children: aChildren, ...props }: React.ComponentProps<'a'>) => (
     // biome-ignore lint/nursery/useAnchorHref: Problem with react-markdown types.
     <a
       className={
         effectiveInvert
           ? 'text-indigo-200 underline-offset-4 hover:underline'
-          : 'text-indigo-900 underline-offset-4 hover:underline'
+          : 'text-indigo-900 underline-offset-4 hover:underline dark:text-indigo-200'
       }
       rel="noreferrer"
       target="_blank"
@@ -49,12 +20,16 @@ const NonMemoizedMarkdown = ({ children, invert }: MarkdownProps) => {
       {aChildren}
     </a>
   );
-  const components: Partial<Components> = { ...baseComponents, a };
+  const components: Partial<Components> = { a };
+
+  const proseMode = effectiveInvert
+    ? 'prose-invert'
+    : 'prose-slate dark:prose-invert';
 
   return (
     <div
       className={
-        `prose ${effectiveInvert ? 'prose-invert' : 'prose-slate'} max-w-none` +
+        `prose ${proseMode} max-w-none` +
         [
           // Tighten vertical rhythm
           'prose-p:my-1 prose-p:leading-relaxed',

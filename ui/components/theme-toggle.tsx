@@ -32,7 +32,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   return (
     <Button
       aria-label="Toggle theme"
-      className={`pointer-events-auto${className}`}
+      className={`pointer-events-auto ${className}`}
       onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
       size="icon"
       title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
