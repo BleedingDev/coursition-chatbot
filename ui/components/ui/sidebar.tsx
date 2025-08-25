@@ -1,5 +1,11 @@
 import { PanelLeft } from 'lucide-react';
-import React from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Button } from './button';
 
 type SidebarContextType = {
@@ -7,10 +13,10 @@ type SidebarContextType = {
   toggleSidebar: () => void;
 };
 
-const SidebarContext = React.createContext<SidebarContextType | null>(null);
+const SidebarContext = createContext<SidebarContextType | null>(null);
 
 export function useSidebar() {
-  const ctx = React.useContext(SidebarContext);
+  const ctx = useContext(SidebarContext);
   if (!ctx) {
     throw new Error('useSidebar must be used within SidebarProvider');
   }
@@ -26,33 +32,39 @@ export function SidebarProvider({
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = React.useState<boolean>(() => {
-    try {
-      const m = document.cookie.match(new RegExp(`${COOKIE}=([^;]+)`));
-      if (m && (m[1] === 'true' || m[1] === 'false')) {
-        return m[1] === 'true';
-      }
-    } catch {
-      console.error('Failed to read cookie');
-    }
-    return defaultOpen;
-  });
+  const [open, setOpen] = useState<boolean>(defaultOpen);
 
-  const toggleSidebar = React.useCallback(
-    () =>
-      setOpen((v) => {
-        const next = !v;
-        try {
-          document.cookie = `${COOKIE}=${String(next)}; path=/; max-age=${60 * 60 * 24 * 7}`;
-        } catch {
-          console.error('Failed to update cookie');
+  useEffect(() => {
+    cookieStore
+      .get(COOKIE)
+      .then((c) => {
+        if (c && (c.value === 'true' || c.value === 'false')) {
+          setOpen(c.value === 'true');
         }
-        return next;
-      }),
-    []
-  );
+      })
+      .catch(() => {
+        console.error('Failed to read sidebar state');
+      });
+  }, []);
 
-  React.useEffect(() => {
+  const toggleSidebar = useCallback(() => {
+    setOpen((v) => !v);
+  }, []);
+
+  useEffect(() => {
+    cookieStore
+      .set({
+        name: COOKIE,
+        value: String(open),
+        path: '/',
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+      })
+      .catch(() => {
+        console.error('Failed to write sidebar state');
+      });
+  }, [open]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault();
@@ -81,7 +93,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 export function SidebarRail({ className = '' }: { className?: string }) {
   const { open, toggleSidebar } = useSidebar();
   return (
-    <div className={`pointer-events-none${className}`}>
+    <div className={`pointer-events-none ${className}`}>
       <Button
         aria-label={open ? 'Hide sidebar' : 'Show sidebar'}
         className={`pointer-events-auto fixed ${open ? 'left-[17rem]' : 'left-3'} top-3 z-[60] shadow`}
