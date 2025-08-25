@@ -239,8 +239,28 @@ function ChatMessage({
 }) {
   // Use text field if content doesn't exist
   const messageText = message.content || message.text;
-  // Determine if message is from user or AI based on role or agentName
-  const isUser = message.role === 'user' || !message.agentName;
+  // Improved user/AI detection logic - check for specific patterns
+  const isUser = !message.agentName || message.role === 'user' || 
+    (message.text && (
+      message.text.endsWith('?') || 
+      message.text.length < 50 || 
+      ['What', 'How', 'Why', 'When', 'Where', 'Can', 'Could', 'Would', 'Do', 'Does'].some(word => 
+        message.text.startsWith(word)
+      )
+    ));
+  
+  // Debug log for message distinction
+  console.log('Message debug:', { 
+    id: message._id, 
+    text: message.text, 
+    role: message.role, 
+    agentName: message.agentName, 
+    isUser,
+    hasUserRole: message.role === 'user',
+    hasAgentName: !!message.agentName,
+    isShortMessage: message.text && message.text.length < 50,
+    hasAIIndicators: message.text && ['What', 'How', 'Why', 'When', 'Where', 'Can', 'Could', 'Would', 'Do', 'Does'].some(word => message.text.startsWith(word))
+  });
   const hasContext = message.contextUsed && message.contextUsed.length > 0;
 
   // Add safety check for message content
@@ -254,28 +274,28 @@ function ChatMessage({
         {/* Avatar */}
         <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-lg ${
           isUser 
-            ? 'bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-200 dark:ring-blue-800' 
-            : 'bg-gradient-to-br from-emerald-500 to-emerald-600 ring-2 ring-emerald-200 dark:ring-emerald-800'
+            ? 'bg-gradient-to-br from-gray-600 to-gray-700 ring-2 ring-gray-300 dark:ring-gray-600' 
+            : 'bg-gradient-to-br from-gray-500 to-gray-600 ring-2 ring-gray-200 dark:ring-gray-500'
         }`} aria-hidden="true">
-          {isUser ? <FiUser className="h-5 w-5" /> : <FiCpu className="h-5 w-5" />}
+          {isUser ? 'U' : 'AI'}
         </div>
         
         {/* Message Bubble */}
         <div className={`relative rounded-2xl px-5 py-4 shadow-lg ${
           isUser 
-            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-            : 'bg-white dark:bg-gray-800 border-2 border-emerald-200 dark:border-emerald-700 shadow-emerald-100 dark:shadow-emerald-900/20'
+            ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white' 
+            : 'bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 shadow-gray-100 dark:shadow-gray-900/20'
         }`}>
           {/* Message Header */}
           <div className={`flex items-center gap-2 mb-2 ${
-            isUser ? 'text-blue-100' : 'text-emerald-600 dark:text-emerald-400'
+            isUser ? 'text-gray-200' : 'text-gray-600 dark:text-gray-400'
           }`}>
             <span className="text-xs font-semibold uppercase tracking-wide">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {!isUser && (
               <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" aria-label="AI is online" />
+                <div className="h-2 w-2 rounded-full bg-gray-500 animate-pulse" aria-label="AI is online" />
                 <span className="text-xs">Online</span>
               </div>
             )}
@@ -294,15 +314,15 @@ function ChatMessage({
           {hasContext && message.contextUsed && (
             <div className={`mt-4 pt-3 border-t ${
               isUser 
-                ? 'border-blue-400/30' 
-                : 'border-emerald-200 dark:border-emerald-600'
+                ? 'border-gray-400/30' 
+                : 'border-gray-200 dark:border-gray-600'
             }`}>
               <button
                 onClick={() => toggleContextExpansion(message._id)}
                 className={`flex items-center gap-2 text-xs font-medium transition-colors ${
                   isUser 
-                    ? 'text-blue-100 hover:text-white' 
-                    : 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300'
+                    ? 'text-gray-200 hover:text-white' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
                 aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
                 aria-expanded={expandedContexts.has(message._id)}
@@ -347,20 +367,20 @@ function ContextResult({ context, isUser }: { context: any; isUser: boolean }) {
   return (
     <div className={`rounded-lg p-3 border ${
       isUser 
-        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700' 
-        : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700'
+        ? 'bg-gradient-to-br from-gray-100 to-gray-200 border-gray-300 dark:border-gray-600' 
+        : 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-gray-200 dark:border-gray-500'
     }`} role="region" aria-label="Context information">
       <div className={`text-xs font-medium mb-1 ${
         isUser 
-          ? 'text-blue-700 dark:text-blue-300' 
-          : 'text-emerald-700 dark:text-emerald-300'
+          ? 'text-gray-700 dark:text-gray-300' 
+          : 'text-gray-600 dark:text-gray-400'
       }`}>
         {context.key || 'Context'}
       </div>
       <div className={`text-xs leading-relaxed ${
         isUser 
-          ? 'text-blue-600 dark:text-blue-400' 
-          : 'text-emerald-600 dark:text-emerald-400'
+          ? 'text-gray-600 dark:text-gray-400' 
+          : 'text-gray-500 dark:text-gray-500'
       }`}>
         {context.text}
       </div>
@@ -1057,7 +1077,7 @@ function RagBasicUI() {
 
   return (
     <div className="flex h-full flex-col" role="main" aria-label="RAG Chat Application">
-      <div className="relative flex h-full min-h-0 flex-1 flex-row bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <div className="relative flex h-full min-h-0 flex-1 flex-row bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
         <ChatSidebar
           activeThreads={activeThreads}
           archiveThreadMutation={archiveThreadMutation}

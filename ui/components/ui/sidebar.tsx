@@ -23,8 +23,6 @@ export function useSidebar() {
   return ctx;
 }
 
-const COOKIE = 'sidebar:state';
-
 export function SidebarProvider({
   children,
   defaultOpen = true,
@@ -34,35 +32,9 @@ export function SidebarProvider({
 }) {
   const [open, setOpen] = useState<boolean>(defaultOpen);
 
-  useEffect(() => {
-    cookieStore
-      .get(COOKIE)
-      .then((c) => {
-        if (c && (c.value === 'true' || c.value === 'false')) {
-          setOpen(c.value === 'true');
-        }
-      })
-      .catch(() => {
-        console.error('Failed to read sidebar state');
-      });
-  }, []);
-
   const toggleSidebar = useCallback(() => {
     setOpen((v) => !v);
   }, []);
-
-  useEffect(() => {
-    cookieStore
-      .set({
-        name: COOKIE,
-        value: String(open),
-        path: '/',
-        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-      })
-      .catch(() => {
-        console.error('Failed to write sidebar state');
-      });
-  }, [open]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

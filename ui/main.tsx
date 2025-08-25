@@ -65,5 +65,19 @@ function RootRedirect() {
     }
   }, [threads.results, threads.status, navigate, createThread]);
 
+  // Show loading state while checking threads
+  if (threads.status === 'LoadingFirstPage') {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center">
+          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <div className="h-8 w-8 animate-spin rounded-full border-gray-400 border-b-2 border-t-transparent"></div>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
