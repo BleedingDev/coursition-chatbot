@@ -17,6 +17,7 @@ import { Sidebar, SidebarProvider, SidebarRail } from '@/components/ui/sidebar';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { api } from '../../convex/_generated/api';
+import { slugify } from '../../utils/string';
 
 function RagBasicUI() {
   const params = useParams<{ threadId?: string }>();
@@ -360,10 +361,10 @@ function RagBasicUI() {
                                 {expandedContexts.has(message._id) && (
                                   <div className="space-y-2 px-4 pb-4">
                                     {message.contextUsed.results.map(
-                                      (result, index) => (
+                                      (result) => (
                                         <div
                                           className="rounded border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900"
-                                          key={index}
+                                          key={`${result.entryId}-${result.order}-${slugify(result.content[0]?.text.slice(0, 50) || `result-${result.order}`)}`}
                                         >
                                           <div className="mb-2 flex items-center justify-between">
                                             <div className="font-medium text-slate-600 text-xs dark:text-slate-400">
@@ -379,13 +380,13 @@ function RagBasicUI() {
                                             </div>
                                           </div>
                                           <div className="space-y-1 text-slate-800 text-sm dark:text-slate-200">
-                                            {result.content.map(
-                                              (content, contentIndex) => (
-                                                <div key={contentIndex}>
-                                                  {content.text}
-                                                </div>
-                                              )
-                                            )}
+                                            {result.content.map((content) => (
+                                              <div
+                                                key={`${result.entryId}-${result.order}-content-${slugify(content.text.slice(0, 30))}`}
+                                              >
+                                                {content.text}
+                                              </div>
+                                            ))}
                                           </div>
                                         </div>
                                       )
