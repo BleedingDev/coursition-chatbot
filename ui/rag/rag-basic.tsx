@@ -239,8 +239,57 @@ function ChatMessage({
 }) {
   // Use text field if content doesn't exist
   const messageText = message.content || message.text;
-  // Determine if message is from user or AI based on role or agentName
-  const isUser = message.role === 'user' || !message.agentName;
+  
+  // Improved message distinction logic for Convex Agent system
+  // The issue: In this system, ALL messages have agentName, so we need a different approach
+  // We'll use a combination of factors to determine message type
+  let isUser = false;
+
+  console.log(message)
+  
+  if (message.role === 'user') {
+    // Explicit user role
+    isUser = true;
+  } else if (message.role === 'assistant') {
+    // Explicit assistant role
+    isUser = false;
+  } else if (message.streaming) {
+    // Streaming = AI response
+    isUser = false;
+  } else {
+    // For messages without explicit role, we need to use content analysis
+    // In the Convex Agent system, user messages are typically:
+    // - Short and simple (like "Hello", "Hi")
+    // - Questions or prompts
+    // - Single sentences or phrases
+    
+    // AI responses are typically:
+    // - Longer and more detailed
+    // - Explanatory content
+    // - Multiple sentences
+    
+    const text = messageText || '';
+    const isShortMessage = text.length <= 30; // Reduced threshold for better accuracy
+    const isSimpleGreeting = /^(hi|hello|hey|thanks?|thank you|ok|okay|yes|no)$/i.test(text.trim());
+    const isQuestion = text.includes('?');
+    const isLongResponse = text.length > 80; // Reduced threshold for better accuracy
+    const hasMultipleSentences = (text.match(/[.!?]/g) || []).length > 1;
+    const isExplanatory = text.includes('In the context of') || text.includes('we use it to') || text.includes('You form it using');
+    
+    // If it's a short message, simple greeting, or question, it's likely from user
+    if (isShortMessage || isSimpleGreeting || isQuestion) {
+      isUser = true;
+    } 
+    // If it's a long response with multiple sentences or explanatory content, it's likely from AI
+    else if (isLongResponse || hasMultipleSentences || isExplanatory) {
+      isUser = false;
+    }
+    // Default fallback: assume user message if no clear AI indicators
+    else {
+      isUser = true;
+    }
+  }
+  
   const hasContext = message.contextUsed && message.contextUsed.length > 0;
 
   // Add safety check for message content
@@ -249,13 +298,13 @@ function ChatMessage({
   }
 
   return (
-    <article className={`flex gap-4 mb-6 ${isUser ? 'justify-end' : 'justify-start'}`} aria-label={`${isUser ? 'User' : 'AI'} message`}>
+    <article className={`group flex gap-4 mb-6 ${isUser ? 'justify-end' : 'justify-start'}`} aria-label={`${isUser ? 'User' : 'AI'} message`}>
       <div className={`flex gap-3 max-w-[80%] ${isUser ? 'flex-row' : 'flex-row-reverse'}`}>
         {/* Avatar */}
         <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-lg ${
           isUser 
-            ? 'bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-200 dark:ring-blue-800' 
-            : 'bg-gradient-to-br from-emerald-500 to-emerald-600 ring-2 ring-emerald-200 dark:ring-emerald-800'
+            ? 'bg-gradient-to-br from-gray-500 to-gray-600 ring-2 ring-gray-200 dark:ring-gray-800' 
+            : 'bg-gradient-to-br from-gray-400 to-gray-500 ring-2 ring-gray-200 dark:ring-gray-800'
         }`} aria-hidden="true">
           {isUser ? <FiUser className="h-5 w-5" /> : <FiCpu className="h-5 w-5" />}
         </div>
@@ -263,19 +312,19 @@ function ChatMessage({
         {/* Message Bubble */}
         <div className={`relative rounded-2xl px-5 py-4 shadow-lg ${
           isUser 
-            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-            : 'bg-white dark:bg-gray-800 border-2 border-emerald-200 dark:border-emerald-700 shadow-emerald-100 dark:shadow-emerald-900/20'
+            ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg shadow-gray-200 dark:shadow-gray-800 ring-2 ring-gray-300 dark:ring-gray-700' 
+            : 'bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900/10 border-2 border-gray-200 dark:border-gray-700 shadow-lg shadow-gray-100 dark:shadow-gray-900/20 ring-2 ring-gray-300 dark:ring-gray-700'
         }`}>
           {/* Message Header */}
           <div className={`flex items-center gap-2 mb-2 ${
-            isUser ? 'text-blue-100' : 'text-emerald-600 dark:text-emerald-400'
+            isUser ? 'text-gray-100' : 'text-gray-600 dark:text-gray-400'
           }`}>
             <span className="text-xs font-semibold uppercase tracking-wide">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {!isUser && (
               <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" aria-label="AI is online" />
+                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" aria-label="AI is online" />
                 <span className="text-xs">Online</span>
               </div>
             )}
@@ -290,19 +339,119 @@ function ChatMessage({
             />
           </div>
           
+          {/* AI Elements Actions - Show on hover */}
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="flex items-center gap-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(messageText || '');
+                  toast({
+                    title: 'Copied!',
+                    description: 'Message copied to clipboard',
+                  });
+                }}
+                className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                title="Copy message"
+                aria-label="Copy message to clipboard"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+              
+              {!isUser && (
+                <>
+                  <button
+                    onClick={() => {
+                      toast({
+                        title: 'Liked!',
+                        description: 'Message marked as helpful',
+                      });
+                    }}
+                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                    title="Like message"
+                    aria-label="Mark message as helpful"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                    </svg>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      toast({
+                        title: 'Disliked',
+                        description: 'Message marked as unhelpful',
+                      });
+                    }}
+                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                    title="Dislike message"
+                    aria-label="Mark message as unhelpful"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2" />
+                    </svg>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      // Retry functionality - could regenerate AI response
+                      toast({
+                        title: 'Retry',
+                        description: 'Regenerating response...',
+                      });
+                    }}
+                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                    title="Retry response"
+                    aria-label="Regenerate AI response"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </button>
+                </>
+              )}
+              
+              <button
+                onClick={() => {
+                  // Share functionality
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'Chat Message',
+                      text: messageText || '',
+                    });
+                  } else {
+                    navigator.clipboard.writeText(messageText || '');
+                    toast({
+                      title: 'Shared!',
+                      description: 'Message copied to clipboard',
+                    });
+                  }
+                }}
+                className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+                title="Share message"
+                aria-label="Share message"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
           {/* Context Information */}
           {hasContext && message.contextUsed && (
             <div className={`mt-4 pt-3 border-t ${
               isUser 
-                ? 'border-blue-400/30' 
-                : 'border-emerald-200 dark:border-emerald-600'
+                ? 'border-gray-400/30' 
+                : 'border-gray-200 dark:border-gray-600'
             }`}>
               <button
                 onClick={() => toggleContextExpansion(message._id)}
                 className={`flex items-center gap-2 text-xs font-medium transition-colors ${
                   isUser 
-                    ? 'text-blue-100 hover:text-white' 
-                    : 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300'
+                    ? 'text-gray-100 hover:text-white' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
                 aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
                 aria-expanded={expandedContexts.has(message._id)}
@@ -326,18 +475,11 @@ function ChatMessage({
           
           {/* Message Timestamp */}
           <div className={`text-xs mt-3 ${
-            isUser ? 'text-blue-200' : 'text-gray-500 dark:text-gray-400'
+            isUser ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'
           }`}>
             {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
           </div>
         </div>
-        
-        {/* Decorative Elements */}
-        {!isUser && (
-          <div className="hidden sm:block" aria-hidden="true">
-            <div className="w-2 h-2 rounded-full bg-emerald-300 dark:bg-emerald-600 mt-4"></div>
-          </div>
-        )}
       </div>
     </article>
   );
@@ -347,20 +489,20 @@ function ContextResult({ context, isUser }: { context: any; isUser: boolean }) {
   return (
     <div className={`rounded-lg p-3 border ${
       isUser 
-        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700' 
-        : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700'
+        ? 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700' 
+        : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700'
     }`} role="region" aria-label="Context information">
       <div className={`text-xs font-medium mb-1 ${
         isUser 
-          ? 'text-blue-700 dark:text-blue-300' 
-          : 'text-emerald-700 dark:text-emerald-300'
+          ? 'text-gray-700 dark:text-gray-300' 
+          : 'text-gray-700 dark:text-gray-300'
       }`}>
         {context.key || 'Context'}
       </div>
       <div className={`text-xs leading-relaxed ${
         isUser 
-          ? 'text-blue-600 dark:text-blue-400' 
-          : 'text-emerald-600 dark:text-emerald-400'
+          ? 'text-gray-600 dark:text-gray-400' 
+          : 'text-gray-600 dark:text-gray-400'
       }`}>
         {context.text}
       </div>
@@ -566,16 +708,11 @@ function MainChatArea({
         )}
       </div>
 
-      {/* Chat Input Area - Enhanced Design */}
-      <div className="border-t border-blue-200/50 dark:border-blue-800/50 bg-gradient-to-r from-blue-50/50 to-white/95 dark:from-blue-950/50 dark:to-gray-900/95 backdrop-blur-md p-4 sm:p-6 shadow-lg">
+      {/* Chat Input Area - Minimal Design */}
+      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold text-blue-800 dark:text-blue-200 uppercase tracking-wide">
-              Send Message
-            </h2>
-          </div>
           <form
-            className="flex gap-3 sm:gap-4 items-end"
+            className="flex items-center gap-0"
             onSubmit={(e) => {
               e.preventDefault();
               onSendClicked();
@@ -587,11 +724,11 @@ function MainChatArea({
                 Type your message here
               </label>
               <Input
+                className="w-full border-0 focus:ring-0 focus:border-0 rounded-l-xl h-12 text-base bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 id="chat-input"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Ask using your context..."
-                className="w-full resize-none border-2 border-blue-400 dark:border-blue-500 focus:border-blue-600 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-600/20 dark:focus:ring-blue-400/20 rounded-xl h-14 sm:h-16 text-base shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="Ask anything from the lectures..."
                 aria-describedby="chat-input-help"
               />
               <div id="chat-input-help" className="sr-only">
@@ -601,11 +738,10 @@ function MainChatArea({
             <Button 
               type="submit" 
               disabled={!prompt.trim() || !threadId}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg px-6 sm:px-8 h-14 sm:h-16 text-base font-medium rounded-xl"
+              className="bg-gray-800 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-6 h-12 rounded-r-xl border-l-0 shadow-none"
               aria-label="Send message"
             >
-              <FiSend className="h-5 w-5 sm:h-6 sm:w-6 mr-2" aria-hidden="true" />
-              Send
+              <FiSend className="h-4 w-4" aria-hidden="true" />
             </Button>
           </form>
         </div>
