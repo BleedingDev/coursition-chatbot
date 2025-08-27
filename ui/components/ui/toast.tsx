@@ -90,7 +90,7 @@ const ToastTitle = forwardRef<
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
-    className={cn('font-semibold text-sm [&+div]:text-xs', className)}
+    className={cn('font-semibold [&+div]:text-xs', className)}
     ref={ref}
     {...props}
   />
@@ -102,7 +102,7 @@ const ToastDescription = forwardRef<
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Description
-    className={cn('text-sm opacity-90', className)}
+    className={cn('opacity-90', className)}
     ref={ref}
     {...props}
   />

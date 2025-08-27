@@ -243,52 +243,7 @@ function ChatMessage({
   // Improved message distinction logic for Convex Agent system
   // The issue: In this system, ALL messages have agentName, so we need a different approach
   // We'll use a combination of factors to determine message type
-  let isUser = false;
-
-  console.log(message)
-  
-  if (message.role === 'user') {
-    // Explicit user role
-    isUser = true;
-  } else if (message.role === 'assistant') {
-    // Explicit assistant role
-    isUser = false;
-  } else if (message.streaming) {
-    // Streaming = AI response
-    isUser = false;
-  } else {
-    // For messages without explicit role, we need to use content analysis
-    // In the Convex Agent system, user messages are typically:
-    // - Short and simple (like "Hello", "Hi")
-    // - Questions or prompts
-    // - Single sentences or phrases
-    
-    // AI responses are typically:
-    // - Longer and more detailed
-    // - Explanatory content
-    // - Multiple sentences
-    
-    const text = messageText || '';
-    const isShortMessage = text.length <= 30; // Reduced threshold for better accuracy
-    const isSimpleGreeting = /^(hi|hello|hey|thanks?|thank you|ok|okay|yes|no)$/i.test(text.trim());
-    const isQuestion = text.includes('?');
-    const isLongResponse = text.length > 80; // Reduced threshold for better accuracy
-    const hasMultipleSentences = (text.match(/[.!?]/g) || []).length > 1;
-    const isExplanatory = text.includes('In the context of') || text.includes('we use it to') || text.includes('You form it using');
-    
-    // If it's a short message, simple greeting, or question, it's likely from user
-    if (isShortMessage || isSimpleGreeting || isQuestion) {
-      isUser = true;
-    } 
-    // If it's a long response with multiple sentences or explanatory content, it's likely from AI
-    else if (isLongResponse || hasMultipleSentences || isExplanatory) {
-      isUser = false;
-    }
-    // Default fallback: assume user message if no clear AI indicators
-    else {
-      isUser = true;
-    }
-  }
+  const isUser = message.message?.role === 'user';
   
   const hasContext = message.contextUsed && message.contextUsed.length > 0;
 
