@@ -55,7 +55,7 @@ type MessageWithContext = {
   _id: string;
   role?: string;
   content?: string;
-  text?: string; // Add text field that actually exists in messages
+  text?: string;
   streaming?: boolean;
   contextUsed?: Array<{
     key?: string;
