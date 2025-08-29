@@ -17,7 +17,6 @@ import { Textarea } from '../components/ui/textarea';
 import { toast } from '../hooks/use-toast';
 import { api } from '../../convex/_generated/api';
 
-// React Icons imports - using multiple icon sets for variety
 import { 
   FiPlus, 
   FiEdit2, 
@@ -29,17 +28,19 @@ import {
   FiMenu, 
   FiSidebar,
   FiUser,
-  FiCpu
+  FiCpu,
+  FiCopy,
+  FiThumbsUp,
+  FiThumbsDown,
+  FiRotateCcw,
+  FiShare2,
+  FiChevronDown,
+  FiChevronUp,
+  FiMessageCircle,
+  FiFileText,
+  FiStar,
+  FiTrendingUp
 } from 'react-icons/fi';
-import { 
-  HiOutlineLightningBolt,
-  HiOutlineChatAlt2,
-  HiOutlineDocumentText
-} from 'react-icons/hi';
-import { 
-  IoSparklesOutline,
-  IoRocketOutline
-} from 'react-icons/io5';
 
 type ThreadItem = {
   _id: string;
@@ -113,7 +114,7 @@ function ChatSidebar({
       <div className="flex items-center justify-between p-4 border-b border-gray-200/50 dark:border-gray-700/50">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 text-white flex items-center justify-center font-bold shadow-lg" aria-hidden="true">
-            <HiOutlineChatAlt2 className="h-4 w-4" />
+            <FiMessageCircle className="h-4 w-4" />
           </div>
           <h2 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">Chats</h2>
         </div>
@@ -309,9 +310,7 @@ function ChatMessage({
                 title="Copy message"
                 aria-label="Copy message to clipboard"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+                <FiCopy className="w-3.5 h-3.5" />
               </button>
               
               {!isUser && (
@@ -327,9 +326,7 @@ function ChatMessage({
                     title="Like message"
                     aria-label="Mark message as helpful"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                    </svg>
+                    <FiThumbsUp className="w-3.5 h-3.5" />
                   </button>
                   
                   <button
@@ -343,9 +340,7 @@ function ChatMessage({
                     title="Dislike message"
                     aria-label="Mark message as unhelpful"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2" />
-                    </svg>
+                    <FiThumbsDown className="w-3.5 h-3.5" />
                   </button>
                   
                   <button
@@ -360,9 +355,8 @@ function ChatMessage({
                     title="Retry response"
                     aria-label="Regenerate AI response"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
+                    <FiRotateCcw className="w-3.5 h-3.5" />
+
                   </button>
                 </>
               )}
@@ -387,9 +381,7 @@ function ChatMessage({
                 title="Share message"
                 aria-label="Share message"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                </svg>
+                <FiShare2 className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -411,10 +403,10 @@ function ChatMessage({
                 aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
                 aria-expanded={expandedContexts.has(message._id)}
               >
-                <HiOutlineLightningBolt className="h-3 w-3" aria-hidden="true" />
+                <FiZap className="h-3 w-3" aria-hidden="true" />
                 Context Used ({message.contextUsed.length})
                 <span className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`} aria-hidden="true">
-                  ▼
+                  <FiChevronDown className="h-3 w-3" />
                 </span>
               </button>
               
@@ -575,28 +567,6 @@ function MainChatArea({
           >
             <FiMenu className="h-5 w-5" aria-hidden="true" />
           </Button>
-          <div 
-            className="h-8 w-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 text-white flex items-center justify-center font-bold shadow-lg cursor-pointer hover:from-gray-700 hover:to-gray-800 transition-all duration-200"
-            onClick={() => {
-              if (window.innerWidth < 1024) { // Only close on small screens
-                setShowLeftSidebar(false);
-              }
-            }}
-            title="Close sidebar (mobile)"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                if (window.innerWidth < 1024) {
-                  setShowLeftSidebar(false);
-                }
-              }
-            }}
-            aria-label="Close left sidebar on mobile devices"
-          >
-            R
-          </div>
           <span className="font-semibold text-gray-900 dark:text-gray-100 text-lg">RAG Chat</span>
         </div>
         <div className="flex items-center gap-2">
@@ -635,7 +605,7 @@ function MainChatArea({
           <div className="flex items-center justify-center h-full px-4" role="region" aria-label="Empty chat state">
             <div className="text-center">
               <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 mx-auto mb-4 flex items-center justify-center shadow-lg" aria-hidden="true">
-                <IoSparklesOutline className="h-8 w-8 sm:h-10 sm:w-10 text-gray-600 dark:text-gray-400" />
+                <FiStar className="h-8 w-8 sm:h-10 sm:w-10 text-gray-600 dark:text-gray-400" />
               </div>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 Start a conversation
