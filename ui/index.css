@@ -74,21 +74,4 @@
   }
 }
 
-/* Mobile-first utilities */
-@layer utilities {
-  .mobile-first {
-    @apply w-full sm:w-auto;
-  }
-  
-  .mobile-padding {
-    @apply p-3 sm:p-4 lg:p-6;
-  }
-  
-  .mobile-text {
-    @apply text-sm sm:text-base;
-  }
-  
-  .mobile-spacing {
-    @apply space-y-3 sm:space-y-4 lg:space-y-6;
-  }
-}
+
