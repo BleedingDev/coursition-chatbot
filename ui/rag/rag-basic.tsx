@@ -20,7 +20,6 @@ import {
   FiRotateCcw,
   FiSend,
   FiShare2,
-  FiSidebar,
   FiStar,
   FiThumbsDown,
   FiThumbsUp,
@@ -30,6 +29,7 @@ import {
   FiX,
   FiZap,
 } from 'react-icons/fi';
+import { IoChevronBack, IoClose } from 'react-icons/io5';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../convex/_generated/api';
 import { Markdown } from '../components/markdown';
@@ -724,9 +724,9 @@ function MainChatArea({
             aria-label={
               showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
             }
-            className={`rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 ${
+            className={`rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-purple-50 hover:border-purple-300 hover:shadow-purple-100 dark:hover:bg-purple-900/20 dark:hover:border-purple-400 dark:hover:shadow-purple-900/20 ${
               showLeftSidebar
-                ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                ? 'bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-500'
                 : 'text-gray-700 dark:text-gray-300'
             }`}
             onClick={() => {
@@ -742,35 +742,17 @@ function MainChatArea({
           >
             <FiMenu aria-hidden="true" className="h-5 w-5" />
           </Button>
+          <ThemeToggle />
+        </div>
+        <div className="flex items-center">
           <span className="font-semibold text-gray-900 text-lg dark:text-gray-100">
             RAG Chat
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            aria-label={
-              showContextPanel ? 'Hide context panel' : 'Show context panel'
-            }
-            className={`rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 ${
-              showContextPanel
-                ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-                : 'text-gray-700 dark:text-gray-300'
-            }`}
-            onClick={() => setShowContextPanel(!showContextPanel)}
-            size="icon"
-            title={
-              showContextPanel ? 'Hide context panel' : 'Show context panel'
-            }
-            variant="ghost"
-          >
-            <FiSidebar aria-hidden="true" className="h-5 w-5" />
-          </Button>
-          <ThemeToggle />
-        </div>
       </header>
 
       {/* Chat Messages Area - Mobile First */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+      <div className="flex-1 overflow-y-auto p-3 mt-8 sm:p-4 lg:p-6">
         {listMessages.results && listMessages.results.length > 0 ? (
           <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
             {listMessages.results.map((message) => (
@@ -822,7 +804,7 @@ function MainChatArea({
       </div>
 
       {/* Chat Input Area - Minimal Design */}
-      <div className="border-gray-200 border-t bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div className="border-gray-200 border-t bg-white p-2 px-0 dark:border-gray-700 dark:bg-gray-900">
         <div className="mx-auto max-w-4xl">
           <form
             aria-label="Chat message form"
@@ -838,7 +820,7 @@ function MainChatArea({
               </label>
               <Input
                 aria-describedby="chat-input-help"
-                className="h-12 w-full rounded-l-xl border-0 bg-transparent text-base text-gray-900 placeholder-gray-500 focus:border-0 focus:ring-0 dark:text-gray-100 dark:placeholder-gray-400"
+                className="h-12 w-full rounded-l-md ring-0 rounded-r-none bg-gray-50 dark:bg-gray-700 border-0 text-base text-gray-950 font-bold placeholder-gray-700 focus:border-0 focus:ring-0 dark:text-gray-100 dark:placeholder-gray-300"
                 id="chat-input"
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Ask anything from the lectures..."
@@ -851,7 +833,7 @@ function MainChatArea({
             </div>
             <Button
               aria-label="Send message"
-              className="h-12 rounded-r-xl border-l-0 bg-gray-800 px-6 text-white shadow-none hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600"
+              className="h-12 rounded-r-md rounded-l-none border-l-0 bg-blue-600 px-6 dark:text-white shadow-none dark:bg-blue-600 dark:hover:bg-blue-700"
               disabled={!(prompt.trim() && threadId)}
               type="submit"
             >
@@ -1094,71 +1076,90 @@ function ContextPanel({
   selectedEntry,
   setSelectedEntry,
 }: ContextPanelProps) {
-  if (!showContextPanel) {
-    return null;
-  }
-
   return (
-    <aside
-      aria-label="Context panel"
-      className="fixed inset-y-0 right-0 z-40 flex w-80 flex-col border-gray-200/50 border-l bg-white/95 shadow-xl backdrop-blur-md lg:relative lg:z-auto dark:border-gray-700/50 dark:bg-gray-900/95"
-    >
-      <div className="flex items-center justify-between border-gray-200/50 border-b p-4 dark:border-gray-700/50">
-        <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
-          Add Context
-        </h2>
-        <Button
-          aria-label="Close context panel"
-          className="p-2 lg:hidden"
-          onClick={() => setShowContextPanel(false)}
-          size="sm"
-          variant="ghost"
-        >
-          <FiX aria-hidden="true" className="h-4 w-4" />
-        </Button>
-      </div>
-      <AddContextForm
-        addContextForm={addContextForm}
-        handleAddContext={handleAddContext}
-        isAddingContext={isAddingContext}
-        setAddContextForm={setAddContextForm}
-      />
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="p-4">
-          <h3 className="mb-3 font-medium text-gray-900 dark:text-gray-100">
-            Context Entries
-          </h3>
-          <div className="space-y-2">
-            {globalDocuments.results?.map((entry) => (
-              <button
-                aria-label={`Select context entry: ${entry.title || entry.key}`}
-                aria-pressed={selectedEntry === entry.entryId}
-                className={`w-full cursor-pointer rounded-md p-3 text-left shadow-sm transition-colors ${
-                  selectedEntry === entry.entryId
-                    ? 'border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800'
-                    : 'border border-transparent bg-gray-50 hover:border-gray-200 hover:bg-gray-100 dark:bg-gray-900 dark:hover:border-gray-600 dark:hover:bg-gray-800'
-                }`}
-                key={entry.entryId}
-                onClick={() => setSelectedEntry(entry.entryId)}
-                type="button"
-              >
-                <div className="truncate font-medium text-gray-900 text-sm dark:text-gray-100">
-                  {entry.title || entry.key}
-                </div>
-                <div className="mt-1 text-gray-600 text-xs dark:text-gray-300">
-                  Status: {entry.status}
-                </div>
-              </button>
-            ))}
-            {globalDocuments.results?.length === 0 && (
-              <div className="py-4 text-center text-gray-600 text-sm dark:text-gray-300">
-                No context entries yet
-              </div>
-            )}
+    <>
+              {/* Collapsed State - Arrow Toggle */}
+        {!showContextPanel && (
+        <div className="fixed z-40 -translate-y-1/2 lg:absolute lg:top-3 lg:right-0">
+            <Button
+              aria-label="Open context panel"
+              className="rounded-b-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-green-50 hover:border-green-300 hover:shadow-green-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:bg-green-900/20 dark:hover:border-green-400 dark:hover:shadow-green-900/20"
+              onClick={() => setShowContextPanel(true)}
+              size="icon"
+              variant="ghost"
+            >
+              <IoChevronBack className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+            </Button>
           </div>
-        </div>
-      </div>
-    </aside>
+        )}
+
+      {/* Expanded State */}
+      {showContextPanel && (
+        <aside
+          aria-label="Context panel"
+          className="fixed inset-y-0 right-0 z-40 flex w-80 flex-col border-gray-200/50 border-l bg-white/95 shadow-xl backdrop-blur-md lg:relative lg:z-auto dark:border-gray-700/50 dark:bg-gray-900/95"
+        >
+          {/* Header with Close Button */}
+          <div className="flex items-center justify-between border-gray-200/50 border-b p-4 dark:border-gray-700/50">
+            <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
+              Add Context
+            </h2>
+            <Button
+              aria-label="Close context panel"
+              className="rounded-full p-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+              onClick={() => setShowContextPanel(false)}
+              size="sm"
+              variant="ghost"
+            >
+              <IoClose className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+            </Button>
+          </div>
+
+          {/* Content */}
+          <AddContextForm
+            addContextForm={addContextForm}
+            handleAddContext={handleAddContext}
+            isAddingContext={isAddingContext}
+            setAddContextForm={setAddContextForm}
+          />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="p-4">
+              <h3 className="mb-3 font-medium text-gray-900 dark:text-gray-100">
+                Context Entries
+              </h3>
+              <div className="space-y-2">
+                {globalDocuments.results?.map((entry) => (
+                  <button
+                    aria-label={`Select context entry: ${entry.title || entry.key}`}
+                    aria-pressed={selectedEntry === entry.entryId}
+                    className={`w-full cursor-pointer rounded-md p-3 text-left shadow-sm transition-colors ${
+                      selectedEntry === entry.entryId
+                        ? 'border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800'
+                        : 'border border-transparent bg-gray-50 hover:border-gray-200 hover:bg-gray-100 dark:bg-gray-900 dark:hover:border-gray-600 dark:hover:bg-gray-800'
+                    }`}
+                    key={entry.entryId}
+                    onClick={() => setSelectedEntry(entry.entryId)}
+                    type="button"
+                  >
+                    <div className="truncate font-medium text-gray-900 text-sm dark:text-gray-100">
+                      {entry.title || entry.key}
+                    </div>
+                    <div className="mt-1 text-gray-600 text-xs dark:text-gray-300">
+                      Status: {entry.status}
+                    </div>
+                  </button>
+                ))}
+                {globalDocuments.results?.length === 0 && (
+                  <div className="py-4 text-center text-gray-600 text-sm dark:text-gray-300">
+                    No context entries yet
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </aside>
+      )}
+    </>
   );
 }
 
@@ -1201,7 +1202,7 @@ function RagBasicUI() {
   const [expandedContexts, setExpandedContexts] = useState<Set<string>>(
     new Set()
   );
-  const [showContextPanel, setShowContextPanel] = useState<boolean>(false); // Start collapsed on mobile
+  const [showContextPanel, setShowContextPanel] = useState<boolean>(false); // Start collapsed, controlled by arrow toggle
   const [showLeftSidebar, setShowLeftSidebar] = useState<boolean>(true); // Start open on desktop
 
   // Auto-collapse context panel on small screens
@@ -1413,14 +1414,14 @@ function RagBasicUI() {
 
         <div
           aria-label="Main controls"
-          className={`fixed top-3 z-[60] flex items-center gap-2 ${showContextPanel ? 'right-[21rem]' : 'right-3'}`}
+          className={`fixed top-3 z-[60] hidden lg:flex items-center gap-2 ${showLeftSidebar ? 'left-[18rem]' : 'left-8'} ${showContextPanel ? 'right-[21rem]' : 'right-auto'}`}
           role="toolbar"
         >
           <Button
             aria-label={
               showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
             }
-            className="rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
+            className="rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-purple-50 hover:border-purple-300 hover:shadow-purple-100 dark:hover:bg-purple-900/20 dark:hover:border-purple-400 dark:hover:shadow-purple-900/20"
             onClick={() => {
               console.log(
                 'Toggling left sidebar, current state:',
@@ -1435,19 +1436,7 @@ function RagBasicUI() {
           >
             <FiMenu aria-hidden="true" className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </Button>
-          <Button
-            aria-label={
-              showContextPanel ? 'Hide context panel' : 'Show context panel'
-            }
-            className="rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
-            onClick={() => setShowContextPanel(!showContextPanel)}
-            size="icon"
-            title={showContextPanel ? 'Hide context' : 'Show context'}
-            type="button"
-            variant="ghost"
-          >
-            <FiSidebar aria-hidden="true" className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-          </Button>
+
           <ThemeToggle />
         </div>
       </div>
