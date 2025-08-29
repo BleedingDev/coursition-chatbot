@@ -262,8 +262,51 @@ function ChatMessage({
   // Improved message distinction logic for Convex Agent system
   // The issue: In this system, ALL messages have agentName, so we need a different approach
   // We'll use a combination of factors to determine message type
-  const isUser = message.message?.role === 'user';
+  let isUser = false;
 
+  if (message.role === 'user') {
+    // Explicit user role
+    isUser = true;
+  } else if (message.role === 'assistant') {
+    // Explicit assistant role
+    isUser = false;
+  } else if (message.streaming) {
+    // Streaming = AI response
+    isUser = false;
+  } else {
+    // For messages without explicit role, we need to use content analysis
+    // In the Convex Agent system, user messages are typically:
+    // - Short and simple (like "Hello", "Hi")
+    // - Questions or prompts
+    // - Single sentences or phrases
+    
+    // AI responses are typically:
+    // - Longer and more detailed
+    // - Explanatory content
+    // - Multiple sentences
+    
+    const text = messageText || '';
+    const isShortMessage = text.length <= 30; // Reduced threshold for better accuracy
+    const isSimpleGreeting = /^(hi|hello|hey|thanks?|thank you|ok|okay|yes|no)$/i.test(text.trim());
+    const isQuestion = text.includes('?');
+    const isLongResponse = text.length > 80; // Reduced threshold for better accuracy
+    const hasMultipleSentences = (text.match(/[.!?]/g) || []).length > 1;
+    const isExplanatory = text.includes('In the context of') || text.includes('we use it to') || text.includes('You form it using');
+
+    // If it's a short message, simple greeting, or question, it's likely from user
+    if (isShortMessage || isSimpleGreeting || isQuestion) {
+      isUser = true;
+    } 
+    // If it's a long response with multiple sentences or explanatory content, it's likely from AI
+    else if (isLongResponse || hasMultipleSentences || isExplanatory) {
+      isUser = false;
+    }
+    // Default fallback: assume user message if no clear AI indicators
+    else {
+      isUser = true;
+    }
+  }
+  
   const hasContext = message.contextUsed && message.contextUsed.length > 0;
 
   // Add safety check for message content
@@ -272,215 +315,279 @@ function ChatMessage({
   }
 
   return (
-    <article
-      aria-label={`${isUser ? 'User' : 'AI'} message`}
-      className={`group mb-6 flex gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}
-    >
-      <div
-        className={`flex max-w-[80%] gap-3 ${isUser ? 'flex-row' : 'flex-row-reverse'}`}
-      >
-        {/* Avatar */}
-        <div
-          aria-hidden="true"
-          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-medium text-sm text-white shadow-lg ${
-            isUser
-              ? 'bg-gradient-to-br from-gray-500 to-gray-600 ring-2 ring-gray-200 dark:ring-gray-800'
-              : 'bg-gradient-to-br from-gray-400 to-gray-500 ring-2 ring-gray-200 dark:ring-gray-800'
-          }`}
-        >
-          {isUser ? (
-            <FiUser className="h-5 w-5" />
-          ) : (
-            <FiCpu className="h-5 w-5" />
-          )}
-        </div>
-
-        {/* Message Bubble */}
-        <div
-          className={`relative rounded-2xl px-5 py-4 shadow-lg ${
-            isUser
-              ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-gray-200 shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700'
-              : 'border-2 border-gray-200 bg-gradient-to-br from-white to-gray-50 shadow-gray-100 shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700'
-          }`}
-        >
-          {/* Message Header */}
-          <div
-            className={`mb-2 flex items-center gap-2 ${
-              isUser ? 'text-gray-100' : 'text-gray-600 dark:text-gray-400'
-            }`}
-          >
-            <span className="font-semibold text-xs uppercase tracking-wide">
-              {isUser ? 'You' : 'AI Assistant'}
-            </span>
-            {!isUser && (
-              <div className="flex items-center gap-1">
-                <div
-                  aria-label="AI is online"
-                  className="h-2 w-2 animate-pulse rounded-full bg-green-400"
-                />
-                <span className="text-xs">Online</span>
-              </div>
-            )}
-          </div>
-
-          {/* Message Content */}
-          <div
-            className={`${isUser ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}
-          >
-            <MessageText
-              invert={isUser}
-              streaming={message.streaming}
-              text={messageText}
-            />
-          </div>
-
-          {/* AI Elements Actions - Show on hover */}
-          <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-            <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
-              <button
-                aria-label="Copy message to clipboard"
-                className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                onClick={() => {
-                  navigator.clipboard.writeText(messageText || '');
-                  toast({
-                    title: 'Copied!',
-                    description: 'Message copied to clipboard',
-                  });
-                }}
-                title="Copy message"
-              >
-                <FiCopy className="h-3.5 w-3.5" />
-              </button>
-
-              {!isUser && (
-                <>
-                  <button
-                    aria-label="Mark message as helpful"
-                    className="rounded p-1.5 text-gray-600 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-gray-400 dark:hover:bg-green-900/20"
-                    onClick={() => {
-                      toast({
-                        title: 'Liked!',
-                        description: 'Message marked as helpful',
-                      });
-                    }}
-                    title="Like message"
-                  >
-                    <FiThumbsUp className="h-3.5 w-3.5" />
-                  </button>
-
-                  <button
-                    aria-label="Mark message as unhelpful"
-                    className="rounded p-1.5 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
-                    onClick={() => {
-                      toast({
-                        title: 'Disliked',
-                        description: 'Message marked as unhelpful',
-                      });
-                    }}
-                    title="Dislike message"
-                  >
-                    <FiThumbsDown className="h-3.5 w-3.5" />
-                  </button>
-
-                  <button
-                    aria-label="Regenerate AI response"
-                    className="rounded p-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20"
-                    onClick={() => {
-                      // Retry functionality - could regenerate AI response
-                      toast({
-                        title: 'Retry',
-                        description: 'Regenerating response...',
-                      });
-                    }}
-                    title="Retry response"
-                  >
-                    <FiRotateCcw className="h-3.5 w-3.5" />
-                  </button>
-                </>
-              )}
-
-              <button
-                aria-label="Share message"
-                className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
-                onClick={() => {
-                  // Share functionality
-                  if (navigator.share) {
-                    navigator.share({
-                      title: 'Chat Message',
-                      text: messageText || '',
-                    });
-                  } else {
+    <article className={`group flex gap-4 mb-6 ${isUser ? 'justify-end' : 'justify-start'}`} aria-label={`${isUser ? 'User' : 'AI'} message`}>
+      {isUser ? (
+        <>
+          {/* User Message: Message on left, Avatar on right */}
+          {/* Message Bubble */}
+          <div className="relative rounded-2xl px-5 py-4 shadow-lg max-w-[80%] bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg shadow-gray-200 dark:shadow-gray-800 ring-2 ring-gray-300 dark:ring-gray-700">
+            {/* Message Header */}
+            <div className="flex items-center gap-2 mb-2 text-gray-100">
+              <span className="text-xs font-semibold uppercase tracking-wide">
+                You
+              </span>
+            </div>
+            
+            {/* Message Content */}
+            <div className="text-white">
+              <MessageText 
+                text={messageText} 
+                streaming={message.streaming}
+                invert={isUser}
+              />
+            </div>
+            
+            {/* Message Actions - Show on hover */}
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="flex items-center gap-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => {
                     navigator.clipboard.writeText(messageText || '');
                     toast({
-                      title: 'Shared!',
+                      title: 'Copied!',
                       description: 'Message copied to clipboard',
                     });
-                  }
-                }}
-                title="Share message"
-              >
-                <FiShare2 className="h-3.5 w-3.5" />
-              </button>
+                  }}
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                  aria-label="Copy message to clipboard"
+                  title="Copy message"
+                >
+                  <FiCopy className="h-3.5 w-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    // Share functionality
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Chat Message',
+                        text: messageText || '',
+                      });
+                    } else {
+                      navigator.clipboard.writeText(messageText || '');
+                      toast({
+                        title: 'Shared!',
+                        description: 'Message copied to clipboard',
+                      });
+                    }
+                  }}
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
+                  aria-label="Share message"
+                  title="Share message"
+                >
+                  <FiShare2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Context Information */}
+            {hasContext && message.contextUsed && (
+              <div className="mt-4 border-t pt-3 border-gray-400/30">
+                <button
+                  aria-expanded={expandedContexts.has(message._id)}
+                  aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
+                  className="flex items-center gap-2 font-medium text-xs transition-colors text-gray-100 hover:text-white"
+                  onClick={() => toggleContextExpansion(message._id)}
+                >
+                  <FiZap aria-hidden="true" className="h-3 w-3" />
+                  Context Used ({message.contextUsed.length})
+                  <span
+                    aria-hidden="true"
+                    className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
+                  >
+                    <FiChevronDown className="h-3 w-3" />
+                  </span>
+                </button>
+
+                {expandedContexts.has(message._id) && (
+                  <div
+                    aria-label="Context details"
+                    className="mt-3 space-y-2"
+                    role="region"
+                  >
+                    {message.contextUsed.map((context, index) => (
+                      <ContextResult
+                        context={context}
+                        isUser={isUser}
+                        key={index}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Message Timestamp */}
+            <div className="mt-3 text-xs text-gray-200">
+              {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
             </div>
           </div>
 
-          {/* Context Information */}
-          {hasContext && message.contextUsed && (
-            <div
-              className={`mt-4 border-t pt-3 ${
-                isUser
-                  ? 'border-gray-400/30'
-                  : 'border-gray-200 dark:border-gray-600'
-              }`}
-            >
-              <button
-                aria-expanded={expandedContexts.has(message._id)}
-                aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
-                className={`flex items-center gap-2 font-medium text-xs transition-colors ${
-                  isUser
-                    ? 'text-gray-100 hover:text-white'
-                    : 'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-                }`}
-                onClick={() => toggleContextExpansion(message._id)}
-              >
-                <FiZap aria-hidden="true" className="h-3 w-3" />
-                Context Used ({message.contextUsed.length})
-                <span
-                  aria-hidden="true"
-                  className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
-                >
-                  <FiChevronDown className="h-3 w-3" />
-                </span>
-              </button>
-
-              {expandedContexts.has(message._id) && (
-                <div
-                  aria-label="Context details"
-                  className="mt-3 space-y-2"
-                  role="region"
-                >
-                  {message.contextUsed.map((context, index) => (
-                    <ContextResult
-                      context={context}
-                      isUser={isUser}
-                      key={index}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Message Timestamp */}
-          <div
-            className={`mt-3 text-xs ${
-              isUser ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'
-            }`}
-          >
-            {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
+          {/* User Avatar - Positioned on right side */}
+          <div className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-lg bg-gradient-to-br from-gray-500 to-gray-600 ring-2 ring-gray-200 dark:ring-gray-800" aria-hidden="true">
+            <FiUser className="h-5 w-5" />
           </div>
-        </div>
-      </div>
+        </>
+      ) : (
+        <>
+          {/* AI Message: Avatar on left, message on right */}
+          {/* AI Avatar */}
+          <div className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-lg bg-gradient-to-br from-gray-400 to-gray-500 ring-2 ring-gray-200 dark:ring-gray-800" aria-hidden="true">
+            <FiCpu className="h-5 w-5" />
+          </div>
+          
+          {/* Message Bubble */}
+          <div className="relative rounded-2xl px-5 py-4 shadow-lg max-w-[80%] bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900/10 border-2 border-gray-200 dark:border-gray-700 shadow-lg shadow-gray-100 dark:shadow-gray-900/20 ring-2 ring-gray-300 dark:ring-gray-700">
+            {/* Message Header */}
+            <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+              <span className="text-xs font-semibold uppercase tracking-wide">
+                AI Assistant
+              </span>
+              <div className="flex items-center gap-1">
+                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" aria-label="AI is online" />
+                <span className="text-xs">Online</span>
+              </div>
+            </div>
+            
+            {/* Message Content */}
+            <div className="text-gray-900 dark:text-gray-100">
+              <MessageText 
+                text={messageText} 
+                streaming={message.streaming}
+                invert={isUser}
+              />
+            </div>
+            
+            {/* AI Elements Actions - Show on hover */}
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="flex items-center gap-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(messageText || '');
+                    toast({
+                      title: 'Copied!',
+                      description: 'Message copied to clipboard',
+                    });
+                  }}
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                  aria-label="Copy message to clipboard"
+                  title="Copy message"
+                >
+                  <FiCopy className="h-3.5 w-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    toast({
+                      title: 'Liked!',
+                      description: 'Message marked as helpful',
+                    });
+                  }}
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-gray-400 dark:hover:bg-green-900/20"
+                  aria-label="Mark message as helpful"
+                  title="Like message"
+                >
+                  <FiThumbsUp className="h-3.5 w-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    toast({
+                      title: 'Disliked',
+                      description: 'Message marked as unhelpful',
+                    });
+                  }}
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
+                  aria-label="Mark message as unhelpful"
+                  title="Dislike message"
+                >
+                  <FiThumbsDown className="h-3.5 w-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    // Retry functionality - could regenerate AI response
+                    toast({
+                      title: 'Retry',
+                      description: 'Regenerating response...',
+                    });
+                  }}
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-gray-900/20"
+                  aria-label="Regenerate AI response"
+                  title="Retry response"
+                >
+                  <FiRotateCcw className="h-3.5 w-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    // Share functionality
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Chat Message',
+                        text: messageText || '',
+                      });
+                    } else {
+                      navigator.clipboard.writeText(messageText || '');
+                      toast({
+                        title: 'Shared!',
+                        description: 'Message copied to clipboard',
+                      });
+                    }
+                  }}
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
+                  aria-label="Share message"
+                  title="Share message"
+                >
+                  <FiShare2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Context Information */}
+            {hasContext && message.contextUsed && (
+              <div className="mt-4 border-t pt-3 border-gray-200 dark:border-gray-600">
+                <button
+                  aria-expanded={expandedContexts.has(message._id)}
+                  aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
+                  className="flex items-center gap-2 font-medium text-xs transition-colors text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                  onClick={() => toggleContextExpansion(message._id)}
+                >
+                  <FiZap aria-hidden="true" className="h-3 w-3" />
+                  Context Used ({message.contextUsed.length})
+                  <span
+                    aria-hidden="true"
+                    className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
+                  >
+                    <FiChevronDown className="h-3 w-3" />
+                  </span>
+                </button>
+
+                {expandedContexts.has(message._id) && (
+                  <div
+                    aria-label="Context details"
+                    className="mt-3 space-y-2"
+                    role="region"
+                  >
+                    {message.contextUsed.map((context, index) => (
+                      <ContextResult
+                        context={context}
+                        isUser={isUser}
+                        key={index}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Message Timestamp */}
+            <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+              {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
+            </div>
+          </div>
+        </>
+      )}
     </article>
   );
 }
