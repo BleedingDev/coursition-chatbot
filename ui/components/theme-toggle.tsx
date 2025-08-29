@@ -1,5 +1,5 @@
-import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { IoMoon, IoSunny } from 'react-icons/io5';
 import { Button } from '@/components/ui/button';
 
 function getInitialTheme(): 'light' | 'dark' {
@@ -32,16 +32,16 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   return (
     <Button
       aria-label="Toggle theme"
-      className={`pointer-events-auto ${className}`}
+      className={`pointer-events-auto rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-blue-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-blue-400 dark:hover:bg-blue-900/20 dark:hover:shadow-blue-900/20 ${className}`}
       onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
       size="icon"
       title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-      variant="secondary"
+      variant="ghost"
     >
       {theme === 'dark' ? (
-        <Sun className="h-4 w-4" />
+        <IoSunny className="h-4 w-4 text-gray-100" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <IoMoon className="h-4 w-4 text-gray-700" />
       )}
     </Button>
   );

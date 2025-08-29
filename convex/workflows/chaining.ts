@@ -115,11 +115,4 @@ export const startWorkflow = mutation({
 export const getForecast = weatherAgent.asTextAction({
   stopWhen: stepCountIs(3),
 });
-export const getFashionAdvice = fashionAgent.asObjectAction({
-  schema: z.object({
-    hat: z.string(),
-    tops: z.string(),
-    bottoms: z.string(),
-    shoes: z.string(),
-  }),
-});
+export const getFashionAdvice = fashionAgent.asObjectAction({});
