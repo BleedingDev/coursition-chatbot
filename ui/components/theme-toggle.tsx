@@ -32,16 +32,16 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   return (
     <Button
       aria-label="Toggle theme"
-      className={`pointer-events-auto ${className}`}
+      className={`pointer-events-auto rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white dark:border-gray-600 dark:bg-gray-800/90 dark:hover:bg-gray-800 ${className}`}
       onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
       size="icon"
       title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-      variant="secondary"
+      variant="ghost"
     >
       {theme === 'dark' ? (
-        <IoSunny className="h-4 w-4" />
+        <IoSunny className="h-4 w-4 text-gray-100" />
       ) : (
-        <IoMoon className="h-4 w-4" />
+        <IoMoon className="h-4 w-4 text-gray-700" />
       )}
     </Button>
   );

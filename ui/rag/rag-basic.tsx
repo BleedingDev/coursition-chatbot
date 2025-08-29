@@ -724,10 +724,10 @@ function MainChatArea({
             aria-label={
               showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
             }
-            className={`p-2 transition-colors ${
+            className={`rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 ${
               showLeftSidebar
                 ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                : 'text-gray-700 dark:text-gray-300'
             }`}
             onClick={() => {
               console.log(
@@ -736,7 +736,7 @@ function MainChatArea({
               );
               setShowLeftSidebar(!showLeftSidebar);
             }}
-            size="sm"
+            size="icon"
             title={showLeftSidebar ? 'Hide sidebar' : 'Show sidebar'}
             variant="ghost"
           >
@@ -751,13 +751,13 @@ function MainChatArea({
             aria-label={
               showContextPanel ? 'Hide context panel' : 'Show context panel'
             }
-            className={`p-2 transition-colors ${
+            className={`rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 ${
               showContextPanel
                 ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                : 'text-gray-700 dark:text-gray-300'
             }`}
             onClick={() => setShowContextPanel(!showContextPanel)}
-            size="sm"
+            size="icon"
             title={
               showContextPanel ? 'Hide context panel' : 'Show context panel'
             }
@@ -1420,7 +1420,7 @@ function RagBasicUI() {
             aria-label={
               showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
             }
-            className="shadow"
+            className="rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
             onClick={() => {
               console.log(
                 'Toggling left sidebar, current state:',
@@ -1431,24 +1431,24 @@ function RagBasicUI() {
             size="icon"
             title={showLeftSidebar ? 'Hide sidebar' : 'Show sidebar'}
             type="button"
-            variant="secondary"
+            variant="ghost"
           >
-            <FiMenu aria-hidden="true" className="h-4 w-4" />
+            <FiMenu aria-hidden="true" className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </Button>
           <Button
             aria-label={
               showContextPanel ? 'Hide context panel' : 'Show context panel'
             }
-            className="shadow"
+            className="rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
             onClick={() => setShowContextPanel(!showContextPanel)}
             size="icon"
             title={showContextPanel ? 'Hide context' : 'Show context'}
             type="button"
-            variant="secondary"
+            variant="ghost"
           >
-            <FiSidebar aria-hidden="true" className="h-4 w-4" />
+            <FiSidebar aria-hidden="true" className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </Button>
-          <ThemeToggle className="shadow" />
+          <ThemeToggle />
         </div>
       </div>
       {error && (
