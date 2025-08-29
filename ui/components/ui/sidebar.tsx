@@ -1,4 +1,3 @@
-import { PanelLeft } from 'lucide-react';
 import {
   createContext,
   useCallback,
@@ -6,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { IoMenu } from 'react-icons/io5';
 import { Button } from './button';
 
 type SidebarContextType = {
@@ -75,7 +75,7 @@ export function SidebarRail({ className = '' }: { className?: string }) {
         type="button"
         variant="secondary"
       >
-        <PanelLeft className="h-4 w-4" />
+        <IoMenu className="h-4 w-4" />
       </Button>
     </div>
   );

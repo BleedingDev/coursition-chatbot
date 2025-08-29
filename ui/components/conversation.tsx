@@ -1,11 +1,11 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { ArrowDownIcon } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { useCallback } from 'react';
+import { IoArrowDown } from 'react-icons/io5';
 import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
@@ -55,7 +55,7 @@ export const ConversationScrollButton = ({
         variant="outline"
         {...props}
       >
-        <ArrowDownIcon className="size-4" />
+        <IoArrowDown className="size-4" />
       </Button>
     )
   );

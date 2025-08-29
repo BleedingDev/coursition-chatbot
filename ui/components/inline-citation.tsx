@@ -1,19 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from '@/components/ui/carousel';
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card';
-import { cn } from '@/lib/utils';
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import {
   type ComponentProps,
   createContext,
@@ -22,6 +8,20 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
+import { Badge } from '@/components/ui/badge';
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/carousel';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
+import { cn } from '@/lib/utils';
 
 export type InlineCitationProps = ComponentProps<'span'>;
 
@@ -206,7 +206,7 @@ export const InlineCitationCarouselPrev = ({
       type="button"
       {...props}
     >
-      <ArrowLeftIcon className="size-4 text-muted-foreground" />
+      <IoArrowBack className="size-4 text-muted-foreground" />
     </button>
   );
 };
@@ -233,7 +233,7 @@ export const InlineCitationCarouselNext = ({
       type="button"
       {...props}
     >
-      <ArrowRightIcon className="size-4 text-muted-foreground" />
+      <IoArrowForward className="size-4 text-muted-foreground" />
     </button>
   );
 };

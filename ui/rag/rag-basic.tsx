@@ -6,41 +6,45 @@ import {
 import type { EntryId } from '@convex-dev/rag';
 import { useAction, useMutation, usePaginatedQuery } from 'convex/react';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  FiCheck,
+  FiChevronDown,
+  FiChevronUp,
+  FiCopy,
+  FiCpu,
+  FiEdit2,
+  FiFileText,
+  FiMenu,
+  FiMessageCircle,
+  FiPlus,
+  FiRotateCcw,
+  FiSend,
+  FiShare2,
+  FiSidebar,
+  FiStar,
+  FiThumbsDown,
+  FiThumbsUp,
+  FiTrash2,
+  FiTrendingUp,
+  FiUser,
+  FiX,
+  FiZap,
+} from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
+import { api } from '../../convex/_generated/api';
 import { Markdown } from '../components/markdown';
 import { ThemeToggle } from '../components/theme-toggle';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Sidebar, SidebarProvider } from '../components/ui/sidebar';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from '../hooks/use-toast';
-import { api } from '../../convex/_generated/api';
-
-import { 
-  FiPlus, 
-  FiEdit2, 
-  FiTrash2, 
-  FiX, 
-  FiCheck, 
-  FiSend, 
-  FiZap, 
-  FiMenu, 
-  FiSidebar,
-  FiUser,
-  FiCpu,
-  FiCopy,
-  FiThumbsUp,
-  FiThumbsDown,
-  FiRotateCcw,
-  FiShare2,
-  FiChevronDown,
-  FiChevronUp,
-  FiMessageCircle,
-  FiFileText,
-  FiStar,
-  FiTrendingUp
-} from 'react-icons/fi';
 
 type ThreadItem = {
   _id: string;
@@ -110,66 +114,82 @@ function ChatSidebar({
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-white/95 dark:bg-gray-900/95 shadow-xl backdrop-blur-md border-r border-gray-200/50 dark:border-gray-700/50 lg:relative lg:z-auto" aria-label="Chat sidebar">
-      <div className="flex items-center justify-between p-4 border-b border-gray-200/50 dark:border-gray-700/50">
+    <aside
+      aria-label="Chat sidebar"
+      className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-gray-200/50 border-r bg-white/95 shadow-xl backdrop-blur-md lg:relative lg:z-auto dark:border-gray-700/50 dark:bg-gray-900/95"
+    >
+      <div className="flex items-center justify-between border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 text-white flex items-center justify-center font-bold shadow-lg" aria-hidden="true">
+          <div
+            aria-hidden="true"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-gray-600 to-gray-700 font-bold text-white shadow-lg"
+          >
             <FiMessageCircle className="h-4 w-4" />
           </div>
-          <h2 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">Chats</h2>
+          <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
+            Chats
+          </h2>
         </div>
       </div>
-      
-      <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50">
+
+      <div className="border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <Button
-          onClick={() => createThread({ title: 'New Chat' })}
-          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg"
           aria-label="Create new chat"
+          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
+          onClick={() => createThread({ title: 'New Chat' })}
         >
-          <FiPlus className="h-4 w-4 mr-2" aria-hidden="true" />
+          <FiPlus aria-hidden="true" className="mr-2 h-4 w-4" />
           New Chat
         </Button>
       </div>
 
-      <nav className="min-h-0 flex-1 overflow-y-auto" aria-label="Chat threads">
-        <div className="p-4 space-y-2">
+      <nav aria-label="Chat threads" className="min-h-0 flex-1 overflow-y-auto">
+        <div className="space-y-2 p-4">
           {activeThreads.map((thread) => (
             <div
+              aria-label={`Select chat: ${thread.title || 'Untitled Chat'}`}
+              aria-pressed={threadId === thread._id}
               className={`group relative cursor-pointer rounded-lg p-3 transition-colors ${
                 threadId === thread._id
-                  ? 'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600'
-                  : 'hover:bg-gray-50 dark:hover:bg-gray-900 border border-transparent hover:border-gray-200 dark:hover:border-gray-700'
+                  ? 'border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800'
+                  : 'border border-transparent hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-900'
               }`}
               key={thread._id}
               onClick={() => setThreadId(thread._id)}
-              role="button"
-              tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   setThreadId(thread._id);
                 }
               }}
-              aria-label={`Select chat: ${thread.title || 'Untitled Chat'}`}
-              aria-pressed={threadId === thread._id}
+              role="button"
+              tabIndex={0}
             >
               <div className="flex items-center justify-between">
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   {editingId === thread._id ? (
                     <Input
-                      value={editingTitle}
-                      onChange={(e) => setEditingTitle(e.target.value)}
+                      aria-label="Edit chat title"
+                      autoFocus
+                      className="w-full border-gray-400 text-sm focus:border-gray-600 focus:ring-2 focus:ring-gray-600/20 dark:border-gray-500 dark:focus:border-gray-400 dark:focus:ring-gray-400/20"
                       onBlur={() => {
                         if (editingTitle.trim()) {
-                          renameThreadMutation({ threadId: thread._id, title: editingTitle.trim() });
+                          renameThreadMutation({
+                            threadId: thread._id,
+                            title: editingTitle.trim(),
+                          });
                         }
                         setEditingId(null);
                         setEditingTitle('');
                       }}
+                      onChange={(e) => setEditingTitle(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           if (editingTitle.trim()) {
-                            renameThreadMutation({ threadId: thread._id, title: editingTitle.trim() });
+                            renameThreadMutation({
+                              threadId: thread._id,
+                              title: editingTitle.trim(),
+                            });
                           }
                           setEditingId(null);
                           setEditingTitle('');
@@ -178,41 +198,39 @@ function ChatSidebar({
                           setEditingTitle('');
                         }
                       }}
-                      className="w-full text-sm border-gray-400 dark:border-gray-500 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-2 focus:ring-gray-600/20 dark:focus:ring-gray-400/20"
-                      autoFocus
-                      aria-label="Edit chat title"
+                      value={editingTitle}
                     />
                   ) : (
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                    <div className="truncate font-medium text-gray-900 text-sm dark:text-gray-100">
                       {thread.title || 'Untitled Chat'}
                     </div>
                   )}
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    aria-label={`Edit title of chat: ${thread.title || 'Untitled Chat'}`}
+                    className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditingId(thread._id);
                       setEditingTitle(thread.title || '');
                     }}
-                    className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                    aria-label={`Edit title of chat: ${thread.title || 'Untitled Chat'}`}
+                    size="sm"
+                    variant="ghost"
                   >
-                    <FiEdit2 className="h-3 w-3" aria-hidden="true" />
+                    <FiEdit2 aria-hidden="true" className="h-3 w-3" />
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    aria-label={`Archive chat: ${thread.title || 'Untitled Chat'}`}
+                    className="h-6 w-6 p-0 text-gray-500 hover:text-red-700 dark:text-gray-400 dark:hover:text-red-300"
                     onClick={(e) => {
                       e.stopPropagation();
                       archiveThreadMutation({ threadId: thread._id });
                     }}
-                    className="h-6 w-6 p-0 text-gray-500 hover:text-red-700 dark:text-gray-400 dark:hover:text-red-300"
-                    aria-label={`Archive chat: ${thread.title || 'Untitled Chat'}`}
+                    size="sm"
+                    variant="ghost"
                   >
-                    <FiTrash2 className="h-3 w-3" aria-hidden="true" />
+                    <FiTrash2 aria-hidden="true" className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
@@ -240,12 +258,12 @@ function ChatMessage({
 }) {
   // Use text field if content doesn't exist
   const messageText = message.content || message.text;
-  
+
   // Improved message distinction logic for Convex Agent system
   // The issue: In this system, ALL messages have agentName, so we need a different approach
   // We'll use a combination of factors to determine message type
   const isUser = message.message?.role === 'user';
-  
+
   const hasContext = message.contextUsed && message.contextUsed.length > 0;
 
   // Add safety check for message content
@@ -254,51 +272,74 @@ function ChatMessage({
   }
 
   return (
-    <article className={`group flex gap-4 mb-6 ${isUser ? 'justify-end' : 'justify-start'}`} aria-label={`${isUser ? 'User' : 'AI'} message`}>
-      <div className={`flex gap-3 max-w-[80%] ${isUser ? 'flex-row' : 'flex-row-reverse'}`}>
+    <article
+      aria-label={`${isUser ? 'User' : 'AI'} message`}
+      className={`group mb-6 flex gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}
+    >
+      <div
+        className={`flex max-w-[80%] gap-3 ${isUser ? 'flex-row' : 'flex-row-reverse'}`}
+      >
         {/* Avatar */}
-        <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-lg ${
-          isUser 
-            ? 'bg-gradient-to-br from-gray-500 to-gray-600 ring-2 ring-gray-200 dark:ring-gray-800' 
-            : 'bg-gradient-to-br from-gray-400 to-gray-500 ring-2 ring-gray-200 dark:ring-gray-800'
-        }`} aria-hidden="true">
-          {isUser ? <FiUser className="h-5 w-5" /> : <FiCpu className="h-5 w-5" />}
+        <div
+          aria-hidden="true"
+          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-medium text-sm text-white shadow-lg ${
+            isUser
+              ? 'bg-gradient-to-br from-gray-500 to-gray-600 ring-2 ring-gray-200 dark:ring-gray-800'
+              : 'bg-gradient-to-br from-gray-400 to-gray-500 ring-2 ring-gray-200 dark:ring-gray-800'
+          }`}
+        >
+          {isUser ? (
+            <FiUser className="h-5 w-5" />
+          ) : (
+            <FiCpu className="h-5 w-5" />
+          )}
         </div>
-        
+
         {/* Message Bubble */}
-        <div className={`relative rounded-2xl px-5 py-4 shadow-lg ${
-          isUser 
-            ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg shadow-gray-200 dark:shadow-gray-800 ring-2 ring-gray-300 dark:ring-gray-700' 
-            : 'bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900/10 border-2 border-gray-200 dark:border-gray-700 shadow-lg shadow-gray-100 dark:shadow-gray-900/20 ring-2 ring-gray-300 dark:ring-gray-700'
-        }`}>
+        <div
+          className={`relative rounded-2xl px-5 py-4 shadow-lg ${
+            isUser
+              ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-gray-200 shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700'
+              : 'border-2 border-gray-200 bg-gradient-to-br from-white to-gray-50 shadow-gray-100 shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700'
+          }`}
+        >
           {/* Message Header */}
-          <div className={`flex items-center gap-2 mb-2 ${
-            isUser ? 'text-gray-100' : 'text-gray-600 dark:text-gray-400'
-          }`}>
-            <span className="text-xs font-semibold uppercase tracking-wide">
+          <div
+            className={`mb-2 flex items-center gap-2 ${
+              isUser ? 'text-gray-100' : 'text-gray-600 dark:text-gray-400'
+            }`}
+          >
+            <span className="font-semibold text-xs uppercase tracking-wide">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {!isUser && (
               <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" aria-label="AI is online" />
+                <div
+                  aria-label="AI is online"
+                  className="h-2 w-2 animate-pulse rounded-full bg-green-400"
+                />
                 <span className="text-xs">Online</span>
               </div>
             )}
           </div>
-          
+
           {/* Message Content */}
-          <div className={`${isUser ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
-            <MessageText 
-              text={messageText} 
-              streaming={message.streaming}
+          <div
+            className={`${isUser ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}
+          >
+            <MessageText
               invert={isUser}
+              streaming={message.streaming}
+              text={messageText}
             />
           </div>
-          
+
           {/* AI Elements Actions - Show on hover */}
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <div className="flex items-center gap-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border border-gray-200 dark:border-gray-700">
+          <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
               <button
+                aria-label="Copy message to clipboard"
+                className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                 onClick={() => {
                   navigator.clipboard.writeText(messageText || '');
                   toast({
@@ -306,44 +347,44 @@ function ChatMessage({
                     description: 'Message copied to clipboard',
                   });
                 }}
-                className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                 title="Copy message"
-                aria-label="Copy message to clipboard"
               >
-                <FiCopy className="w-3.5 h-3.5" />
+                <FiCopy className="h-3.5 w-3.5" />
               </button>
-              
+
               {!isUser && (
                 <>
                   <button
+                    aria-label="Mark message as helpful"
+                    className="rounded p-1.5 text-gray-600 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-gray-400 dark:hover:bg-green-900/20"
                     onClick={() => {
                       toast({
                         title: 'Liked!',
                         description: 'Message marked as helpful',
                       });
                     }}
-                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
                     title="Like message"
-                    aria-label="Mark message as helpful"
                   >
-                    <FiThumbsUp className="w-3.5 h-3.5" />
+                    <FiThumbsUp className="h-3.5 w-3.5" />
                   </button>
-                  
+
                   <button
+                    aria-label="Mark message as unhelpful"
+                    className="rounded p-1.5 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
                     onClick={() => {
                       toast({
                         title: 'Disliked',
                         description: 'Message marked as unhelpful',
                       });
                     }}
-                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                     title="Dislike message"
-                    aria-label="Mark message as unhelpful"
                   >
-                    <FiThumbsDown className="w-3.5 h-3.5" />
+                    <FiThumbsDown className="h-3.5 w-3.5" />
                   </button>
-                  
+
                   <button
+                    aria-label="Regenerate AI response"
+                    className="rounded p-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20"
                     onClick={() => {
                       // Retry functionality - could regenerate AI response
                       toast({
@@ -351,17 +392,16 @@ function ChatMessage({
                         description: 'Regenerating response...',
                       });
                     }}
-                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
                     title="Retry response"
-                    aria-label="Regenerate AI response"
                   >
-                    <FiRotateCcw className="w-3.5 h-3.5" />
-
+                    <FiRotateCcw className="h-3.5 w-3.5" />
                   </button>
                 </>
               )}
-              
+
               <button
+                aria-label="Share message"
+                className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
                 onClick={() => {
                   // Share functionality
                   if (navigator.share) {
@@ -377,53 +417,66 @@ function ChatMessage({
                     });
                   }
                 }}
-                className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
                 title="Share message"
-                aria-label="Share message"
               >
-                <FiShare2 className="w-3.5 h-3.5" />
+                <FiShare2 className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
-          
+
           {/* Context Information */}
           {hasContext && message.contextUsed && (
-            <div className={`mt-4 pt-3 border-t ${
-              isUser 
-                ? 'border-gray-400/30' 
-                : 'border-gray-200 dark:border-gray-600'
-            }`}>
+            <div
+              className={`mt-4 border-t pt-3 ${
+                isUser
+                  ? 'border-gray-400/30'
+                  : 'border-gray-200 dark:border-gray-600'
+              }`}
+            >
               <button
-                onClick={() => toggleContextExpansion(message._id)}
-                className={`flex items-center gap-2 text-xs font-medium transition-colors ${
-                  isUser 
-                    ? 'text-gray-100 hover:text-white' 
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
-                aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
                 aria-expanded={expandedContexts.has(message._id)}
+                aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
+                className={`flex items-center gap-2 font-medium text-xs transition-colors ${
+                  isUser
+                    ? 'text-gray-100 hover:text-white'
+                    : 'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+                onClick={() => toggleContextExpansion(message._id)}
               >
-                <FiZap className="h-3 w-3" aria-hidden="true" />
+                <FiZap aria-hidden="true" className="h-3 w-3" />
                 Context Used ({message.contextUsed.length})
-                <span className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`} aria-hidden="true">
+                <span
+                  aria-hidden="true"
+                  className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
+                >
                   <FiChevronDown className="h-3 w-3" />
                 </span>
               </button>
-              
+
               {expandedContexts.has(message._id) && (
-                <div className="mt-3 space-y-2" role="region" aria-label="Context details">
+                <div
+                  aria-label="Context details"
+                  className="mt-3 space-y-2"
+                  role="region"
+                >
                   {message.contextUsed.map((context, index) => (
-                    <ContextResult key={index} context={context} isUser={isUser} />
+                    <ContextResult
+                      context={context}
+                      isUser={isUser}
+                      key={index}
+                    />
                   ))}
                 </div>
               )}
             </div>
           )}
-          
+
           {/* Message Timestamp */}
-          <div className={`text-xs mt-3 ${
-            isUser ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'
-          }`}>
+          <div
+            className={`mt-3 text-xs ${
+              isUser ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'
+            }`}
+          >
             {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
           </div>
         </div>
@@ -434,23 +487,31 @@ function ChatMessage({
 
 function ContextResult({ context, isUser }: { context: any; isUser: boolean }) {
   return (
-    <div className={`rounded-lg p-3 border ${
-      isUser 
-        ? 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700' 
-        : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700'
-    }`} role="region" aria-label="Context information">
-      <div className={`text-xs font-medium mb-1 ${
-        isUser 
-          ? 'text-gray-700 dark:text-gray-300' 
-          : 'text-gray-700 dark:text-gray-300'
-      }`}>
+    <div
+      aria-label="Context information"
+      className={`rounded-lg border p-3 ${
+        isUser
+          ? 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/20'
+          : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/20'
+      }`}
+      role="region"
+    >
+      <div
+        className={`mb-1 font-medium text-xs ${
+          isUser
+            ? 'text-gray-700 dark:text-gray-300'
+            : 'text-gray-700 dark:text-gray-300'
+        }`}
+      >
         {context.key || 'Context'}
       </div>
-      <div className={`text-xs leading-relaxed ${
-        isUser 
-          ? 'text-gray-600 dark:text-gray-400' 
-          : 'text-gray-600 dark:text-gray-400'
-      }`}>
+      <div
+        className={`text-xs leading-relaxed ${
+          isUser
+            ? 'text-gray-600 dark:text-gray-400'
+            : 'text-gray-600 dark:text-gray-400'
+        }`}
+      >
         {context.text}
       </div>
     </div>
@@ -545,44 +606,57 @@ function MainChatArea({
   return (
     <main className="flex h-full min-h-0 flex-1 flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Page Title - Accessibility H1 */}
-      <h1 className="sr-only">RAG Chat - AI-Powered Contextual Conversations</h1>
-      
+      <h1 className="sr-only">
+        RAG Chat - AI-Powered Contextual Conversations
+      </h1>
+
       {/* Mobile Header */}
-      <header className="lg:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 p-4 flex items-center justify-between shadow-sm">
+      <header className="flex items-center justify-between border-gray-200/50 border-b bg-white/95 p-4 shadow-sm backdrop-blur-md lg:hidden dark:border-gray-700/50 dark:bg-gray-900/95">
         <div className="flex items-center gap-3">
           <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log('Mobile toggle left sidebar, current state:', showLeftSidebar);
-              setShowLeftSidebar(!showLeftSidebar);
-            }}
+            aria-label={
+              showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
+            }
             className={`p-2 transition-colors ${
-              showLeftSidebar 
-                ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' 
+              showLeftSidebar
+                ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
                 : 'hover:bg-gray-100 dark:hover:bg-gray-800'
             }`}
+            onClick={() => {
+              console.log(
+                'Mobile toggle left sidebar, current state:',
+                showLeftSidebar
+              );
+              setShowLeftSidebar(!showLeftSidebar);
+            }}
+            size="sm"
             title={showLeftSidebar ? 'Hide sidebar' : 'Show sidebar'}
-            aria-label={showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'}
+            variant="ghost"
           >
-            <FiMenu className="h-5 w-5" aria-hidden="true" />
+            <FiMenu aria-hidden="true" className="h-5 w-5" />
           </Button>
-          <span className="font-semibold text-gray-900 dark:text-gray-100 text-lg">RAG Chat</span>
+          <span className="font-semibold text-gray-900 text-lg dark:text-gray-100">
+            RAG Chat
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowContextPanel(!showContextPanel)}
+            aria-label={
+              showContextPanel ? 'Hide context panel' : 'Show context panel'
+            }
             className={`p-2 transition-colors ${
-              showContextPanel 
-                ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' 
+              showContextPanel
+                ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
                 : 'hover:bg-gray-100 dark:hover:bg-gray-800'
             }`}
-            title={showContextPanel ? 'Hide context panel' : 'Show context panel'}
-            aria-label={showContextPanel ? 'Hide context panel' : 'Show context panel'}
+            onClick={() => setShowContextPanel(!showContextPanel)}
+            size="sm"
+            title={
+              showContextPanel ? 'Hide context panel' : 'Show context panel'
+            }
+            variant="ghost"
           >
-            <FiSidebar className="h-5 w-5" aria-hidden="true" />
+            <FiSidebar aria-hidden="true" className="h-5 w-5" />
           </Button>
           <ThemeToggle />
         </div>
@@ -591,29 +665,38 @@ function MainChatArea({
       {/* Chat Messages Area - Mobile First */}
       <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
         {listMessages.results && listMessages.results.length > 0 ? (
-          <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+          <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
             {listMessages.results.map((message) => (
               <ChatMessage
+                expandedContexts={expandedContexts}
                 key={message._id}
                 message={message}
-                expandedContexts={expandedContexts}
                 toggleContextExpansion={toggleContextExpansion}
               />
             ))}
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full px-4" role="region" aria-label="Empty chat state">
+          <div
+            aria-label="Empty chat state"
+            className="flex h-full items-center justify-center px-4"
+            role="region"
+          >
             <div className="text-center">
-              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 mx-auto mb-4 flex items-center justify-center shadow-lg" aria-hidden="true">
-                <FiStar className="h-8 w-8 sm:h-10 sm:w-10 text-gray-600 dark:text-gray-400" />
+              <div
+                aria-hidden="true"
+                className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg sm:h-20 sm:w-20 dark:from-gray-800 dark:to-gray-700"
+              >
+                <FiStar className="h-8 w-8 text-gray-600 sm:h-10 sm:w-10 dark:text-gray-400" />
               </div>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h2 className="mb-2 font-semibold text-gray-900 text-lg sm:text-xl dark:text-gray-100">
                 Start a conversation
               </h2>
-              <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm sm:text-base max-w-sm mx-auto">
+              <p className="mx-auto mb-4 max-w-sm text-gray-700 text-sm sm:text-base dark:text-gray-300">
                 Ask questions and get AI-powered responses using your context
               </p>
               <Button
+                aria-label="Start a new chat conversation"
+                className="h-auto bg-gradient-to-r from-gray-600 to-gray-700 px-6 py-3 font-medium text-base text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
                 onClick={() => {
                   if (!threadId) {
                     createThread({ title: 'New Chat' }).then((id) => {
@@ -622,10 +705,8 @@ function MainChatArea({
                     });
                   }
                 }}
-                className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg px-6 py-3 h-auto text-base font-medium"
-                aria-label="Start a new chat conversation"
               >
-                <FiPlus className="h-4 w-4 mr-2" aria-hidden="true" />
+                <FiPlus aria-hidden="true" className="mr-2 h-4 w-4" />
                 Start New Chat
               </Button>
             </div>
@@ -634,39 +715,40 @@ function MainChatArea({
       </div>
 
       {/* Chat Input Area - Minimal Design */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="border-gray-200 border-t bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+        <div className="mx-auto max-w-4xl">
           <form
+            aria-label="Chat message form"
             className="flex items-center gap-0"
             onSubmit={(e) => {
               e.preventDefault();
               onSendClicked();
             }}
-            aria-label="Chat message form"
           >
             <div className="flex-1">
-              <label htmlFor="chat-input" className="sr-only">
+              <label className="sr-only" htmlFor="chat-input">
                 Type your message here
               </label>
               <Input
-                className="w-full border-0 focus:ring-0 focus:border-0 rounded-l-xl h-12 text-base bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                aria-describedby="chat-input-help"
+                className="h-12 w-full rounded-l-xl border-0 bg-transparent text-base text-gray-900 placeholder-gray-500 focus:border-0 focus:ring-0 dark:text-gray-100 dark:placeholder-gray-400"
                 id="chat-input"
-                value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Ask anything from the lectures..."
-                aria-describedby="chat-input-help"
+                value={prompt}
               />
-              <div id="chat-input-help" className="sr-only">
-                Type your question or message here. The AI will respond using the context you've provided.
+              <div className="sr-only" id="chat-input-help">
+                Type your question or message here. The AI will respond using
+                the context you've provided.
               </div>
             </div>
-            <Button 
-              type="submit" 
-              disabled={!prompt.trim() || !threadId}
-              className="bg-gray-800 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-6 h-12 rounded-r-xl border-l-0 shadow-none"
+            <Button
               aria-label="Send message"
+              className="h-12 rounded-r-xl border-l-0 bg-gray-800 px-6 text-white shadow-none hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600"
+              disabled={!(prompt.trim() && threadId)}
+              type="submit"
             >
-              <FiSend className="h-4 w-4" aria-hidden="true" />
+              <FiSend aria-hidden="true" className="h-4 w-4" />
             </Button>
           </form>
         </div>
@@ -699,20 +781,23 @@ function EntryChunksPanel({
   }
 
   return (
-    <aside className="hidden xl:flex fixed inset-y-0 right-[20rem] left-[16rem] z-30 flex-col bg-white/95 dark:bg-gray-900/95 shadow-xl backdrop-blur-md border-l border-gray-200/50 dark:border-gray-700/50" aria-label="Entry chunks panel">
-      <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50">
+    <aside
+      aria-label="Entry chunks panel"
+      className="fixed inset-y-0 right-[20rem] left-[16rem] z-30 hidden flex-col border-gray-200/50 border-l bg-white/95 shadow-xl backdrop-blur-md xl:flex dark:border-gray-700/50 dark:bg-gray-900/95"
+    >
+      <div className="border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+          <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
             Entry Chunks
           </h2>
           <button
+            aria-label="Close entry chunks panel"
             className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             onClick={() => setSelectedEntry(null)}
             title="Close chunks panel"
             type="button"
-            aria-label="Close entry chunks panel"
           >
-            <FiX className="h-4 w-4" aria-hidden="true" />
+            <FiX aria-hidden="true" className="h-4 w-4" />
           </button>
         </div>
         <p className="mt-1 text-gray-700 text-sm dark:text-gray-300">
@@ -740,10 +825,10 @@ function EntryChunksPanel({
             ))}
             {documentChunks.status === 'CanLoadMore' && (
               <button
+                aria-label="Load more document chunks"
                 className="w-full rounded-lg border border-gray-400 py-3 font-medium text-gray-700 text-sm transition hover:bg-gray-50 hover:text-gray-800 dark:border-gray-500 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                 onClick={() => documentChunks.loadMore(10)}
                 type="button"
-                aria-label="Load more document chunks"
               >
                 Load More Chunks
               </button>
@@ -754,7 +839,10 @@ function EntryChunksPanel({
             <div className="text-center text-gray-600 dark:text-gray-300">
               {documentChunks.status === 'LoadingFirstPage' ? (
                 <>
-                  <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-gray-500 border-b-2" aria-label="Loading chunks" />
+                  <div
+                    aria-label="Loading chunks"
+                    className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-gray-500 border-b-2"
+                  />
                   <p>Loading chunks...</p>
                 </>
               ) : (
@@ -782,56 +870,80 @@ function AddContextForm({
   isAddingContext: boolean;
 }) {
   return (
-    <section className="border-b border-gray-200/50 dark:border-gray-700/50 p-4" aria-label="Add new context form">
+    <section
+      aria-label="Add new context form"
+      className="border-gray-200/50 border-b p-4 dark:border-gray-700/50"
+    >
       <h3 className="mb-3 font-medium text-gray-900 dark:text-gray-100">
         Add New Context
       </h3>
-      <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); handleAddContext(); }}>
+      <form
+        className="space-y-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleAddContext();
+        }}
+      >
         <div>
-          <label htmlFor="context-key" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            className="mb-1 block font-medium text-gray-700 text-sm dark:text-gray-300"
+            htmlFor="context-key"
+          >
             Key
           </label>
           <Input
+            aria-describedby="context-key-help"
+            className="w-full border-gray-400 focus:border-gray-600 focus:ring-2 focus:ring-gray-600/20 dark:border-gray-500 dark:focus:border-gray-400 dark:focus:ring-gray-400/20"
             id="context-key"
-            value={addContextForm.key}
             onChange={(e) =>
               setAddContextForm((prev) => ({ ...prev, key: e.target.value }))
             }
             placeholder="Enter context key..."
-            className="w-full border-gray-400 dark:border-gray-500 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-2 focus:ring-gray-600/20 dark:focus:ring-gray-400/20"
-            aria-describedby="context-key-help"
+            value={addContextForm.key}
           />
-          <div id="context-key-help" className="sr-only">
+          <div className="sr-only" id="context-key-help">
             Enter a descriptive key for your context entry
           </div>
         </div>
         <div>
-          <label htmlFor="context-text" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            className="mb-1 block font-medium text-gray-700 text-sm dark:text-gray-300"
+            htmlFor="context-text"
+          >
             Text
           </label>
           <textarea
+            aria-describedby="context-text-help"
+            className="h-24 w-full resize-none rounded-md border border-gray-400 bg-white px-3 py-2 text-gray-900 text-sm placeholder-gray-500 focus:border-gray-600 focus:ring-2 focus:ring-gray-600/20 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:border-gray-400 dark:focus:ring-gray-400/20"
             id="context-text"
-            value={addContextForm.text}
             onChange={(e) =>
               setAddContextForm((prev) => ({ ...prev, text: e.target.value }))
             }
             placeholder="Enter context text..."
-            className="w-full h-24 resize-none rounded-md border border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-2 focus:ring-gray-600/20 dark:focus:ring-gray-400/20"
-            aria-describedby="context-text-help"
+            value={addContextForm.text}
           />
-          <div id="context-text-help" className="sr-only">
-            Enter the context information that the AI will use to answer questions
+          <div className="sr-only" id="context-text-help">
+            Enter the context information that the AI will use to answer
+            questions
           </div>
         </div>
         <Button
+          aria-label={
+            isAddingContext ? 'Adding context...' : 'Add context entry'
+          }
+          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800"
+          disabled={
+            !(addContextForm.key.trim() && addContextForm.text.trim()) ||
+            isAddingContext
+          }
           type="submit"
-          disabled={!addContextForm.key.trim() || !addContextForm.text.trim() || isAddingContext}
-          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white"
-          aria-label={isAddingContext ? "Adding context..." : "Add context entry"}
         >
           {isAddingContext ? (
             <>
-              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" aria-label="Loading" />
+              <div
+                aria-label="Loading"
+                className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+              />
               Adding...
             </>
           ) : (
@@ -880,19 +992,22 @@ function ContextPanel({
   }
 
   return (
-    <aside className="fixed inset-y-0 right-0 z-40 flex w-80 flex-col bg-white/95 dark:bg-gray-900/95 shadow-xl backdrop-blur-md border-l border-gray-200/50 dark:border-gray-700/50 lg:relative lg:z-auto" aria-label="Context panel">
-      <div className="flex items-center justify-between p-4 border-b border-gray-200/50 dark:border-gray-700/50">
-        <h2 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+    <aside
+      aria-label="Context panel"
+      className="fixed inset-y-0 right-0 z-40 flex w-80 flex-col border-gray-200/50 border-l bg-white/95 shadow-xl backdrop-blur-md lg:relative lg:z-auto dark:border-gray-700/50 dark:bg-gray-900/95"
+    >
+      <div className="flex items-center justify-between border-gray-200/50 border-b p-4 dark:border-gray-700/50">
+        <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
           Add Context
         </h2>
         <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setShowContextPanel(false)}
-          className="lg:hidden p-2"
           aria-label="Close context panel"
+          className="p-2 lg:hidden"
+          onClick={() => setShowContextPanel(false)}
+          size="sm"
+          variant="ghost"
         >
-          <FiX className="h-4 w-4" aria-hidden="true" />
+          <FiX aria-hidden="true" className="h-4 w-4" />
         </Button>
       </div>
       <AddContextForm
@@ -909,16 +1024,16 @@ function ContextPanel({
           <div className="space-y-2">
             {globalDocuments.results?.map((entry) => (
               <button
-                className={`cursor-pointer rounded-md p-3 shadow-sm transition-colors w-full text-left ${
-                  selectedEntry === entry.entryId 
-                    ? 'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600' 
-                    : 'bg-gray-50 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 dark:hover:border-gray-600'
+                aria-label={`Select context entry: ${entry.title || entry.key}`}
+                aria-pressed={selectedEntry === entry.entryId}
+                className={`w-full cursor-pointer rounded-md p-3 text-left shadow-sm transition-colors ${
+                  selectedEntry === entry.entryId
+                    ? 'border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800'
+                    : 'border border-transparent bg-gray-50 hover:border-gray-200 hover:bg-gray-100 dark:bg-gray-900 dark:hover:border-gray-600 dark:hover:bg-gray-800'
                 }`}
                 key={entry.entryId}
                 onClick={() => setSelectedEntry(entry.entryId)}
                 type="button"
-                aria-label={`Select context entry: ${entry.title || entry.key}`}
-                aria-pressed={selectedEntry === entry.entryId}
               >
                 <div className="truncate font-medium text-gray-900 text-sm dark:text-gray-100">
                   {entry.title || entry.key}
@@ -953,13 +1068,15 @@ function RagBasicUI() {
       return;
     }
     console.log('Creating new thread...');
-    createThread({ title: 'RAG Thread' }).then((id) => {
-      console.log('New thread created:', id);
-      setThreadId(id);
-      navigate(`/${id}`, { replace: true });
-    }).catch((error) => {
-      console.error('Failed to create thread:', error);
-    });
+    createThread({ title: 'RAG Thread' })
+      .then((id) => {
+        console.log('New thread created:', id);
+        setThreadId(id);
+        navigate(`/${id}`, { replace: true });
+      })
+      .catch((error) => {
+        console.error('Failed to create thread:', error);
+      });
   }, [createThread, threadId, navigate]);
 
   // Error state
@@ -983,7 +1100,8 @@ function RagBasicUI() {
   // Auto-collapse context panel on small screens
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) { // lg breakpoint
+      if (window.innerWidth < 1024) {
+        // lg breakpoint
         console.log('Resize: Mobile detected, collapsing panels');
         setShowContextPanel(false);
         setShowLeftSidebar(false); // Also collapse left sidebar on mobile
@@ -999,7 +1117,7 @@ function RagBasicUI() {
 
     // Add event listener
     window.addEventListener('resize', handleResize);
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -1011,16 +1129,16 @@ function RagBasicUI() {
   ).withOptimisticUpdate(
     optimisticallySendMessage(api.rag.utils.listMessagesWithContext)
   );
-  
+
   // Debug threadId
   console.log('Current threadId:', threadId);
-  
+
   const listMessages = useThreadMessages(
     api.rag.utils.listMessagesWithContext,
     threadId ? { threadId } : 'skip',
     { initialNumItems: 10, stream: true }
   );
-  
+
   // Debug listMessages
   console.log('listMessages status:', listMessages.status);
   console.log('listMessages results:', listMessages.results);
@@ -1039,7 +1157,7 @@ function RagBasicUI() {
     {},
     { initialNumItems: 30 }
   );
-  
+
   // Debug threads
   console.log('Threads status:', threads.status);
   console.log('Threads results:', threads.results);
@@ -1048,7 +1166,7 @@ function RagBasicUI() {
   const activeThreads = (threads.results ?? []).filter(
     (t) => t.status === 'active'
   );
-  
+
   console.log('Filtered active threads:', activeThreads);
   const renameThreadMutation = useMutation(api.threads.renameThread);
   const archiveThreadMutation = useMutation(api.threads.archiveThread);
@@ -1085,8 +1203,13 @@ function RagBasicUI() {
 
   // Handle sending messages
   const onSendClicked = useCallback(async () => {
-    if (!prompt.trim() || !threadId) {
-      console.log('Cannot send message - prompt:', prompt.trim(), 'threadId:', threadId);
+    if (!(prompt.trim() && threadId)) {
+      console.log(
+        'Cannot send message - prompt:',
+        prompt.trim(),
+        'threadId:',
+        threadId
+      );
       return;
     }
     console.log('Sending message:', prompt.trim(), 'to thread:', threadId);
@@ -1117,7 +1240,11 @@ function RagBasicUI() {
   }, []);
 
   return (
-    <div className="flex h-full flex-col" role="main" aria-label="RAG Chat Application">
+    <div
+      aria-label="RAG Chat Application"
+      className="flex h-full flex-col"
+      role="main"
+    >
       <div className="relative flex h-full min-h-0 flex-1 flex-row bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <ChatSidebar
           activeThreads={activeThreads}
@@ -1128,10 +1255,10 @@ function RagBasicUI() {
           renameThreadMutation={renameThreadMutation}
           setEditingId={setEditingId}
           setEditingTitle={setEditingTitle}
-          setThreadId={setThreadId}
-          threadId={threadId}
-          showLeftSidebar={showLeftSidebar}
           setShowLeftSidebar={setShowLeftSidebar}
+          setThreadId={setThreadId}
+          showLeftSidebar={showLeftSidebar}
+          threadId={threadId}
         />
 
         <MainChatArea
@@ -1143,13 +1270,13 @@ function RagBasicUI() {
           onSendClicked={onSendClicked}
           prompt={prompt}
           setPrompt={setPrompt}
+          setShowContextPanel={setShowContextPanel}
+          setShowLeftSidebar={setShowLeftSidebar}
           setThreadId={setThreadId}
+          showContextPanel={showContextPanel}
+          showLeftSidebar={showLeftSidebar}
           threadId={threadId}
           toggleContextExpansion={toggleContextExpansion}
-          showContextPanel={showContextPanel}
-          setShowContextPanel={setShowContextPanel}
-          showLeftSidebar={showLeftSidebar}
-          setShowLeftSidebar={setShowLeftSidebar}
         />
 
         <EntryChunksPanel
@@ -1173,14 +1300,14 @@ function RagBasicUI() {
           selectedEntry={selectedEntry}
           setAddContextForm={setAddContextForm}
           setSelectedEntry={setSelectedEntry}
-          showContextPanel={showContextPanel}
           setShowContextPanel={setShowContextPanel}
+          showContextPanel={showContextPanel}
         />
 
         <div
+          aria-label="Main controls"
           className={`fixed top-3 z-[60] flex items-center gap-2 ${showContextPanel ? 'right-[21rem]' : 'right-3'}`}
           role="toolbar"
-          aria-label="Main controls"
         >
           <Button
             aria-label={
@@ -1188,7 +1315,10 @@ function RagBasicUI() {
             }
             className="shadow"
             onClick={() => {
-              console.log('Toggling left sidebar, current state:', showLeftSidebar);
+              console.log(
+                'Toggling left sidebar, current state:',
+                showLeftSidebar
+              );
               setShowLeftSidebar(!showLeftSidebar);
             }}
             size="icon"
@@ -1196,7 +1326,7 @@ function RagBasicUI() {
             type="button"
             variant="secondary"
           >
-            <FiMenu className="h-4 w-4" aria-hidden="true" />
+            <FiMenu aria-hidden="true" className="h-4 w-4" />
           </Button>
           <Button
             aria-label={
@@ -1209,13 +1339,17 @@ function RagBasicUI() {
             type="button"
             variant="secondary"
           >
-            <FiSidebar className="h-4 w-4" aria-hidden="true" />
+            <FiSidebar aria-hidden="true" className="h-4 w-4" />
           </Button>
           <ThemeToggle className="shadow" />
         </div>
       </div>
       {error && (
-        <div className="text-center text-red-600 dark:text-red-400 p-4" role="alert" aria-live="polite">
+        <div
+          aria-live="polite"
+          className="p-4 text-center text-red-600 dark:text-red-400"
+          role="alert"
+        >
           {error.message}
         </div>
       )}
@@ -1234,9 +1368,11 @@ function MessageText({
 }) {
   // Add safety check for text
   if (!text) {
-    return <div className="text-gray-400 dark:text-gray-500 italic">No content</div>;
+    return (
+      <div className="text-gray-400 italic dark:text-gray-500">No content</div>
+    );
   }
-  
+
   const [smoothText] = useSmoothText(text, { startStreaming: streaming });
   return <Markdown invert={invert}>{smoothText}</Markdown>;
 }

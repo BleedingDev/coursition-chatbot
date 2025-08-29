@@ -1,5 +1,15 @@
 'use client';
 
+import type { ToolUIPart } from 'ai';
+import type { ComponentProps, ReactNode } from 'react';
+import {
+  IoCheckmarkCircle,
+  IoChevronDown,
+  IoCloseCircle,
+  IoConstruct,
+  IoEllipse,
+  IoTime,
+} from 'react-icons/io5';
 import { Badge } from '@/components/ui/badge';
 import {
   Collapsible,
@@ -7,16 +17,6 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import type { ToolUIPart } from 'ai';
-import {
-  CheckCircleIcon,
-  ChevronDownIcon,
-  CircleIcon,
-  ClockIcon,
-  WrenchIcon,
-  XCircleIcon,
-} from 'lucide-react';
-import type { ComponentProps, ReactNode } from 'react';
 import { CodeBlock } from './code-block';
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
@@ -43,10 +43,10 @@ const getStatusBadge = (status: ToolUIPart['state']) => {
   } as const;
 
   const icons = {
-    'input-streaming': <CircleIcon className="size-4" />,
-    'input-available': <ClockIcon className="size-4 animate-pulse" />,
-    'output-available': <CheckCircleIcon className="size-4 text-green-600" />,
-    'output-error': <XCircleIcon className="size-4 text-red-600" />,
+    'input-streaming': <IoEllipse className="size-4" />,
+    'input-available': <IoTime className="size-4 animate-pulse" />,
+    'output-available': <IoCheckmarkCircle className="size-4 text-green-600" />,
+    'output-error': <IoCloseCircle className="size-4 text-red-600" />,
   } as const;
 
   return (
@@ -71,11 +71,11 @@ export const ToolHeader = ({
     {...props}
   >
     <div className="flex items-center gap-2">
-      <WrenchIcon className="size-4 text-muted-foreground" />
+      <IoConstruct className="size-4 text-muted-foreground" />
       <span className="font-medium text-sm">{type}</span>
       {getStatusBadge(state)}
     </div>
-    <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+    <IoChevronDown className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
   </CollapsibleTrigger>
 );
 

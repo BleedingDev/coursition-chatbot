@@ -1,15 +1,15 @@
 'use client';
 
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import type { ComponentProps } from 'react';
+import { createContext, memo, useContext, useEffect, useState } from 'react';
+import { IoBrain, IoChevronDown } from 'react-icons/io5';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { BrainIcon, ChevronDownIcon } from 'lucide-react';
-import type { ComponentProps } from 'react';
-import { createContext, memo, useContext, useEffect, useState } from 'react';
 import { Response } from './response';
 
 type ReasoningContextValue = {
@@ -79,14 +79,14 @@ export const Reasoning = memo(
     // Auto-open when streaming starts, auto-close when streaming ends (once only)
     useEffect(() => {
       if (defaultOpen && !isStreaming && isOpen && !hasAutoClosedRef) {
-          // Add a small delay before closing to allow user to see the content
-          const timer = setTimeout(() => {
-            setIsOpen(false);
-            setHasAutoClosedRef(true);
-          }, AUTO_CLOSE_DELAY);
+        // Add a small delay before closing to allow user to see the content
+        const timer = setTimeout(() => {
+          setIsOpen(false);
+          setHasAutoClosedRef(true);
+        }, AUTO_CLOSE_DELAY);
 
-          return () => clearTimeout(timer);
-        }
+        return () => clearTimeout(timer);
+      }
     }, [isStreaming, isOpen, defaultOpen, setIsOpen, hasAutoClosedRef]);
 
     const handleOpenChange = (newOpen: boolean) => {
@@ -126,13 +126,13 @@ export const ReasoningTrigger = memo(
       >
         {children ?? (
           <>
-            <BrainIcon className="size-4" />
+            <IoBrain className="size-4" />
             {isStreaming || duration === 0 ? (
               <p>Thinking...</p>
             ) : (
               <p>Thought for {duration} seconds</p>
             )}
-            <ChevronDownIcon
+            <IoChevronDown
               className={cn(
                 'size-4 text-muted-foreground transition-transform',
                 isOpen ? 'rotate-180' : 'rotate-0'

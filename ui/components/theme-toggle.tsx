@@ -1,5 +1,5 @@
-import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { IoMoon, IoSunny } from 'react-icons/io5';
 import { Button } from '@/components/ui/button';
 
 function getInitialTheme(): 'light' | 'dark' {
@@ -39,9 +39,9 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       variant="secondary"
     >
       {theme === 'dark' ? (
-        <Sun className="h-4 w-4" />
+        <IoSunny className="h-4 w-4" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <IoMoon className="h-4 w-4" />
       )}
     </Button>
   );

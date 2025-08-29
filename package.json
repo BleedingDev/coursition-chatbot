@@ -42,7 +42,6 @@
     "convex": "^1.26.1",
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^8.6.0",
-    "lucide-react": "^0.487.0",
     "ollama-ai-provider": "^1.2.0",
     "openai": "^5.9.0",
     "radix-ui": "1.4.3",

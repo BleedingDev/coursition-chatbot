@@ -1,11 +1,11 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import type { UIMessage } from 'ai';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import type { ComponentProps, HTMLAttributes, ReactElement } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type BranchContextType = {
   currentBranch: number;
@@ -158,7 +158,7 @@ export const BranchPrevious = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronLeftIcon size={14} />}
+      {children ?? <IoChevronBack size={14} />}
     </Button>
   );
 };
@@ -188,7 +188,7 @@ export const BranchNext = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronRightIcon size={14} />}
+      {children ?? <IoChevronForward size={14} />}
     </Button>
   );
 };
