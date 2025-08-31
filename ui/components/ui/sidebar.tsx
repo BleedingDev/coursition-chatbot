@@ -68,7 +68,7 @@ export function SidebarRail({ className = '' }: { className?: string }) {
     <div className={`pointer-events-none ${className}`}>
       <Button
         aria-label={open ? 'Hide sidebar' : 'Show sidebar'}
-        className={`pointer-events-auto fixed ${open ? 'left-[17rem]' : 'left-3'} top-3 z-[60] rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-purple-50 hover:border-purple-300 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:bg-purple-900/20 dark:hover:border-purple-400 dark:hover:shadow-purple-900/20`}
+        className={`pointer-events-auto fixed ${open ? 'left-[17rem]' : 'left-3'} top-3 z-[60] rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20`}
         onClick={toggleSidebar}
         size="icon"
         title={open ? 'Hide sidebar' : 'Show sidebar'}

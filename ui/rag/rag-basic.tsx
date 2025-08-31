@@ -7,13 +7,10 @@ import type { EntryId } from '@convex-dev/rag';
 import { useAction, useMutation, usePaginatedQuery } from 'convex/react';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  FiCheck,
   FiChevronDown,
-  FiChevronUp,
   FiCopy,
   FiCpu,
   FiEdit2,
-  FiFileText,
   FiMenu,
   FiMessageCircle,
   FiPlus,
@@ -24,7 +21,6 @@ import {
   FiThumbsDown,
   FiThumbsUp,
   FiTrash2,
-  FiTrendingUp,
   FiUser,
   FiX,
   FiZap,
@@ -35,15 +31,8 @@ import { api } from '../../convex/_generated/api';
 import { Markdown } from '../components/markdown';
 import { ThemeToggle } from '../components/theme-toggle';
 import { Button } from '../components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Sidebar, SidebarProvider } from '../components/ui/sidebar';
-import { Textarea } from '../components/ui/textarea';
+import { SidebarProvider } from '../components/ui/sidebar';
 import { toast } from '../hooks/use-toast';
 
 type ThreadItem = {
@@ -279,24 +268,28 @@ function ChatMessage({
     // - Short and simple (like "Hello", "Hi")
     // - Questions or prompts
     // - Single sentences or phrases
-    
+
     // AI responses are typically:
     // - Longer and more detailed
     // - Explanatory content
     // - Multiple sentences
-    
+
     const text = messageText || '';
     const isShortMessage = text.length <= 30; // Reduced threshold for better accuracy
-    const isSimpleGreeting = /^(hi|hello|hey|thanks?|thank you|ok|okay|yes|no)$/i.test(text.trim());
+    const isSimpleGreeting =
+      /^(hi|hello|hey|thanks?|thank you|ok|okay|yes|no)$/i.test(text.trim());
     const isQuestion = text.includes('?');
     const isLongResponse = text.length > 80; // Reduced threshold for better accuracy
     const hasMultipleSentences = (text.match(/[.!?]/g) || []).length > 1;
-    const isExplanatory = text.includes('In the context of') || text.includes('we use it to') || text.includes('You form it using');
+    const isExplanatory =
+      text.includes('In the context of') ||
+      text.includes('we use it to') ||
+      text.includes('You form it using');
 
     // If it's a short message, simple greeting, or question, it's likely from user
     if (isShortMessage || isSimpleGreeting || isQuestion) {
       isUser = true;
-    } 
+    }
     // If it's a long response with multiple sentences or explanatory content, it's likely from AI
     else if (isLongResponse || hasMultipleSentences || isExplanatory) {
       isUser = false;
@@ -306,7 +299,7 @@ function ChatMessage({
       isUser = true;
     }
   }
-  
+
   const hasContext = message.contextUsed && message.contextUsed.length > 0;
 
   // Add safety check for message content
@@ -315,32 +308,37 @@ function ChatMessage({
   }
 
   return (
-    <article className={`group flex gap-4 mb-6 ${isUser ? 'justify-end' : 'justify-start'}`} aria-label={`${isUser ? 'User' : 'AI'} message`}>
+    <article
+      aria-label={`${isUser ? 'User' : 'AI'} message`}
+      className={`group mb-6 flex gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}
+    >
       {isUser ? (
         <>
           {/* User Message: Message on left, Avatar on right */}
           {/* Message Bubble */}
-          <div className="relative rounded-2xl px-5 py-4 shadow-lg max-w-[80%] bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg shadow-gray-200 dark:shadow-gray-800 ring-2 ring-gray-300 dark:ring-gray-700">
+          <div className="relative max-w-[80%] rounded-2xl bg-gradient-to-r from-gray-600 to-gray-700 px-5 py-4 text-white shadow-gray-200 shadow-lg shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700">
             {/* Message Header */}
-            <div className="flex items-center gap-2 mb-2 text-gray-100">
-              <span className="text-xs font-semibold uppercase tracking-wide">
+            <div className="mb-2 flex items-center gap-2 text-gray-100">
+              <span className="font-semibold text-xs uppercase tracking-wide">
                 You
               </span>
             </div>
-            
+
             {/* Message Content */}
             <div className="text-white">
-              <MessageText 
-                text={messageText} 
-                streaming={message.streaming}
+              <MessageText
                 invert={isUser}
+                streaming={message.streaming}
+                text={messageText}
               />
             </div>
-            
+
             {/* Message Actions - Show on hover */}
-            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <div className="flex items-center gap-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
                 <button
+                  aria-label="Copy message to clipboard"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                   onClick={() => {
                     navigator.clipboard.writeText(messageText || '');
                     toast({
@@ -348,14 +346,15 @@ function ChatMessage({
                       description: 'Message copied to clipboard',
                     });
                   }}
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                  aria-label="Copy message to clipboard"
                   title="Copy message"
+                  type="button"
                 >
                   <FiCopy className="h-3.5 w-3.5" />
                 </button>
 
                 <button
+                  aria-label="Share message"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
                   onClick={() => {
                     // Share functionality
                     if (navigator.share) {
@@ -371,9 +370,8 @@ function ChatMessage({
                       });
                     }
                   }}
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
-                  aria-label="Share message"
                   title="Share message"
+                  type="button"
                 >
                   <FiShare2 className="h-3.5 w-3.5" />
                 </button>
@@ -382,12 +380,13 @@ function ChatMessage({
 
             {/* Context Information */}
             {hasContext && message.contextUsed && (
-              <div className="mt-4 border-t pt-3 border-gray-400/30">
+              <div className="mt-4 border-gray-400/30 border-t pt-3">
                 <button
                   aria-expanded={expandedContexts.has(message._id)}
                   aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
-                  className="flex items-center gap-2 font-medium text-xs transition-colors text-gray-100 hover:text-white"
+                  className="flex items-center gap-2 font-medium text-gray-100 text-xs transition-colors hover:text-white"
                   onClick={() => toggleContextExpansion(message._id)}
+                  type="button"
                 >
                   <FiZap aria-hidden="true" className="h-3 w-3" />
                   Context Used ({message.contextUsed.length})
@@ -400,10 +399,9 @@ function ChatMessage({
                 </button>
 
                 {expandedContexts.has(message._id) && (
-                  <div
+                  <section
                     aria-label="Context details"
                     className="mt-3 space-y-2"
-                    role="region"
                   >
                     {message.contextUsed.map((context, index) => (
                       <ContextResult
@@ -412,19 +410,24 @@ function ChatMessage({
                         key={index}
                       />
                     ))}
-                  </div>
+                  </section>
                 )}
               </div>
             )}
 
             {/* Message Timestamp */}
-            <div className="mt-3 text-xs text-gray-200">
-              {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
+            <div className="mt-3 text-gray-200 text-xs">
+              {new Date(
+                message._creationTime || Date.now()
+              ).toLocaleTimeString()}
             </div>
           </div>
 
           {/* User Avatar - Positioned on right side */}
-          <div className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-lg bg-gradient-to-br from-gray-500 to-gray-600 ring-2 ring-gray-200 dark:ring-gray-800" aria-hidden="true">
+          <div
+            aria-hidden="true"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gray-500 to-gray-600 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
+          >
             <FiUser className="h-5 w-5" />
           </div>
         </>
@@ -432,36 +435,44 @@ function ChatMessage({
         <>
           {/* AI Message: Avatar on left, message on right */}
           {/* AI Avatar */}
-          <div className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-lg bg-gradient-to-br from-gray-400 to-gray-500 ring-2 ring-gray-200 dark:ring-gray-800" aria-hidden="true">
+          <div
+            aria-hidden="true"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gray-400 to-gray-500 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
+          >
             <FiCpu className="h-5 w-5" />
           </div>
-          
+
           {/* Message Bubble */}
-          <div className="relative rounded-2xl px-5 py-4 shadow-lg max-w-[80%] bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900/10 border-2 border-gray-200 dark:border-gray-700 shadow-lg shadow-gray-100 dark:shadow-gray-900/20 ring-2 ring-gray-300 dark:ring-gray-700">
+          <div className="relative max-w-[80%] rounded-2xl border-2 border-gray-200 bg-gradient-to-br from-white to-gray-50 px-5 py-4 shadow-gray-100 shadow-lg shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700">
             {/* Message Header */}
-            <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
-              <span className="text-xs font-semibold uppercase tracking-wide">
+            <div className="mb-2 flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <span className="font-semibold text-xs uppercase tracking-wide">
                 AI Assistant
               </span>
               <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" aria-label="AI is online" />
+                <span
+                  aria-hidden
+                  className="h-2 w-2 animate-pulse rounded-full bg-green-400"
+                />
                 <span className="text-xs">Online</span>
               </div>
             </div>
-            
+
             {/* Message Content */}
             <div className="text-gray-900 dark:text-gray-100">
-              <MessageText 
-                text={messageText} 
-                streaming={message.streaming}
+              <MessageText
                 invert={isUser}
+                streaming={message.streaming}
+                text={messageText}
               />
             </div>
-            
+
             {/* AI Elements Actions - Show on hover */}
-            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <div className="flex items-center gap-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
                 <button
+                  aria-label="Copy message to clipboard"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                   onClick={() => {
                     navigator.clipboard.writeText(messageText || '');
                     toast({
@@ -469,42 +480,42 @@ function ChatMessage({
                       description: 'Message copied to clipboard',
                     });
                   }}
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                  aria-label="Copy message to clipboard"
                   title="Copy message"
                 >
                   <FiCopy className="h-3.5 w-3.5" />
                 </button>
 
                 <button
+                  aria-label="Mark message as helpful"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-gray-400 dark:hover:bg-green-900/20"
                   onClick={() => {
                     toast({
                       title: 'Liked!',
                       description: 'Message marked as helpful',
                     });
                   }}
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-gray-400 dark:hover:bg-green-900/20"
-                  aria-label="Mark message as helpful"
                   title="Like message"
                 >
                   <FiThumbsUp className="h-3.5 w-3.5" />
                 </button>
 
                 <button
+                  aria-label="Mark message as unhelpful"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
                   onClick={() => {
                     toast({
                       title: 'Disliked',
                       description: 'Message marked as unhelpful',
                     });
                   }}
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
-                  aria-label="Mark message as unhelpful"
                   title="Dislike message"
                 >
                   <FiThumbsDown className="h-3.5 w-3.5" />
                 </button>
 
                 <button
+                  aria-label="Regenerate AI response"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-gray-900/20"
                   onClick={() => {
                     // Retry functionality - could regenerate AI response
                     toast({
@@ -512,14 +523,14 @@ function ChatMessage({
                       description: 'Regenerating response...',
                     });
                   }}
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-gray-900/20"
-                  aria-label="Regenerate AI response"
                   title="Retry response"
                 >
                   <FiRotateCcw className="h-3.5 w-3.5" />
                 </button>
 
                 <button
+                  aria-label="Share message"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
                   onClick={() => {
                     // Share functionality
                     if (navigator.share) {
@@ -535,8 +546,6 @@ function ChatMessage({
                       });
                     }
                   }}
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
-                  aria-label="Share message"
                   title="Share message"
                 >
                   <FiShare2 className="h-3.5 w-3.5" />
@@ -546,11 +555,11 @@ function ChatMessage({
 
             {/* Context Information */}
             {hasContext && message.contextUsed && (
-              <div className="mt-4 border-t pt-3 border-gray-200 dark:border-gray-600">
+              <div className="mt-4 border-gray-200 border-t pt-3 dark:border-gray-600">
                 <button
                   aria-expanded={expandedContexts.has(message._id)}
                   aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
-                  className="flex items-center gap-2 font-medium text-xs transition-colors text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                  className="flex items-center gap-2 font-medium text-gray-600 text-xs transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                   onClick={() => toggleContextExpansion(message._id)}
                 >
                   <FiZap aria-hidden="true" className="h-3 w-3" />
@@ -564,10 +573,9 @@ function ChatMessage({
                 </button>
 
                 {expandedContexts.has(message._id) && (
-                  <div
+                  <section
                     aria-label="Context details"
                     className="mt-3 space-y-2"
-                    role="region"
                   >
                     {message.contextUsed.map((context, index) => (
                       <ContextResult
@@ -576,14 +584,16 @@ function ChatMessage({
                         key={index}
                       />
                     ))}
-                  </div>
+                  </section>
                 )}
               </div>
             )}
 
             {/* Message Timestamp */}
-            <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-              {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
+            <div className="mt-3 text-gray-500 text-xs dark:text-gray-400">
+              {new Date(
+                message._creationTime || Date.now()
+              ).toLocaleTimeString()}
             </div>
           </div>
         </>
@@ -592,16 +602,21 @@ function ChatMessage({
   );
 }
 
-function ContextResult({ context, isUser }: { context: any; isUser: boolean }) {
+function ContextResult({
+  context,
+  isUser,
+}: {
+  context: { key: string; text: string };
+  isUser: boolean;
+}) {
   return (
-    <div
+    <section
       aria-label="Context information"
       className={`rounded-lg border p-3 ${
         isUser
           ? 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/20'
           : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/20'
       }`}
-      role="region"
     >
       <div
         className={`mb-1 font-medium text-xs ${
@@ -621,7 +636,7 @@ function ContextResult({ context, isUser }: { context: any; isUser: boolean }) {
       >
         {context.text}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -724,9 +739,9 @@ function MainChatArea({
             aria-label={
               showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
             }
-            className={`rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-purple-50 hover:border-purple-300 hover:shadow-purple-100 dark:hover:bg-purple-900/20 dark:hover:border-purple-400 dark:hover:shadow-purple-900/20 ${
+            className={`rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20 ${
               showLeftSidebar
-                ? 'bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-500'
+                ? 'border-purple-300 bg-purple-100 text-purple-700 dark:border-purple-500 dark:bg-purple-800 dark:text-purple-300'
                 : 'text-gray-700 dark:text-gray-300'
             }`}
             onClick={() => {
@@ -752,7 +767,7 @@ function MainChatArea({
       </header>
 
       {/* Chat Messages Area - Mobile First */}
-      <div className="flex-1 overflow-y-auto p-3 mt-8 sm:p-4 lg:p-6">
+      <div className="mt-8 flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
         {listMessages.results && listMessages.results.length > 0 ? (
           <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
             {listMessages.results.map((message) => (
@@ -765,10 +780,9 @@ function MainChatArea({
             ))}
           </div>
         ) : (
-          <div
+          <section
             aria-label="Empty chat state"
             className="flex h-full items-center justify-center px-4"
-            role="region"
           >
             <div className="text-center">
               <div
@@ -799,7 +813,7 @@ function MainChatArea({
                 Start New Chat
               </Button>
             </div>
-          </div>
+          </section>
         )}
       </div>
 
@@ -820,7 +834,7 @@ function MainChatArea({
               </label>
               <Input
                 aria-describedby="chat-input-help"
-                className="h-12 w-full rounded-l-md ring-0 rounded-r-none bg-gray-50 dark:bg-gray-700 border-0 text-base text-gray-950 font-bold placeholder-gray-700 focus:border-0 focus:ring-0 dark:text-gray-100 dark:placeholder-gray-300"
+                className="h-12 w-full rounded-r-none rounded-l-md border-0 bg-gray-50 font-bold text-base text-gray-950 placeholder-gray-700 ring-0 focus:border-0 focus:ring-0 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-300"
                 id="chat-input"
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Ask anything from the lectures..."
@@ -833,7 +847,7 @@ function MainChatArea({
             </div>
             <Button
               aria-label="Send message"
-              className="h-12 rounded-r-md rounded-l-none border-l-0 bg-blue-600 px-6 dark:text-white shadow-none dark:bg-blue-600 dark:hover:bg-blue-700"
+              className="h-12 rounded-r-md rounded-l-none border-l-0 bg-blue-600 px-6 shadow-none dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700"
               disabled={!(prompt.trim() && threadId)}
               type="submit"
             >
@@ -929,7 +943,7 @@ function EntryChunksPanel({
               {documentChunks.status === 'LoadingFirstPage' ? (
                 <>
                   <div
-                    aria-label="Loading chunks"
+                    aria-hidden
                     className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-gray-500 border-b-2"
                   />
                   <p>Loading chunks...</p>
@@ -1030,7 +1044,7 @@ function AddContextForm({
           {isAddingContext ? (
             <>
               <div
-                aria-label="Loading"
+                aria-hidden
                 className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
               />
               Adding...
@@ -1078,20 +1092,20 @@ function ContextPanel({
 }: ContextPanelProps) {
   return (
     <>
-              {/* Collapsed State - Arrow Toggle */}
-        {!showContextPanel && (
-        <div className="fixed z-40 -translate-y-1/2 lg:absolute lg:top-3 lg:right-0">
-            <Button
-              aria-label="Open context panel"
-              className="rounded-b-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-green-50 hover:border-green-300 hover:shadow-green-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:bg-green-900/20 dark:hover:border-green-400 dark:hover:shadow-green-900/20"
-              onClick={() => setShowContextPanel(true)}
-              size="icon"
-              variant="ghost"
-            >
-              <IoChevronBack className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-            </Button>
-          </div>
-        )}
+      {/* Collapsed State - Arrow Toggle */}
+      {!showContextPanel && (
+        <div className="-translate-y-1/2 fixed z-40 lg:absolute lg:top-3 lg:right-0">
+          <Button
+            aria-label="Open context panel"
+            className="rounded-b-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-green-300 hover:bg-green-50 hover:shadow-green-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-green-400 dark:hover:bg-green-900/20 dark:hover:shadow-green-900/20"
+            onClick={() => setShowContextPanel(true)}
+            size="icon"
+            variant="ghost"
+          >
+            <IoChevronBack className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+          </Button>
+        </div>
+      )}
 
       {/* Expanded State */}
       {showContextPanel && (
@@ -1414,14 +1428,14 @@ function RagBasicUI() {
 
         <div
           aria-label="Main controls"
-          className={`fixed top-3 z-[60] hidden lg:flex items-center gap-2 ${showLeftSidebar ? 'left-[18rem]' : 'left-8'} ${showContextPanel ? 'right-[21rem]' : 'right-auto'}`}
+          className={`fixed top-3 z-[60] hidden items-center gap-2 lg:flex ${showLeftSidebar ? 'left-[18rem]' : 'left-8'} ${showContextPanel ? 'right-[21rem]' : 'right-auto'}`}
           role="toolbar"
         >
           <Button
             aria-label={
               showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
             }
-            className="rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-600 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-purple-50 hover:border-purple-300 hover:shadow-purple-100 dark:hover:bg-purple-900/20 dark:hover:border-purple-400 dark:hover:shadow-purple-900/20"
+            className="rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20"
             onClick={() => {
               console.log(
                 'Toggling left sidebar, current state:',
@@ -1434,7 +1448,10 @@ function RagBasicUI() {
             type="button"
             variant="ghost"
           >
-            <FiMenu aria-hidden="true" className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+            <FiMenu
+              aria-hidden="true"
+              className="h-4 w-4 text-gray-700 dark:text-gray-300"
+            />
           </Button>
 
           <ThemeToggle />

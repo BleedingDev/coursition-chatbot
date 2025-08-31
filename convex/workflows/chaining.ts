@@ -3,7 +3,6 @@
 import { createThread, saveMessage, stepCountIs } from '@convex-dev/agent';
 import { type WorkflowId, WorkflowManager } from '@convex-dev/workflow';
 import { v } from 'convex/values';
-import { z } from 'zod/v3';
 import { components, internal } from '../_generated/api';
 import { action, mutation } from '../_generated/server';
 import { fashionAgent } from '../agents/fashion';
