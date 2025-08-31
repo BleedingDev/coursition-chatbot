@@ -1,8 +1,9 @@
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import * as React from 'react';
-import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
+
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -203,7 +204,7 @@ const CarouselPrevious = ({
       variant={variant}
       {...props}
     >
-      <IoArrowBack className="size-4" />
+      <ArrowLeft className="size-4" />
       <span className="sr-only">Previous slide</span>
     </Button>
   );
@@ -233,7 +234,7 @@ const CarouselNext = ({
       variant={variant}
       {...props}
     >
-      <IoArrowForward className="size-4" />
+      <ArrowRight className="size-4" />
       <span className="sr-only">Next slide</span>
     </Button>
   );

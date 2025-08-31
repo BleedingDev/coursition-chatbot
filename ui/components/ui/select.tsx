@@ -1,8 +1,8 @@
 'use client';
 
+import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { Select as SelectPrimitive } from 'radix-ui';
 import type * as React from 'react';
-import { IoCheckmark, IoChevronDown, IoChevronUp } from 'react-icons/io5';
 
 import { cn } from '@/lib/utils';
 
@@ -26,7 +26,7 @@ const SelectTrigger = ({
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <IoChevronDown className="size-4 opacity-50" />
+      <ChevronDown className="size-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 );
@@ -43,7 +43,7 @@ const SelectScrollUpButton = ({
     )}
     {...props}
   >
-    <IoChevronUp className="size-4" />
+    <ChevronUp className="size-4" />
   </SelectPrimitive.ScrollUpButton>
 );
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -59,7 +59,7 @@ const SelectScrollDownButton = ({
     )}
     {...props}
   >
-    <IoChevronDown className="size-4" />
+    <ChevronDown className="size-4" />
   </SelectPrimitive.ScrollDownButton>
 );
 SelectScrollDownButton.displayName =
@@ -123,7 +123,7 @@ const SelectItem = ({
   >
     <span className="absolute right-2 flex size-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <IoCheckmark className="size-4" />
+        <Check className="size-4" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

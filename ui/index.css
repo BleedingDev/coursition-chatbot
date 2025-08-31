@@ -242,3 +242,12 @@
 @utility message-exit-active {
   @apply opacity-0 translate-y-2 transition-all duration-200 ease-in;
 }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

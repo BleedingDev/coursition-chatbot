@@ -834,7 +834,7 @@ function MainChatArea({
               </label>
               <Input
                 aria-describedby="chat-input-help"
-                className="h-12 w-full rounded-r-none rounded-l-md border-0 bg-gray-50 font-bold text-base text-gray-950 placeholder-gray-700 ring-0 focus:border-0 focus:ring-0 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-300"
+                className="h-12 w-full rounded-r-none rounded-l-md border-0 bg-gray-50 text-base text-gray-950 placeholder-gray-700 ring-0 focus:border-0 focus:ring-0 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-300"
                 id="chat-input"
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Ask anything from the lectures..."
@@ -1362,10 +1362,9 @@ function RagBasicUI() {
   }, []);
 
   return (
-    <div
+    <main
       aria-label="RAG Chat Application"
-      className="flex h-full flex-col"
-      role="main"
+      className="flex h-svh w-full flex-col"
     >
       <div className="relative flex h-full min-h-0 flex-1 flex-row bg-linear-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <ChatSidebar
@@ -1466,7 +1465,7 @@ function RagBasicUI() {
           {error.message}
         </div>
       )}
-    </div>
+    </main>
   );
 }
 
