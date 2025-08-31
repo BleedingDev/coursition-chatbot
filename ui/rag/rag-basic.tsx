@@ -111,9 +111,9 @@ function ChatSidebar({
         <div className="flex items-center gap-3">
           <div
             aria-hidden="true"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-gray-600 to-gray-700 font-bold text-white shadow-lg"
+            className="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-gray-600 to-gray-700 font-bold text-white shadow-lg"
           >
-            <FiMessageCircle className="h-4 w-4" />
+            <FiMessageCircle className="size-4" />
           </div>
           <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
             Chats
@@ -124,10 +124,10 @@ function ChatSidebar({
       <div className="border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <Button
           aria-label="Create new chat"
-          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
+          className="w-full bg-linear-to-r from-gray-600 to-gray-700 text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
           onClick={() => createThread({ title: 'New Chat' })}
         >
-          <FiPlus aria-hidden="true" className="mr-2 h-4 w-4" />
+          <FiPlus aria-hidden="true" className="mr-2 size-4" />
           New Chat
         </Button>
       </div>
@@ -198,7 +198,7 @@ function ChatSidebar({
                 <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                   <Button
                     aria-label={`Edit title of chat: ${thread.title || 'Untitled Chat'}`}
-                    className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    className="size-6 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditingId(thread._id);
@@ -207,11 +207,11 @@ function ChatSidebar({
                     size="sm"
                     variant="ghost"
                   >
-                    <FiEdit2 aria-hidden="true" className="h-3 w-3" />
+                    <FiEdit2 aria-hidden="true" className="size-3" />
                   </Button>
                   <Button
                     aria-label={`Archive chat: ${thread.title || 'Untitled Chat'}`}
-                    className="h-6 w-6 p-0 text-gray-500 hover:text-red-700 dark:text-gray-400 dark:hover:text-red-300"
+                    className="size-6 p-0 text-gray-500 hover:text-red-700 dark:text-gray-400 dark:hover:text-red-300"
                     onClick={(e) => {
                       e.stopPropagation();
                       archiveThreadMutation({ threadId: thread._id });
@@ -219,7 +219,7 @@ function ChatSidebar({
                     size="sm"
                     variant="ghost"
                   >
-                    <FiTrash2 aria-hidden="true" className="h-3 w-3" />
+                    <FiTrash2 aria-hidden="true" className="size-3" />
                   </Button>
                 </div>
               </div>
@@ -316,7 +316,7 @@ function ChatMessage({
         <>
           {/* User Message: Message on left, Avatar on right */}
           {/* Message Bubble */}
-          <div className="relative max-w-[80%] rounded-2xl bg-gradient-to-r from-gray-600 to-gray-700 px-5 py-4 text-white shadow-gray-200 shadow-lg shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700">
+          <div className="relative max-w-[80%] rounded-2xl bg-linear-to-r from-gray-600 to-gray-700 px-5 py-4 text-white shadow-gray-200 shadow-lg shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700">
             {/* Message Header */}
             <div className="mb-2 flex items-center gap-2 text-gray-100">
               <span className="font-semibold text-xs uppercase tracking-wide">
@@ -349,7 +349,7 @@ function ChatMessage({
                   title="Copy message"
                   type="button"
                 >
-                  <FiCopy className="h-3.5 w-3.5" />
+                  <FiCopy className="size-3.5" />
                 </button>
 
                 <button
@@ -373,7 +373,7 @@ function ChatMessage({
                   title="Share message"
                   type="button"
                 >
-                  <FiShare2 className="h-3.5 w-3.5" />
+                  <FiShare2 className="size-3.5" />
                 </button>
               </div>
             </div>
@@ -388,13 +388,13 @@ function ChatMessage({
                   onClick={() => toggleContextExpansion(message._id)}
                   type="button"
                 >
-                  <FiZap aria-hidden="true" className="h-3 w-3" />
+                  <FiZap aria-hidden="true" className="size-3" />
                   Context Used ({message.contextUsed.length})
                   <span
                     aria-hidden="true"
                     className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
                   >
-                    <FiChevronDown className="h-3 w-3" />
+                    <FiChevronDown className="size-3" />
                   </span>
                 </button>
 
@@ -426,9 +426,9 @@ function ChatMessage({
           {/* User Avatar - Positioned on right side */}
           <div
             aria-hidden="true"
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gray-500 to-gray-600 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-gray-500 to-gray-600 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
           >
-            <FiUser className="h-5 w-5" />
+            <FiUser className="size-5" />
           </div>
         </>
       ) : (
@@ -437,13 +437,13 @@ function ChatMessage({
           {/* AI Avatar */}
           <div
             aria-hidden="true"
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gray-400 to-gray-500 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-gray-400 to-gray-500 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
           >
-            <FiCpu className="h-5 w-5" />
+            <FiCpu className="size-5" />
           </div>
 
           {/* Message Bubble */}
-          <div className="relative max-w-[80%] rounded-2xl border-2 border-gray-200 bg-gradient-to-br from-white to-gray-50 px-5 py-4 shadow-gray-100 shadow-lg shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700">
+          <div className="relative max-w-[80%] rounded-2xl border-2 border-gray-200 bg-linear-to-br from-white to-gray-50 px-5 py-4 shadow-gray-100 shadow-lg shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700">
             {/* Message Header */}
             <div className="mb-2 flex items-center gap-2 text-gray-600 dark:text-gray-400">
               <span className="font-semibold text-xs uppercase tracking-wide">
@@ -452,7 +452,7 @@ function ChatMessage({
               <div className="flex items-center gap-1">
                 <span
                   aria-hidden
-                  className="h-2 w-2 animate-pulse rounded-full bg-green-400"
+                  className="size-2 animate-pulse rounded-full bg-green-400"
                 />
                 <span className="text-xs">Online</span>
               </div>
@@ -482,7 +482,7 @@ function ChatMessage({
                   }}
                   title="Copy message"
                 >
-                  <FiCopy className="h-3.5 w-3.5" />
+                  <FiCopy className="size-3.5" />
                 </button>
 
                 <button
@@ -496,7 +496,7 @@ function ChatMessage({
                   }}
                   title="Like message"
                 >
-                  <FiThumbsUp className="h-3.5 w-3.5" />
+                  <FiThumbsUp className="size-3.5" />
                 </button>
 
                 <button
@@ -510,7 +510,7 @@ function ChatMessage({
                   }}
                   title="Dislike message"
                 >
-                  <FiThumbsDown className="h-3.5 w-3.5" />
+                  <FiThumbsDown className="size-3.5" />
                 </button>
 
                 <button
@@ -525,7 +525,7 @@ function ChatMessage({
                   }}
                   title="Retry response"
                 >
-                  <FiRotateCcw className="h-3.5 w-3.5" />
+                  <FiRotateCcw className="size-3.5" />
                 </button>
 
                 <button
@@ -548,7 +548,7 @@ function ChatMessage({
                   }}
                   title="Share message"
                 >
-                  <FiShare2 className="h-3.5 w-3.5" />
+                  <FiShare2 className="size-3.5" />
                 </button>
               </div>
             </div>
@@ -562,13 +562,13 @@ function ChatMessage({
                   className="flex items-center gap-2 font-medium text-gray-600 text-xs transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                   onClick={() => toggleContextExpansion(message._id)}
                 >
-                  <FiZap aria-hidden="true" className="h-3 w-3" />
+                  <FiZap aria-hidden="true" className="size-3" />
                   Context Used ({message.contextUsed.length})
                   <span
                     aria-hidden="true"
                     className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
                   >
-                    <FiChevronDown className="h-3 w-3" />
+                    <FiChevronDown className="size-3" />
                   </span>
                 </button>
 
@@ -726,14 +726,14 @@ function MainChatArea({
   const navigate = useNavigate();
 
   return (
-    <main className="flex h-full min-h-0 flex-1 flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <main className="flex h-full min-h-0 flex-1 flex-col bg-linear-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Page Title - Accessibility H1 */}
       <h1 className="sr-only">
         RAG Chat - AI-Powered Contextual Conversations
       </h1>
 
       {/* Mobile Header */}
-      <header className="flex items-center justify-between border-gray-200/50 border-b bg-white/95 p-4 shadow-sm backdrop-blur-md lg:hidden dark:border-gray-700/50 dark:bg-gray-900/95">
+      <header className="flex items-center justify-between border-gray-200/50 border-b bg-white/95 p-4 shadow-xs backdrop-blur-md lg:hidden dark:border-gray-700/50 dark:bg-gray-900/95">
         <div className="flex items-center gap-3">
           <Button
             aria-label={
@@ -755,7 +755,7 @@ function MainChatArea({
             title={showLeftSidebar ? 'Hide sidebar' : 'Show sidebar'}
             variant="ghost"
           >
-            <FiMenu aria-hidden="true" className="h-5 w-5" />
+            <FiMenu aria-hidden="true" className="size-5" />
           </Button>
           <ThemeToggle />
         </div>
@@ -787,9 +787,9 @@ function MainChatArea({
             <div className="text-center">
               <div
                 aria-hidden="true"
-                className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg sm:h-20 sm:w-20 dark:from-gray-800 dark:to-gray-700"
+                className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-gray-100 to-gray-200 shadow-lg sm:size-20 dark:from-gray-800 dark:to-gray-700"
               >
-                <FiStar className="h-8 w-8 text-gray-600 sm:h-10 sm:w-10 dark:text-gray-400" />
+                <FiStar className="size-8 text-gray-600 sm:size-10 dark:text-gray-400" />
               </div>
               <h2 className="mb-2 font-semibold text-gray-900 text-lg sm:text-xl dark:text-gray-100">
                 Start a conversation
@@ -799,7 +799,7 @@ function MainChatArea({
               </p>
               <Button
                 aria-label="Start a new chat conversation"
-                className="h-auto bg-gradient-to-r from-gray-600 to-gray-700 px-6 py-3 font-medium text-base text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
+                className="h-auto bg-linear-to-r from-gray-600 to-gray-700 px-6 py-3 font-medium text-base text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
                 onClick={() => {
                   if (!threadId) {
                     createThread({ title: 'New Chat' }).then((id) => {
@@ -809,7 +809,7 @@ function MainChatArea({
                   }
                 }}
               >
-                <FiPlus aria-hidden="true" className="mr-2 h-4 w-4" />
+                <FiPlus aria-hidden="true" className="mr-2 size-4" />
                 Start New Chat
               </Button>
             </div>
@@ -851,7 +851,7 @@ function MainChatArea({
               disabled={!(prompt.trim() && threadId)}
               type="submit"
             >
-              <FiSend aria-hidden="true" className="h-4 w-4" />
+              <FiSend aria-hidden="true" className="size-4" />
             </Button>
           </form>
         </div>
@@ -886,7 +886,7 @@ function EntryChunksPanel({
   return (
     <aside
       aria-label="Entry chunks panel"
-      className="fixed inset-y-0 right-[20rem] left-[16rem] z-30 hidden flex-col border-gray-200/50 border-l bg-white/95 shadow-xl backdrop-blur-md xl:flex dark:border-gray-700/50 dark:bg-gray-900/95"
+      className="fixed inset-y-0 right-80 left-64 z-30 hidden flex-col border-gray-200/50 border-l bg-white/95 shadow-xl backdrop-blur-md xl:flex dark:border-gray-700/50 dark:bg-gray-900/95"
     >
       <div className="border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <div className="flex items-center justify-between">
@@ -900,7 +900,7 @@ function EntryChunksPanel({
             title="Close chunks panel"
             type="button"
           >
-            <FiX aria-hidden="true" className="h-4 w-4" />
+            <FiX aria-hidden="true" className="size-4" />
           </button>
         </div>
         <p className="mt-1 text-gray-700 text-sm dark:text-gray-300">
@@ -919,7 +919,7 @@ function EntryChunksPanel({
                 <div className="font-medium text-gray-600 text-sm dark:text-gray-300">
                   Chunk {chunk.order}
                 </div>
-                <div className="rounded-lg bg-gray-50 p-4 shadow-sm dark:bg-gray-800">
+                <div className="rounded-lg bg-gray-50 p-4 shadow-xs dark:bg-gray-800">
                   <div className="text-gray-800 text-sm leading-relaxed dark:text-gray-200">
                     {chunk.text}
                   </div>
@@ -944,7 +944,7 @@ function EntryChunksPanel({
                 <>
                   <div
                     aria-hidden
-                    className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-gray-500 border-b-2"
+                    className="mx-auto mb-2 size-8 animate-spin rounded-full border-gray-500 border-b-2"
                   />
                   <p>Loading chunks...</p>
                 </>
@@ -1034,7 +1034,7 @@ function AddContextForm({
           aria-label={
             isAddingContext ? 'Adding context...' : 'Add context entry'
           }
-          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800"
+          className="w-full bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800"
           disabled={
             !(addContextForm.key.trim() && addContextForm.text.trim()) ||
             isAddingContext
@@ -1045,7 +1045,7 @@ function AddContextForm({
             <>
               <div
                 aria-hidden
-                className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                className="mr-2 size-4 animate-spin rounded-full border-2 border-white border-t-transparent"
               />
               Adding...
             </>
@@ -1102,7 +1102,7 @@ function ContextPanel({
             size="icon"
             variant="ghost"
           >
-            <IoChevronBack className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+            <IoChevronBack className="size-4 text-gray-700 dark:text-gray-300" />
           </Button>
         </div>
       )}
@@ -1125,7 +1125,7 @@ function ContextPanel({
               size="sm"
               variant="ghost"
             >
-              <IoClose className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+              <IoClose className="size-4 text-gray-700 dark:text-gray-300" />
             </Button>
           </div>
 
@@ -1146,7 +1146,7 @@ function ContextPanel({
                   <button
                     aria-label={`Select context entry: ${entry.title || entry.key}`}
                     aria-pressed={selectedEntry === entry.entryId}
-                    className={`w-full cursor-pointer rounded-md p-3 text-left shadow-sm transition-colors ${
+                    className={`w-full cursor-pointer rounded-md p-3 text-left shadow-xs transition-colors ${
                       selectedEntry === entry.entryId
                         ? 'border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800'
                         : 'border border-transparent bg-gray-50 hover:border-gray-200 hover:bg-gray-100 dark:bg-gray-900 dark:hover:border-gray-600 dark:hover:bg-gray-800'
@@ -1367,7 +1367,7 @@ function RagBasicUI() {
       className="flex h-full flex-col"
       role="main"
     >
-      <div className="relative flex h-full min-h-0 flex-1 flex-row bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <div className="relative flex h-full min-h-0 flex-1 flex-row bg-linear-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <ChatSidebar
           activeThreads={activeThreads}
           archiveThreadMutation={archiveThreadMutation}
@@ -1428,7 +1428,7 @@ function RagBasicUI() {
 
         <div
           aria-label="Main controls"
-          className={`fixed top-3 z-[60] hidden items-center gap-2 lg:flex ${showLeftSidebar ? 'left-[18rem]' : 'left-8'} ${showContextPanel ? 'right-[21rem]' : 'right-auto'}`}
+          className={`fixed top-3 z-60 hidden items-center gap-2 lg:flex ${showLeftSidebar ? 'left-72' : 'left-8'} ${showContextPanel ? 'right-84' : 'right-auto'}`}
           role="toolbar"
         >
           <Button
@@ -1450,7 +1450,7 @@ function RagBasicUI() {
           >
             <FiMenu
               aria-hidden="true"
-              className="h-4 w-4 text-gray-700 dark:text-gray-300"
+              className="size-4 text-gray-700 dark:text-gray-300"
             />
           </Button>
 

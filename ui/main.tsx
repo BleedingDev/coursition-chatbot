@@ -70,8 +70,8 @@ function RootRedirect() {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg dark:from-gray-800 dark:to-gray-700">
-            <div className="h-8 w-8 animate-spin rounded-full border-gray-400 border-t-transparent border-b-2" />
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-gray-100 to-gray-200 shadow-lg dark:from-gray-800 dark:to-gray-700">
+            <div className="size-8 animate-spin rounded-full border-gray-400 border-t-transparent border-b-2" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>

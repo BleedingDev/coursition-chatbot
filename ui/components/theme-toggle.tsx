@@ -39,9 +39,9 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       variant="ghost"
     >
       {theme === 'dark' ? (
-        <IoSunny className="h-4 w-4 text-gray-100" />
+        <IoSunny className="size-4 text-gray-100" />
       ) : (
-        <IoMoon className="h-4 w-4 text-gray-700" />
+        <IoMoon className="size-4 text-gray-700" />
       )}
     </Button>
   );
