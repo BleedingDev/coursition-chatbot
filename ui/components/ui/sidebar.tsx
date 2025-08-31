@@ -1,4 +1,3 @@
-import { PanelLeft } from 'lucide-react';
 import {
   createContext,
   useCallback,
@@ -6,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { IoMenu } from 'react-icons/io5';
 import { Button } from './button';
 
 type SidebarContextType = {
@@ -23,8 +23,6 @@ export function useSidebar() {
   return ctx;
 }
 
-const COOKIE = 'sidebar:state';
-
 export function SidebarProvider({
   children,
   defaultOpen = true,
@@ -34,35 +32,9 @@ export function SidebarProvider({
 }) {
   const [open, setOpen] = useState<boolean>(defaultOpen);
 
-  useEffect(() => {
-    cookieStore
-      .get(COOKIE)
-      .then((c) => {
-        if (c && (c.value === 'true' || c.value === 'false')) {
-          setOpen(c.value === 'true');
-        }
-      })
-      .catch(() => {
-        console.error('Failed to read sidebar state');
-      });
-  }, []);
-
   const toggleSidebar = useCallback(() => {
     setOpen((v) => !v);
   }, []);
-
-  useEffect(() => {
-    cookieStore
-      .set({
-        name: COOKIE,
-        value: String(open),
-        path: '/',
-        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-      })
-      .catch(() => {
-        console.error('Failed to write sidebar state');
-      });
-  }, [open]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -96,14 +68,14 @@ export function SidebarRail({ className = '' }: { className?: string }) {
     <div className={`pointer-events-none ${className}`}>
       <Button
         aria-label={open ? 'Hide sidebar' : 'Show sidebar'}
-        className={`pointer-events-auto fixed ${open ? 'left-[17rem]' : 'left-3'} top-3 z-[60] shadow`}
+        className={`pointer-events-auto fixed ${open ? 'left-[17rem]' : 'left-3'} top-3 z-[60] rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20`}
         onClick={toggleSidebar}
         size="icon"
         title={open ? 'Hide sidebar' : 'Show sidebar'}
         type="button"
-        variant="secondary"
+        variant="ghost"
       >
-        <PanelLeft className="h-4 w-4" />
+        <IoMenu className="h-4 w-4 text-gray-700 dark:text-gray-300" />
       </Button>
     </div>
   );
