@@ -20,7 +20,7 @@ export function Toaster() {
           className="border-2 border-slate-200 bg-slate-100 dark:border-slate-400 dark:bg-slate-300"
         >
           <div className="grid gap-1">
-            {title && <ToastTitle className="text-3xl">{title}</ToastTitle>}
+            {title && <ToastTitle>{title}</ToastTitle>}
             {description && (
               <ToastDescription className="text-xl">
                 {description}
