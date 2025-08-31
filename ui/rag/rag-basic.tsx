@@ -5,27 +5,27 @@ import {
 } from '@convex-dev/agent/react';
 import type { EntryId } from '@convex-dev/rag';
 import { useAction, useMutation, usePaginatedQuery } from 'convex/react';
-import { useCallback, useEffect, useState } from 'react';
 import {
-  FiChevronDown,
-  FiCopy,
-  FiCpu,
-  FiEdit2,
-  FiMenu,
-  FiMessageCircle,
-  FiPlus,
-  FiRotateCcw,
-  FiSend,
-  FiShare2,
-  FiStar,
-  FiThumbsDown,
-  FiThumbsUp,
-  FiTrash2,
-  FiUser,
-  FiX,
-  FiZap,
-} from 'react-icons/fi';
-import { IoChevronBack, IoClose } from 'react-icons/io5';
+  ChevronDown,
+  ChevronLeft,
+  Copy,
+  Cpu,
+  Cross,
+  Edit,
+  Mail,
+  Menu,
+  Plus,
+  RotateCcw,
+  Send,
+  Share,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+  Trash,
+  User,
+  Zap,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../convex/_generated/api';
 import { Markdown } from '../components/markdown';
@@ -51,8 +51,8 @@ type MessageWithContext = {
   text?: string;
   streaming?: boolean;
   contextUsed?: Array<{
-    key?: string;
-    text?: string;
+    key: string;
+    text: string;
   }> | null;
   agentName?: string;
   status?: string;
@@ -96,7 +96,6 @@ function ChatSidebar({
   setThreadId,
   threadId,
   showLeftSidebar,
-  setShowLeftSidebar,
 }: ChatSidebarProps) {
   if (!showLeftSidebar) {
     return null;
@@ -113,7 +112,7 @@ function ChatSidebar({
             aria-hidden="true"
             className="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-gray-600 to-gray-700 font-bold text-white shadow-lg"
           >
-            <FiMessageCircle className="size-4" />
+            <Mail className="size-4" />
           </div>
           <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
             Chats
@@ -127,7 +126,7 @@ function ChatSidebar({
           className="w-full bg-linear-to-r from-gray-600 to-gray-700 text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
           onClick={() => createThread({ title: 'New Chat' })}
         >
-          <FiPlus aria-hidden="true" className="mr-2 size-4" />
+          <Plus aria-hidden="true" className="mr-2 size-4" />
           New Chat
         </Button>
       </div>
@@ -207,7 +206,7 @@ function ChatSidebar({
                     size="sm"
                     variant="ghost"
                   >
-                    <FiEdit2 aria-hidden="true" className="size-3" />
+                    <Edit aria-hidden="true" className="size-3" />
                   </Button>
                   <Button
                     aria-label={`Archive chat: ${thread.title || 'Untitled Chat'}`}
@@ -219,7 +218,7 @@ function ChatSidebar({
                     size="sm"
                     variant="ghost"
                   >
-                    <FiTrash2 aria-hidden="true" className="size-3" />
+                    <Trash aria-hidden="true" className="size-3" />
                   </Button>
                 </div>
               </div>
@@ -316,7 +315,7 @@ function ChatMessage({
         <>
           {/* User Message: Message on left, Avatar on right */}
           {/* Message Bubble */}
-          <div className="relative max-w-[80%] rounded-2xl bg-linear-to-r from-gray-600 to-gray-700 px-5 py-4 text-white shadow-gray-200 shadow-lg shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700">
+          <div className="relative max-w-[80%] rounded-2xl bg-linear-to-r from-gray-600 to-gray-700 px-5 py-4 text-white shadow-gray-200 shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700">
             {/* Message Header */}
             <div className="mb-2 flex items-center gap-2 text-gray-100">
               <span className="font-semibold text-xs uppercase tracking-wide">
@@ -349,7 +348,7 @@ function ChatMessage({
                   title="Copy message"
                   type="button"
                 >
-                  <FiCopy className="size-3.5" />
+                  <Copy className="size-3.5" />
                 </button>
 
                 <button
@@ -373,7 +372,7 @@ function ChatMessage({
                   title="Share message"
                   type="button"
                 >
-                  <FiShare2 className="size-3.5" />
+                  <Share className="size-3.5" />
                 </button>
               </div>
             </div>
@@ -388,13 +387,13 @@ function ChatMessage({
                   onClick={() => toggleContextExpansion(message._id)}
                   type="button"
                 >
-                  <FiZap aria-hidden="true" className="size-3" />
+                  <Zap aria-hidden="true" className="size-3" />
                   Context Used ({message.contextUsed.length})
                   <span
                     aria-hidden="true"
                     className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
                   >
-                    <FiChevronDown className="size-3" />
+                    <ChevronDown className="size-3" />
                   </span>
                 </button>
 
@@ -428,7 +427,7 @@ function ChatMessage({
             aria-hidden="true"
             className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-gray-500 to-gray-600 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
           >
-            <FiUser className="size-5" />
+            <User className="size-5" />
           </div>
         </>
       ) : (
@@ -439,11 +438,11 @@ function ChatMessage({
             aria-hidden="true"
             className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-gray-400 to-gray-500 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
           >
-            <FiCpu className="size-5" />
+            <Cpu className="size-5" />
           </div>
 
           {/* Message Bubble */}
-          <div className="relative max-w-[80%] rounded-2xl border-2 border-gray-200 bg-linear-to-br from-white to-gray-50 px-5 py-4 shadow-gray-100 shadow-lg shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700">
+          <div className="relative max-w-[80%] rounded-2xl border-2 border-gray-200 bg-linear-to-br from-white to-gray-50 px-5 py-4 shadow-gray-100 shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700">
             {/* Message Header */}
             <div className="mb-2 flex items-center gap-2 text-gray-600 dark:text-gray-400">
               <span className="font-semibold text-xs uppercase tracking-wide">
@@ -481,8 +480,9 @@ function ChatMessage({
                     });
                   }}
                   title="Copy message"
+                  type="button"
                 >
-                  <FiCopy className="size-3.5" />
+                  <Copy className="size-3.5" />
                 </button>
 
                 <button
@@ -495,8 +495,9 @@ function ChatMessage({
                     });
                   }}
                   title="Like message"
+                  type="button"
                 >
-                  <FiThumbsUp className="size-3.5" />
+                  <ThumbsUp className="size-3.5" />
                 </button>
 
                 <button
@@ -509,13 +510,14 @@ function ChatMessage({
                     });
                   }}
                   title="Dislike message"
+                  type="button"
                 >
-                  <FiThumbsDown className="size-3.5" />
+                  <ThumbsDown className="size-3.5" />
                 </button>
 
                 <button
                   aria-label="Regenerate AI response"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-gray-900/20"
+                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                   onClick={() => {
                     // Retry functionality - could regenerate AI response
                     toast({
@@ -524,8 +526,9 @@ function ChatMessage({
                     });
                   }}
                   title="Retry response"
+                  type="button"
                 >
-                  <FiRotateCcw className="size-3.5" />
+                  <RotateCcw className="size-3.5" />
                 </button>
 
                 <button
@@ -547,8 +550,9 @@ function ChatMessage({
                     }
                   }}
                   title="Share message"
+                  type="button"
                 >
-                  <FiShare2 className="size-3.5" />
+                  <Share className="size-3.5" />
                 </button>
               </div>
             </div>
@@ -561,14 +565,15 @@ function ChatMessage({
                   aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
                   className="flex items-center gap-2 font-medium text-gray-600 text-xs transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                   onClick={() => toggleContextExpansion(message._id)}
+                  type="button"
                 >
-                  <FiZap aria-hidden="true" className="size-3" />
+                  <Zap aria-hidden="true" className="size-3" />
                   Context Used ({message.contextUsed.length})
                   <span
                     aria-hidden="true"
                     className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
                   >
-                    <FiChevronDown className="size-3" />
+                    <ChevronDown className="size-3" />
                   </span>
                 </button>
 
@@ -640,58 +645,6 @@ function ContextResult({
   );
 }
 
-type ChatInputProps = {
-  prompt: string;
-  threadId?: string;
-  setPrompt: (prompt: string) => void;
-  onSendClicked: () => void;
-  createThread: (params: { title: string }) => Promise<string>;
-  setThreadId: (id: string) => void;
-};
-
-function ChatInput({
-  prompt,
-  threadId,
-  setPrompt,
-  onSendClicked,
-  createThread,
-  setThreadId,
-}: ChatInputProps) {
-  const navigate = useNavigate();
-  return (
-    <form
-      className="flex items-center gap-2 pt-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSendClicked();
-      }}
-    >
-      <Input
-        className="flex-1"
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Ask using the added context…"
-        value={prompt}
-      />
-      <Button disabled={!(prompt.trim() && threadId)} type="submit">
-        <FiSend />
-      </Button>
-      <Button
-        onClick={() => {
-          createThread({ title: 'RAG Thread' }).then((id) => {
-            setThreadId(id);
-            navigate(`/${id}`);
-          });
-        }}
-        title="Start over"
-        type="button"
-        variant="secondary"
-      >
-        Start over
-      </Button>
-    </form>
-  );
-}
-
 type MainChatAreaProps = {
   listMessages: { results?: MessageWithContext[] };
   expandedContexts: Set<string>;
@@ -718,8 +671,6 @@ function MainChatArea({
   onSendClicked,
   createThread,
   setThreadId,
-  showContextPanel,
-  setShowContextPanel,
   showLeftSidebar,
   setShowLeftSidebar,
 }: MainChatAreaProps) {
@@ -739,7 +690,7 @@ function MainChatArea({
             aria-label={
               showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
             }
-            className={`rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20 ${
+            className={`z-100 rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20 ${
               showLeftSidebar
                 ? 'border-purple-300 bg-purple-100 text-purple-700 dark:border-purple-500 dark:bg-purple-800 dark:text-purple-300'
                 : 'text-gray-700 dark:text-gray-300'
@@ -755,7 +706,7 @@ function MainChatArea({
             title={showLeftSidebar ? 'Hide sidebar' : 'Show sidebar'}
             variant="ghost"
           >
-            <FiMenu aria-hidden="true" className="size-5" />
+            <Menu aria-hidden="true" className="size-5" />
           </Button>
           <ThemeToggle />
         </div>
@@ -789,7 +740,7 @@ function MainChatArea({
                 aria-hidden="true"
                 className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-gray-100 to-gray-200 shadow-lg sm:size-20 dark:from-gray-800 dark:to-gray-700"
               >
-                <FiStar className="size-8 text-gray-600 sm:size-10 dark:text-gray-400" />
+                <Star className="size-8 text-gray-600 sm:size-10 dark:text-gray-400" />
               </div>
               <h2 className="mb-2 font-semibold text-gray-900 text-lg sm:text-xl dark:text-gray-100">
                 Start a conversation
@@ -809,7 +760,7 @@ function MainChatArea({
                   }
                 }}
               >
-                <FiPlus aria-hidden="true" className="mr-2 size-4" />
+                <Plus aria-hidden="true" className="mr-2 size-4" />
                 Start New Chat
               </Button>
             </div>
@@ -851,7 +802,7 @@ function MainChatArea({
               disabled={!(prompt.trim() && threadId)}
               type="submit"
             >
-              <FiSend aria-hidden="true" className="size-4" />
+              <Send aria-hidden="true" className="size-4" />
             </Button>
           </form>
         </div>
@@ -900,7 +851,7 @@ function EntryChunksPanel({
             title="Close chunks panel"
             type="button"
           >
-            <FiX aria-hidden="true" className="size-4" />
+            <Cross aria-hidden="true" className="size-4" />
           </button>
         </div>
         <p className="mt-1 text-gray-700 text-sm dark:text-gray-300">
@@ -1102,7 +1053,7 @@ function ContextPanel({
             size="icon"
             variant="ghost"
           >
-            <IoChevronBack className="size-4 text-gray-700 dark:text-gray-300" />
+            <ChevronLeft className="size-4 text-gray-700 dark:text-gray-300" />
           </Button>
         </div>
       )}
@@ -1125,7 +1076,7 @@ function ContextPanel({
               size="sm"
               variant="ghost"
             >
-              <IoClose className="size-4 text-gray-700 dark:text-gray-300" />
+              <Cross className="size-4 text-gray-700 dark:text-gray-300" />
             </Button>
           </div>
 
@@ -1196,8 +1147,8 @@ function RagBasicUI() {
         setThreadId(id);
         navigate(`/${id}`, { replace: true });
       })
-      .catch((error) => {
-        console.error('Failed to create thread:', error);
+      .catch((err) => {
+        console.error('Failed to create thread:', err);
       });
   }, [createThread, threadId, navigate]);
 
@@ -1311,8 +1262,8 @@ function RagBasicUI() {
         title: 'Context added',
         description: 'Your context has been added successfully.',
       });
-    } catch (error) {
-      console.error('Failed to add context:', error);
+    } catch (err) {
+      console.error('Failed to add context:', err);
       toast({
         title: 'Error',
         description: 'Failed to add context. Please try again.',
@@ -1342,9 +1293,9 @@ function RagBasicUI() {
       });
       console.log('Message sent successfully');
       setPrompt('');
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      setError(error as Error);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      setError(err as Error);
     }
   }, [prompt, threadId, sendMessage]);
 
@@ -1447,7 +1398,7 @@ function RagBasicUI() {
             type="button"
             variant="ghost"
           >
-            <FiMenu
+            <Menu
               aria-hidden="true"
               className="size-4 text-gray-700 dark:text-gray-300"
             />
@@ -1478,14 +1429,13 @@ function MessageText({
   streaming?: boolean;
   invert?: boolean;
 }) {
-  // Add safety check for text
+  const [smoothText] = useSmoothText(text || '', { startStreaming: streaming });
   if (!text) {
     return (
       <div className="text-gray-400 italic dark:text-gray-500">No content</div>
     );
   }
 
-  const [smoothText] = useSmoothText(text, { startStreaming: streaming });
   return <Markdown invert={invert}>{smoothText}</Markdown>;
 }
 
