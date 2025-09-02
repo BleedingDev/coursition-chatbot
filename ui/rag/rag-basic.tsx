@@ -1,6 +1,5 @@
 import {
   optimisticallySendMessage,
-  useSmoothText,
   useThreadMessages,
 } from '@convex-dev/agent/react';
 import type { EntryId } from '@convex-dev/rag';
@@ -9,7 +8,6 @@ import {
   ChevronDown,
   ChevronLeft,
   Copy,
-  Cpu,
   Cross,
   Edit,
   Mail,
@@ -22,13 +20,14 @@ import {
   ThumbsDown,
   ThumbsUp,
   Trash,
-  User,
   Zap,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Action, Actions } from '@/components/actions';
+import { Message, MessageContent } from '@/components/message';
+import { Response } from '@/components/response';
 import { api } from '../../convex/_generated/api';
-import { Markdown } from '../components/markdown';
 import { ThemeToggle } from '../components/theme-toggle';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -63,7 +62,7 @@ type MessageWithContext = {
   finishReason?: string;
   model?: string;
   provider?: string;
-  message?: any;
+  message?: unknown;
 };
 
 type ChatSidebarProps = {
@@ -123,7 +122,8 @@ function ChatSidebar({
       <div className="border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <Button
           aria-label="Create new chat"
-          className="w-full bg-linear-to-r from-gray-600 to-gray-700 text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
+          className="w-full"
+          colorScheme="primary"
           onClick={() => createThread({ title: 'New Chat' })}
         >
           <Plus aria-hidden="true" className="mr-2 size-4" />
@@ -134,7 +134,7 @@ function ChatSidebar({
       <nav aria-label="Chat threads" className="min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-2 p-4">
           {activeThreads.map((thread) => (
-            <div
+            <button
               aria-label={`Select chat: ${thread.title || 'Untitled Chat'}`}
               aria-pressed={threadId === thread._id}
               className={`group relative cursor-pointer rounded-lg p-3 transition-colors ${
@@ -144,14 +144,7 @@ function ChatSidebar({
               }`}
               key={thread._id}
               onClick={() => setThreadId(thread._id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setThreadId(thread._id);
-                }
-              }}
-              role="button"
-              tabIndex={0}
+              type="button"
             >
               <div className="flex items-center justify-between">
                 <div className="min-w-0 flex-1">
@@ -195,34 +188,32 @@ function ChatSidebar({
                   )}
                 </div>
                 <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Button
+                  <button
                     aria-label={`Edit title of chat: ${thread.title || 'Untitled Chat'}`}
-                    className="size-6 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    className="flex size-6 cursor-pointer items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditingId(thread._id);
                       setEditingTitle(thread.title || '');
                     }}
-                    size="sm"
-                    variant="ghost"
+                    type="button"
                   >
                     <Edit aria-hidden="true" className="size-3" />
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     aria-label={`Archive chat: ${thread.title || 'Untitled Chat'}`}
-                    className="size-6 p-0 text-gray-500 hover:text-red-700 dark:text-gray-400 dark:hover:text-red-300"
+                    className="flex size-6 cursor-pointer items-center justify-center text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
                     onClick={(e) => {
                       e.stopPropagation();
                       archiveThreadMutation({ threadId: thread._id });
                     }}
-                    size="sm"
-                    variant="ghost"
+                    type="button"
                   >
                     <Trash aria-hidden="true" className="size-3" />
-                  </Button>
+                  </button>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
           {activeThreads.length === 0 && (
             <div className="py-4 text-center text-gray-600 text-sm dark:text-gray-300">
@@ -247,57 +238,8 @@ function ChatMessage({
   // Use text field if content doesn't exist
   const messageText = message.content || message.text;
 
-  // Improved message distinction logic for Convex Agent system
-  // The issue: In this system, ALL messages have agentName, so we need a different approach
-  // We'll use a combination of factors to determine message type
-  let isUser = false;
-
-  if (message.role === 'user') {
-    // Explicit user role
-    isUser = true;
-  } else if (message.role === 'assistant') {
-    // Explicit assistant role
-    isUser = false;
-  } else if (message.streaming) {
-    // Streaming = AI response
-    isUser = false;
-  } else {
-    // For messages without explicit role, we need to use content analysis
-    // In the Convex Agent system, user messages are typically:
-    // - Short and simple (like "Hello", "Hi")
-    // - Questions or prompts
-    // - Single sentences or phrases
-
-    // AI responses are typically:
-    // - Longer and more detailed
-    // - Explanatory content
-    // - Multiple sentences
-
-    const text = messageText || '';
-    const isShortMessage = text.length <= 30; // Reduced threshold for better accuracy
-    const isSimpleGreeting =
-      /^(hi|hello|hey|thanks?|thank you|ok|okay|yes|no)$/i.test(text.trim());
-    const isQuestion = text.includes('?');
-    const isLongResponse = text.length > 80; // Reduced threshold for better accuracy
-    const hasMultipleSentences = (text.match(/[.!?]/g) || []).length > 1;
-    const isExplanatory =
-      text.includes('In the context of') ||
-      text.includes('we use it to') ||
-      text.includes('You form it using');
-
-    // If it's a short message, simple greeting, or question, it's likely from user
-    if (isShortMessage || isSimpleGreeting || isQuestion) {
-      isUser = true;
-    }
-    // If it's a long response with multiple sentences or explanatory content, it's likely from AI
-    else if (isLongResponse || hasMultipleSentences || isExplanatory) {
-      isUser = false;
-    }
-    // Default fallback: assume user message if no clear AI indicators
-    else {
-      isUser = true;
-    }
-  }
+  // Simple role-based message distinction
+  const isUser = (message.message as { role?: string })?.role === 'user';
 
   const hasContext = message.contextUsed && message.contextUsed.length > 0;
 
@@ -307,303 +249,137 @@ function ChatMessage({
   }
 
   return (
-    <article
-      aria-label={`${isUser ? 'User' : 'AI'} message`}
-      className={`group mb-6 flex gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}
-    >
-      {isUser ? (
-        <>
-          {/* User Message: Message on left, Avatar on right */}
-          {/* Message Bubble */}
-          <div className="relative max-w-[80%] rounded-2xl bg-linear-to-r from-gray-600 to-gray-700 px-5 py-4 text-white shadow-gray-200 shadow-lg ring-2 ring-gray-300 dark:shadow-gray-800 dark:ring-gray-700">
-            {/* Message Header */}
-            <div className="mb-2 flex items-center gap-2 text-gray-100">
-              <span className="font-semibold text-xs uppercase tracking-wide">
-                You
-              </span>
-            </div>
+    <div className="group relative">
+      <Message from={isUser ? 'user' : 'assistant'}>
+        <MessageContent>
+          <Response>{messageText}</Response>
 
-            {/* Message Content */}
-            <div className="text-white">
-              <MessageText
-                invert={isUser}
-                streaming={message.streaming}
-                text={messageText}
-              />
-            </div>
-
-            {/* Message Actions - Show on hover */}
-            <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
-                <button
-                  aria-label="Copy message to clipboard"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                  onClick={() => {
-                    navigator.clipboard.writeText(messageText || '');
-                    toast({
-                      title: 'Copied!',
-                      description: 'Message copied to clipboard',
-                    });
-                  }}
-                  title="Copy message"
-                  type="button"
-                >
-                  <Copy className="size-3.5" />
-                </button>
-
-                <button
-                  aria-label="Share message"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
-                  onClick={() => {
-                    // Share functionality
-                    if (navigator.share) {
-                      navigator.share({
-                        title: 'Chat Message',
-                        text: messageText || '',
-                      });
-                    } else {
-                      navigator.clipboard.writeText(messageText || '');
-                      toast({
-                        title: 'Shared!',
-                        description: 'Message copied to clipboard',
-                      });
-                    }
-                  }}
-                  title="Share message"
-                  type="button"
-                >
-                  <Share className="size-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Context Information */}
-            {hasContext && message.contextUsed && (
-              <div className="mt-4 border-gray-400/30 border-t pt-3">
-                <button
-                  aria-expanded={expandedContexts.has(message._id)}
-                  aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
-                  className="flex items-center gap-2 font-medium text-gray-100 text-xs transition-colors hover:text-white"
-                  onClick={() => toggleContextExpansion(message._id)}
-                  type="button"
-                >
-                  <Zap aria-hidden="true" className="size-3" />
-                  Context Used ({message.contextUsed.length})
-                  <span
-                    aria-hidden="true"
-                    className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
-                  >
-                    <ChevronDown className="size-3" />
-                  </span>
-                </button>
-
-                {expandedContexts.has(message._id) && (
-                  <section
-                    aria-label="Context details"
-                    className="mt-3 space-y-2"
-                  >
-                    {message.contextUsed.map((context, index) => (
-                      <ContextResult
-                        context={context}
-                        isUser={isUser}
-                        key={index}
-                      />
-                    ))}
-                  </section>
-                )}
-              </div>
-            )}
-
-            {/* Message Timestamp */}
-            <div className="mt-3 text-gray-200 text-xs">
-              {new Date(
-                message._creationTime || Date.now()
-              ).toLocaleTimeString()}
-            </div>
-          </div>
-
-          {/* User Avatar - Positioned on right side */}
-          <div
-            aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-gray-500 to-gray-600 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
-          >
-            <User className="size-5" />
-          </div>
-        </>
-      ) : (
-        <>
-          {/* AI Message: Avatar on left, message on right */}
-          {/* AI Avatar */}
-          <div
-            aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-gray-400 to-gray-500 font-medium text-sm text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-800"
-          >
-            <Cpu className="size-5" />
-          </div>
-
-          {/* Message Bubble */}
-          <div className="relative max-w-[80%] rounded-2xl border-2 border-gray-200 bg-linear-to-br from-white to-gray-50 px-5 py-4 shadow-gray-100 shadow-lg ring-2 ring-gray-300 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900/10 dark:shadow-gray-900/20 dark:ring-gray-700">
-            {/* Message Header */}
-            <div className="mb-2 flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <span className="font-semibold text-xs uppercase tracking-wide">
-                AI Assistant
-              </span>
-              <div className="flex items-center gap-1">
+          {/* Context Information */}
+          {hasContext && message.contextUsed && (
+            <div className="mt-3">
+              <Button
+                aria-expanded={expandedContexts.has(message._id)}
+                aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
+                className="flex items-center gap-2 font-medium text-gray-600 text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                onClick={() => toggleContextExpansion(message._id)}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                <Zap aria-hidden="true" className="size-3" />
+                Context Used ({message.contextUsed.length})
                 <span
-                  aria-hidden
-                  className="size-2 animate-pulse rounded-full bg-green-400"
-                />
-                <span className="text-xs">Online</span>
-              </div>
-            </div>
-
-            {/* Message Content */}
-            <div className="text-gray-900 dark:text-gray-100">
-              <MessageText
-                invert={isUser}
-                streaming={message.streaming}
-                text={messageText}
-              />
-            </div>
-
-            {/* AI Elements Actions - Show on hover */}
-            <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
-                <button
-                  aria-label="Copy message to clipboard"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                  onClick={() => {
-                    navigator.clipboard.writeText(messageText || '');
-                    toast({
-                      title: 'Copied!',
-                      description: 'Message copied to clipboard',
-                    });
-                  }}
-                  title="Copy message"
-                  type="button"
+                  aria-hidden="true"
+                  className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
                 >
-                  <Copy className="size-3.5" />
-                </button>
+                  <ChevronDown className="size-3" />
+                </span>
+              </Button>
 
-                <button
-                  aria-label="Mark message as helpful"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-gray-400 dark:hover:bg-green-900/20"
+              {expandedContexts.has(message._id) && (
+                <section
+                  aria-label="Context details"
+                  className="mt-3 space-y-2"
+                >
+                  {message.contextUsed.map((context, index) => (
+                    <ContextResult
+                      context={context}
+                      isUser={isUser}
+                      key={`${context.key}-${index}`}
+                    />
+                  ))}
+                </section>
+              )}
+            </div>
+          )}
+
+          {/* Message Timestamp */}
+          <div className="mt-3 text-gray-500 text-xs dark:text-gray-400">
+            {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
+          </div>
+        </MessageContent>
+      </Message>
+
+      {/* Floating Message Actions */}
+      <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        <div className="rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
+          <Actions>
+            <Action
+              onClick={() => {
+                navigator.clipboard.writeText(messageText || '');
+                toast({
+                  title: 'Copied!',
+                  description: 'Message copied to clipboard',
+                });
+              }}
+              tooltip="Copy message"
+            >
+              <Copy className="size-3" />
+            </Action>
+
+            {!isUser && (
+              <>
+                <Action
                   onClick={() => {
                     toast({
                       title: 'Liked!',
                       description: 'Message marked as helpful',
                     });
                   }}
-                  title="Like message"
-                  type="button"
+                  tooltip="Like message"
                 >
-                  <ThumbsUp className="size-3.5" />
-                </button>
+                  <ThumbsUp className="size-3" />
+                </Action>
 
-                <button
-                  aria-label="Mark message as unhelpful"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
+                <Action
                   onClick={() => {
                     toast({
                       title: 'Disliked',
                       description: 'Message marked as unhelpful',
                     });
                   }}
-                  title="Dislike message"
-                  type="button"
+                  tooltip="Dislike message"
                 >
-                  <ThumbsDown className="size-3.5" />
-                </button>
+                  <ThumbsDown className="size-3" />
+                </Action>
 
-                <button
-                  aria-label="Regenerate AI response"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                <Action
                   onClick={() => {
-                    // Retry functionality - could regenerate AI response
                     toast({
-                      title: 'Retry',
-                      description: 'Regenerating response...',
+                      title: 'Regenerating...',
+                      description: 'Generating new response',
                     });
                   }}
-                  title="Retry response"
-                  type="button"
+                  tooltip="Regenerate response"
                 >
-                  <RotateCcw className="size-3.5" />
-                </button>
-
-                <button
-                  aria-label="Share message"
-                  className="rounded p-1.5 text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:text-gray-400 dark:hover:bg-purple-900/20"
-                  onClick={() => {
-                    // Share functionality
-                    if (navigator.share) {
-                      navigator.share({
-                        title: 'Chat Message',
-                        text: messageText || '',
-                      });
-                    } else {
-                      navigator.clipboard.writeText(messageText || '');
-                      toast({
-                        title: 'Shared!',
-                        description: 'Message copied to clipboard',
-                      });
-                    }
-                  }}
-                  title="Share message"
-                  type="button"
-                >
-                  <Share className="size-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Context Information */}
-            {hasContext && message.contextUsed && (
-              <div className="mt-4 border-gray-200 border-t pt-3 dark:border-gray-600">
-                <button
-                  aria-expanded={expandedContexts.has(message._id)}
-                  aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
-                  className="flex items-center gap-2 font-medium text-gray-600 text-xs transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                  onClick={() => toggleContextExpansion(message._id)}
-                  type="button"
-                >
-                  <Zap aria-hidden="true" className="size-3" />
-                  Context Used ({message.contextUsed.length})
-                  <span
-                    aria-hidden="true"
-                    className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
-                  >
-                    <ChevronDown className="size-3" />
-                  </span>
-                </button>
-
-                {expandedContexts.has(message._id) && (
-                  <section
-                    aria-label="Context details"
-                    className="mt-3 space-y-2"
-                  >
-                    {message.contextUsed.map((context, index) => (
-                      <ContextResult
-                        context={context}
-                        isUser={isUser}
-                        key={index}
-                      />
-                    ))}
-                  </section>
-                )}
-              </div>
+                  <RotateCcw className="size-3" />
+                </Action>
+              </>
             )}
 
-            {/* Message Timestamp */}
-            <div className="mt-3 text-gray-500 text-xs dark:text-gray-400">
-              {new Date(
-                message._creationTime || Date.now()
-              ).toLocaleTimeString()}
-            </div>
-          </div>
-        </>
-      )}
-    </article>
+            <Action
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: 'Chat Message',
+                    text: messageText || '',
+                  });
+                } else {
+                  navigator.clipboard.writeText(messageText || '');
+                  toast({
+                    title: 'Shared!',
+                    description: 'Message copied to clipboard',
+                  });
+                }
+              }}
+              tooltip="Share message"
+            >
+              <Share className="size-3" />
+            </Action>
+          </Actions>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -696,10 +472,6 @@ function MainChatArea({
                 : 'text-gray-700 dark:text-gray-300'
             }`}
             onClick={() => {
-              console.log(
-                'Mobile toggle left sidebar, current state:',
-                showLeftSidebar
-              );
               setShowLeftSidebar(!showLeftSidebar);
             }}
             size="icon"
@@ -750,7 +522,8 @@ function MainChatArea({
               </p>
               <Button
                 aria-label="Start a new chat conversation"
-                className="h-auto bg-linear-to-r from-gray-600 to-gray-700 px-6 py-3 font-medium text-base text-white shadow-lg hover:from-gray-700 hover:to-gray-800"
+                className="h-auto px-6 py-3 font-medium text-base"
+                colorScheme="success"
                 onClick={() => {
                   if (!threadId) {
                     createThread({ title: 'New Chat' }).then((id) => {
@@ -798,7 +571,8 @@ function MainChatArea({
             </div>
             <Button
               aria-label="Send message"
-              className="h-12 rounded-r-md rounded-l-none border-l-0 bg-blue-600 px-6 shadow-none dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700"
+              className="h-12 rounded-r-md rounded-l-none border-l-0 px-6 shadow-none"
+              colorScheme="info"
               disabled={!(prompt.trim() && threadId)}
               type="submit"
             >
@@ -844,15 +618,17 @@ function EntryChunksPanel({
           <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
             Entry Chunks
           </h2>
-          <button
+          <Button
             aria-label="Close entry chunks panel"
-            className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             onClick={() => setSelectedEntry(null)}
+            size="icon"
             title="Close chunks panel"
             type="button"
+            variant="ghost"
           >
             <Cross aria-hidden="true" className="size-4" />
-          </button>
+          </Button>
         </div>
         <p className="mt-1 text-gray-700 text-sm dark:text-gray-300">
           {globalDocuments.results?.find((e) => e.entryId === selectedEntry)
@@ -878,14 +654,16 @@ function EntryChunksPanel({
               </div>
             ))}
             {documentChunks.status === 'CanLoadMore' && (
-              <button
+              <Button
                 aria-label="Load more document chunks"
-                className="w-full rounded-lg border border-gray-400 py-3 font-medium text-gray-700 text-sm transition hover:bg-gray-50 hover:text-gray-800 dark:border-gray-500 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="w-full"
                 onClick={() => documentChunks.loadMore(10)}
+                size="lg"
                 type="button"
+                variant="outline"
               >
                 Load More Chunks
-              </button>
+              </Button>
             )}
           </div>
         ) : (
@@ -985,7 +763,8 @@ function AddContextForm({
           aria-label={
             isAddingContext ? 'Adding context...' : 'Add context entry'
           }
-          className="w-full bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800"
+          className="w-full"
+          colorScheme="purple"
           disabled={
             !(addContextForm.key.trim() && addContextForm.text.trim()) ||
             isAddingContext
@@ -1094,7 +873,7 @@ function ContextPanel({
               </h3>
               <div className="space-y-2">
                 {globalDocuments.results?.map((entry) => (
-                  <button
+                  <Button
                     aria-label={`Select context entry: ${entry.title || entry.key}`}
                     aria-pressed={selectedEntry === entry.entryId}
                     className={`w-full cursor-pointer rounded-md p-3 text-left shadow-xs transition-colors ${
@@ -1105,6 +884,7 @@ function ContextPanel({
                     key={entry.entryId}
                     onClick={() => setSelectedEntry(entry.entryId)}
                     type="button"
+                    variant="ghost"
                   >
                     <div className="truncate font-medium text-gray-900 text-sm dark:text-gray-100">
                       {entry.title || entry.key}
@@ -1112,7 +892,7 @@ function ContextPanel({
                     <div className="mt-1 text-gray-600 text-xs dark:text-gray-300">
                       Status: {entry.status}
                     </div>
-                  </button>
+                  </Button>
                 ))}
                 {globalDocuments.results?.length === 0 && (
                   <div className="py-4 text-center text-gray-600 text-sm dark:text-gray-300">
@@ -1137,13 +917,10 @@ function RagBasicUI() {
 
   useEffect(() => {
     if (threadId) {
-      console.log('Thread already exists:', threadId);
       return;
     }
-    console.log('Creating new thread...');
     createThread({ title: 'RAG Thread' })
       .then((id) => {
-        console.log('New thread created:', id);
         setThreadId(id);
         navigate(`/${id}`, { replace: true });
       })
@@ -1175,11 +952,9 @@ function RagBasicUI() {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
         // lg breakpoint
-        console.log('Resize: Mobile detected, collapsing panels');
         setShowContextPanel(false);
         setShowLeftSidebar(false); // Also collapse left sidebar on mobile
       } else {
-        console.log('Resize: Desktop detected, expanding panels');
         setShowContextPanel(true);
         setShowLeftSidebar(true); // Show both panels on desktop
       }
@@ -1203,18 +978,12 @@ function RagBasicUI() {
     optimisticallySendMessage(api.rag.utils.listMessagesWithContext)
   );
 
-  // Debug threadId
-  console.log('Current threadId:', threadId);
-
   const listMessages = useThreadMessages(
     api.rag.utils.listMessagesWithContext,
     threadId ? { threadId } : 'skip',
     { initialNumItems: 10, stream: true }
   );
 
-  // Debug listMessages
-  console.log('listMessages status:', listMessages.status);
-  console.log('listMessages results:', listMessages.results);
   const globalDocuments = usePaginatedQuery(
     api.rag.utils.listEntries,
     {},
@@ -1231,16 +1000,10 @@ function RagBasicUI() {
     { initialNumItems: 30 }
   );
 
-  // Debug threads
-  console.log('Threads status:', threads.status);
-  console.log('Threads results:', threads.results);
-  console.log('Active threads count:', threads.results?.length || 0);
-
   const activeThreads = (threads.results ?? []).filter(
     (t) => t.status === 'active'
   );
 
-  console.log('Filtered active threads:', activeThreads);
   const renameThreadMutation = useMutation(api.threads.renameThread);
   const archiveThreadMutation = useMutation(api.threads.archiveThread);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -1277,21 +1040,13 @@ function RagBasicUI() {
   // Handle sending messages
   const onSendClicked = useCallback(async () => {
     if (!(prompt.trim() && threadId)) {
-      console.log(
-        'Cannot send message - prompt:',
-        prompt.trim(),
-        'threadId:',
-        threadId
-      );
       return;
     }
-    console.log('Sending message:', prompt.trim(), 'to thread:', threadId);
     try {
       await sendMessage({
         threadId,
         prompt: prompt.trim(),
       });
-      console.log('Message sent successfully');
       setPrompt('');
     } catch (err) {
       console.error('Failed to send message:', err);
@@ -1387,10 +1142,6 @@ function RagBasicUI() {
             }
             className="rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20"
             onClick={() => {
-              console.log(
-                'Toggling left sidebar, current state:',
-                showLeftSidebar
-              );
               setShowLeftSidebar(!showLeftSidebar);
             }}
             size="icon"
@@ -1418,25 +1169,6 @@ function RagBasicUI() {
       )}
     </main>
   );
-}
-
-function MessageText({
-  text,
-  streaming,
-  invert,
-}: {
-  text?: string;
-  streaming?: boolean;
-  invert?: boolean;
-}) {
-  const [smoothText] = useSmoothText(text || '', { startStreaming: streaming });
-  if (!text) {
-    return (
-      <div className="text-gray-400 italic dark:text-gray-500">No content</div>
-    );
-  }
-
-  return <Markdown invert={invert}>{smoothText}</Markdown>;
 }
 
 export default function RagBasicPage() {
