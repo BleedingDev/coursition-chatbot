@@ -5,7 +5,6 @@ import {
 import type { EntryId } from '@convex-dev/rag';
 import { useAction, useMutation, usePaginatedQuery } from 'convex/react';
 import {
-  ChevronDown,
   ChevronLeft,
   Copy,
   Cross,
@@ -14,7 +13,6 @@ import {
   Menu,
   Plus,
   RotateCcw,
-  Send,
   Share,
   Star,
   ThumbsDown,
@@ -26,8 +24,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Action, Actions } from '@/components/actions';
+import { Conversation, ConversationContent } from '@/components/conversation';
+import { Loader } from '@/components/loader';
 import { Message, MessageContent } from '@/components/message';
+import {
+  PromptInput,
+  PromptInputSubmit,
+  PromptInputTextarea,
+} from '@/components/prompt-input';
 import { Response } from '@/components/response';
+import { Sources, SourcesContent, SourcesTrigger } from '@/components/sources';
 import { api } from '../../convex/_generated/api';
 import { ThemeToggle } from '../components/theme-toggle';
 import { Button } from '../components/ui/button';
@@ -257,39 +263,29 @@ function ChatMessage({
           {/* Context Information */}
           {hasContext && message.contextUsed && (
             <div className="mt-3">
-              <Button
-                aria-expanded={expandedContexts.has(message._id)}
-                aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
-                className="flex items-center gap-2 font-medium text-gray-600 text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                onClick={() => toggleContextExpansion(message._id)}
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                <Zap aria-hidden="true" className="size-3" />
-                Context Used ({message.contextUsed.length})
-                <span
-                  aria-hidden="true"
-                  className={`transition-transform ${expandedContexts.has(message._id) ? 'rotate-180' : ''}`}
+              <Sources>
+                <SourcesTrigger
+                  aria-expanded={expandedContexts.has(message._id)}
+                  aria-label={`${expandedContexts.has(message._id) ? 'Hide' : 'Show'} context used in this message`}
+                  count={message.contextUsed.length}
+                  onClick={() => toggleContextExpansion(message._id)}
                 >
-                  <ChevronDown className="size-3" />
-                </span>
-              </Button>
+                  <Zap aria-hidden="true" className="size-3" />
+                  Context Used ({message.contextUsed.length})
+                </SourcesTrigger>
 
-              {expandedContexts.has(message._id) && (
-                <section
-                  aria-label="Context details"
-                  className="mt-3 space-y-2"
-                >
-                  {message.contextUsed.map((context, index) => (
-                    <ContextResult
-                      context={context}
-                      isUser={isUser}
-                      key={`${context.key}-${index}`}
-                    />
-                  ))}
-                </section>
-              )}
+                {expandedContexts.has(message._id) && (
+                  <SourcesContent>
+                    {message.contextUsed.map((context, index) => (
+                      <ContextResult
+                        context={context}
+                        isUser={isUser}
+                        key={`${context.key}-${index}`}
+                      />
+                    ))}
+                  </SourcesContent>
+                )}
+              </Sources>
             </div>
           )}
 
@@ -474,10 +470,10 @@ function MainChatArea({
         </div>
       </header>
 
-      {/* Chat Messages Area - Mobile First */}
-      <div className="mt-8 flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+      {/* Chat Messages Area - Using AI Elements */}
+      <Conversation className="mt-8">
         {listMessages.results && listMessages.results.length > 0 ? (
-          <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
+          <ConversationContent className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
             {listMessages.results.map((message) => (
               <ChatMessage
                 expandedContexts={expandedContexts}
@@ -486,7 +482,7 @@ function MainChatArea({
                 toggleContextExpansion={toggleContextExpansion}
               />
             ))}
-          </div>
+          </ConversationContent>
         ) : (
           <section
             aria-label="Empty chat state"
@@ -524,46 +520,35 @@ function MainChatArea({
             </div>
           </section>
         )}
-      </div>
+      </Conversation>
 
-      {/* Chat Input Area - Minimal Design */}
-      <div className="border-gray-200 border-t bg-white p-2 px-0 dark:border-gray-700 dark:bg-gray-900">
+      {/* Chat Input Area - Using AI Elements */}
+      <div className="border-gray-200 border-t bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
         <div className="mx-auto max-w-4xl">
-          <form
+          <PromptInput
             aria-label="Chat message form"
-            className="flex items-center gap-0"
             onSubmit={(e) => {
               e.preventDefault();
               onSendClicked();
             }}
           >
-            <div className="flex-1">
-              <label className="sr-only" htmlFor="chat-input">
-                Type your message here
-              </label>
-              <Input
-                aria-describedby="chat-input-help"
-                className="h-12 w-full rounded-r-none rounded-l-md border-0 bg-gray-50 text-base text-gray-950 placeholder-gray-700 ring-0 focus:border-0 focus:ring-0 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-300"
-                id="chat-input"
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Ask anything from the lectures..."
-                value={prompt}
-              />
-              <div className="sr-only" id="chat-input-help">
-                Type your question or message here. The AI will respond using
-                the context you've provided.
-              </div>
+            <PromptInputTextarea
+              aria-describedby="chat-input-help"
+              className="min-h-12 resize-none border-0 bg-gray-50 text-base text-gray-950 placeholder-gray-700 focus:ring-0 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-300"
+              id="chat-input"
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Ask anything from the lectures..."
+              value={prompt}
+            />
+            <div className="sr-only" id="chat-input-help">
+              Type your question or message here. The AI will respond using the
+              context you've provided.
             </div>
-            <Button
+            <PromptInputSubmit
               aria-label="Send message"
-              className="h-12 rounded-r-md rounded-l-none border-l-0 px-6 shadow-none"
-              colorScheme="info"
               disabled={!(prompt.trim() && threadId)}
-              type="submit"
-            >
-              <Send aria-hidden="true" className="size-4" />
-            </Button>
-          </form>
+            />
+          </PromptInput>
         </div>
       </div>
     </main>
@@ -656,10 +641,7 @@ function EntryChunksPanel({
             <div className="text-center text-gray-600 dark:text-gray-300">
               {documentChunks.status === 'LoadingFirstPage' ? (
                 <>
-                  <div
-                    aria-hidden
-                    className="mx-auto mb-2 size-8 animate-spin rounded-full border-gray-500 border-b-2"
-                  />
+                  <Loader className="mx-auto mb-2" size={32} />
                   <p>Loading chunks...</p>
                 </>
               ) : (
@@ -758,10 +740,7 @@ function AddContextForm({
         >
           {isAddingContext ? (
             <>
-              <div
-                aria-hidden
-                className="mr-2 size-4 animate-spin rounded-full border-2 border-white border-t-transparent"
-              />
+              <Loader className="mr-2" size={16} />
               Adding...
             </>
           ) : (
