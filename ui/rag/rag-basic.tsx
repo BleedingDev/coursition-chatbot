@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Action, Actions } from '@/components/actions';
 import { Message, MessageContent } from '@/components/message';
 import { Response } from '@/components/response';
@@ -32,7 +33,6 @@ import { ThemeToggle } from '../components/theme-toggle';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { SidebarProvider } from '../components/ui/sidebar';
-import { toast } from '../hooks/use-toast';
 
 type ThreadItem = {
   _id: string;
@@ -307,10 +307,7 @@ function ChatMessage({
             <Action
               onClick={() => {
                 navigator.clipboard.writeText(messageText || '');
-                toast({
-                  title: 'Copied!',
-                  description: 'Message copied to clipboard',
-                });
+                toast.success('Message copied to clipboard');
               }}
               tooltip="Copy message"
             >
@@ -321,10 +318,7 @@ function ChatMessage({
               <>
                 <Action
                   onClick={() => {
-                    toast({
-                      title: 'Liked!',
-                      description: 'Message marked as helpful',
-                    });
+                    toast.success('Message marked as helpful');
                   }}
                   tooltip="Like message"
                 >
@@ -333,10 +327,7 @@ function ChatMessage({
 
                 <Action
                   onClick={() => {
-                    toast({
-                      title: 'Disliked',
-                      description: 'Message marked as unhelpful',
-                    });
+                    toast.error('Message marked as unhelpful');
                   }}
                   tooltip="Dislike message"
                 >
@@ -345,10 +336,7 @@ function ChatMessage({
 
                 <Action
                   onClick={() => {
-                    toast({
-                      title: 'Regenerating...',
-                      description: 'Generating new response',
-                    });
+                    toast.info('Generating new response');
                   }}
                   tooltip="Regenerate response"
                 >
@@ -366,10 +354,7 @@ function ChatMessage({
                   });
                 } else {
                   navigator.clipboard.writeText(messageText || '');
-                  toast({
-                    title: 'Shared!',
-                    description: 'Message copied to clipboard',
-                  });
+                  toast.success('Message copied to clipboard');
                 }
               }}
               tooltip="Share message"
@@ -1021,17 +1006,10 @@ function RagBasicUI() {
         text: addContextForm.text.trim(),
       });
       setAddContextForm({ key: '', text: '' });
-      toast({
-        title: 'Context added',
-        description: 'Your context has been added successfully.',
-      });
+      toast.success('Your context has been added successfully');
     } catch (err) {
       console.error('Failed to add context:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to add context. Please try again.',
-        variant: 'destructive',
-      });
+      toast.error('Failed to add context. Please try again.');
     } finally {
       setIsAddingContext(false);
     }
