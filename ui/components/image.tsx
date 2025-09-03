@@ -12,13 +12,16 @@ export const Image = ({
   mediaType,
   ...props
 }: ImageProps) => (
+  // biome-ignore lint/performance/noImgElement: This is a Vite project, not Next.js
   <img
     {...props}
-    alt={props.alt}
+    alt={props.alt || 'Generated image'}
     className={cn(
       'h-auto max-w-full overflow-hidden rounded-md',
       props.className
     )}
+    height={props.height || 400}
     src={`data:${mediaType};base64,${base64}`}
+    width={props.width || 400}
   />
 );

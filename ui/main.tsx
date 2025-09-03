@@ -4,8 +4,8 @@ import './index.css';
 import { useMutation, usePaginatedQuery } from 'convex/react';
 import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { api } from '../convex/_generated/api';
-import { Toaster } from './components/ui/toaster';
 import RagBasic from './rag/rag-basic';
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
@@ -32,7 +32,7 @@ export function App() {
             <Route element={<RagBasic />} path=":threadId" />
           </Routes>
         </main>
-        <Toaster />
+        <Toaster position="top-right" richColors />
       </div>
     </BrowserRouter>
   );
