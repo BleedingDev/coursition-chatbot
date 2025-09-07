@@ -170,7 +170,7 @@ export function MainChatArea({
           >
             <PromptInputTextarea
               aria-describedby="chat-input-help"
-              className="min-h-12 resize-none border-0 bg-gray-50 text-base text-gray-950 placeholder-gray-700 focus:ring-0 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-300"
+              className="bg-gray-50 text-base text-gray-950 placeholder-gray-700 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-300"
               id="chat-input"
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Ask anything from the lectures..."
