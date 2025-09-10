@@ -21,14 +21,18 @@ import { cn } from '@/lib/utils';
 
 export type PromptInputProps = HTMLAttributes<HTMLFormElement>;
 
-export const PromptInput = ({ className, ...props }: PromptInputProps) => (
+export const PromptInput = ({ className, children, ...props }: PromptInputProps) => (
   <form
     className={cn(
-      'w-full divide-y overflow-hidden rounded-xl border bg-background shadow-xs',
+      'w-full overflow-hidden rounded-xl shadow-xs',
+      'grid grid-cols-[23fr_1fr] gap-0 min-h-[48px]',
+      'border border-gray-200 dark:border-gray-700', // Temporary debug border
       className
     )}
     {...props}
-  />
+  >
+    {children}
+  </form>
 );
 
 export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
@@ -68,9 +72,10 @@ export const PromptInputTextarea = ({
   return (
     <Textarea
       className={cn(
-        'w-full resize-none rounded-none border-none p-3 shadow-none outline-hidden ring-0',
-        'field-sizing-content max-h-[6lh] bg-transparent dark:bg-transparent',
-        'focus-visible:ring-0',
+        'resize-none border-none p-3 shadow-none outline-hidden ring-0',
+        'h-full max-h-[6lh] bg-transparent dark:bg-transparent',
+        'focus-visible:ring-0 rounded-l-lg rounded-r-none min-w-0',
+        'min-h-[48px]',
         className
       )}
       name="message"
@@ -126,7 +131,7 @@ export const PromptInputButton = ({
   return (
     <Button
       className={cn(
-        'shrink-0 gap-1.5 rounded-lg',
+        'shrink-0 gap-1.5 rounded-lg h-full max-h-[6lh]',
         variant === 'ghost' && 'text-muted-foreground',
         newSize === 'default' && 'px-3',
         className
@@ -146,7 +151,6 @@ export type PromptInputSubmitProps = ComponentProps<typeof Button> & {
 export const PromptInputSubmit = ({
   className,
   variant = 'default',
-  size = 'icon',
   status,
   children,
   ...props
@@ -163,8 +167,11 @@ export const PromptInputSubmit = ({
 
   return (
     <Button
-      className={cn('gap-1.5 rounded-lg', className)}
-      size={size}
+      className={cn(
+        'gap-1.5 rounded-l-none rounded-r-lg h-full min-h-[48px]',
+        'px-3', // Add horizontal padding since we're not using size prop
+        className
+      )}
       type="submit"
       variant={variant}
       {...props}
