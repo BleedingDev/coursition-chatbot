@@ -42,28 +42,15 @@ export function ChatSidebar({
   threadId,
   showLeftSidebar,
 }: ChatSidebarProps) {
-  if (!showLeftSidebar) {
-    return null;
-  }
-
   return (
     <aside
       aria-label="Chat sidebar"
-      className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-gray-200/50 border-r bg-white/95 shadow-xl backdrop-blur-md lg:relative lg:z-auto dark:border-gray-700/50 dark:bg-gray-900/95"
+      className={`fixed left-0 z-40 flex w-64 flex-col border-gray-200/50 border-r bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 ease-in-out dark:border-gray-700/50 dark:bg-gray-900/95 ${
+        showLeftSidebar 
+          ? 'translate-x-0 top-16 bottom-0 pt-6 opacity-100 h-[calc(100vh-4rem)]' 
+          : '-translate-x-full opacity-0 pointer-events-none'
+      }`}
     >
-      <div className="flex items-center justify-between border-gray-200/50 border-b p-4 dark:border-gray-700/50">
-        <div className="flex items-center gap-3">
-          <div
-            aria-hidden="true"
-            className="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-gray-600 to-gray-700 font-bold text-white shadow-lg"
-          >
-            <Mail className="size-4" />
-          </div>
-          <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
-            Chats
-          </h2>
-        </div>
-      </div>
 
       <div className="border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <Button

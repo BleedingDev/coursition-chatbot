@@ -1,4 +1,4 @@
-import { Menu, Plus, Star } from 'lucide-react';
+import { ChevronLeft, Menu, Plus, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Conversation, ConversationContent } from '@/components/conversation';
 import {
@@ -44,6 +44,7 @@ type MainChatAreaProps = {
   toggleContextExpansion: (messageId: string) => void;
   prompt: string;
   threadId?: string;
+  threadTitle?: string;
   setPrompt: (prompt: string) => void;
   onSendClicked: () => void;
   createThread: (params: { title: string }) => Promise<string>;
@@ -60,10 +61,13 @@ export function MainChatArea({
   toggleContextExpansion,
   prompt,
   threadId,
+  threadTitle,
   setPrompt,
   onSendClicked,
   createThread,
   setThreadId,
+  showContextPanel,
+  setShowContextPanel,
   showLeftSidebar,
   setShowLeftSidebar,
 }: MainChatAreaProps) {
@@ -77,7 +81,7 @@ export function MainChatArea({
       </h1>
 
       {/* Mobile Header */}
-      <header className="flex items-center justify-between border-gray-200/50 border-b bg-white/95 p-4 shadow-xs backdrop-blur-md lg:hidden dark:border-gray-700/50 dark:bg-gray-900/95">
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-gray-200/50 border-b bg-white/95 p-4 shadow-lg backdrop-blur-md lg:hidden dark:border-gray-700/50 dark:bg-gray-900/95">
         <div className="flex items-center gap-3">
           <Button
             aria-label={
@@ -99,15 +103,86 @@ export function MainChatArea({
           </Button>
           <ThemeToggle />
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900 text-lg dark:text-gray-100">
-            RAG Chat
+            {threadTitle || 'RAG Chat'}
           </span>
+          <Button
+            aria-label={
+              showContextPanel ? 'Hide context panel' : 'Show context panel'
+            }
+            className={`rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-green-300 hover:bg-green-50 hover:shadow-green-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-green-400 dark:hover:bg-green-900/20 dark:hover:shadow-green-900/20 ${
+              showContextPanel
+                ? 'border-green-300 bg-green-100 text-green-700 dark:border-green-500 dark:bg-green-800 dark:text-green-300'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
+            onClick={() => {
+              setShowContextPanel(!showContextPanel);
+            }}
+            size="icon"
+            title={showContextPanel ? 'Hide context panel' : 'Show context panel'}
+            variant="ghost"
+          >
+            <ChevronLeft aria-hidden="true" className="size-4" />
+          </Button>
+        </div>
+      </header>
+
+      {/* Desktop Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 hidden items-center justify-between border-gray-200/50 border-b bg-white/95 px-6 py-4 shadow-lg backdrop-blur-md lg:flex dark:border-gray-700/50 dark:bg-gray-900/95">
+        <div className="flex items-center gap-4">
+          <Button
+            aria-label={
+              showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
+            }
+            className={`rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20 ${
+              showLeftSidebar
+                ? 'border-purple-300 bg-purple-100 text-purple-700 dark:border-purple-500 dark:bg-purple-800 dark:text-purple-300'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
+            onClick={() => {
+              setShowLeftSidebar(!showLeftSidebar);
+            }}
+            size="icon"
+            title={showLeftSidebar ? 'Hide sidebar' : 'Show sidebar'}
+            variant="ghost"
+          >
+            <Menu aria-hidden="true" className="size-4" />
+          </Button>
+          <div className="flex flex-col">
+            <h2 className="font-semibold text-gray-900 text-xl dark:text-gray-100">
+              {threadTitle || 'RAG Chat'}
+            </h2>
+            <p className="text-gray-600 text-sm dark:text-gray-400">
+              AI-Powered Contextual Conversations
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            aria-label={
+              showContextPanel ? 'Hide context panel' : 'Show context panel'
+            }
+            className={`rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-green-300 hover:bg-green-50 hover:shadow-green-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-green-400 dark:hover:bg-green-900/20 dark:hover:shadow-green-900/20 ${
+              showContextPanel
+                ? 'border-green-300 bg-green-100 text-green-700 dark:border-green-500 dark:bg-green-800 dark:text-green-300'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
+            onClick={() => {
+              setShowContextPanel(!showContextPanel);
+            }}
+            size="icon"
+            title={showContextPanel ? 'Hide context panel' : 'Show context panel'}
+            variant="ghost"
+          >
+            <ChevronLeft aria-hidden="true" className="size-4" />
+          </Button>
+          <ThemeToggle />
         </div>
       </header>
 
       {/* Chat Messages Area - Using AI Elements */}
-      <Conversation className="mt-8">
+      <Conversation className="mt-20 pt-8 lg:pt-20">
         {listMessages.results && listMessages.results.length > 0 ? (
           <ConversationContent className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
             {listMessages.results.map((message) => (
@@ -159,7 +234,7 @@ export function MainChatArea({
       </Conversation>
 
       {/* Chat Input Area - Using AI Elements */}
-      <div className="border-gray-200 border-t bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div className="border-gray-200 border-t bg-white p-4 dark:border-gray-700 dark:bg-gray-900 pt-20 lg:pt-20">
         <div className="mx-auto max-w-4xl">
           <PromptInput
             aria-label="Chat message form"

@@ -113,6 +113,10 @@ function RagBasicUI() {
     (t) => t.status === 'active'
   );
 
+  // Get current thread title
+  const currentThread = activeThreads.find((t) => t._id === threadId);
+  const threadTitle = currentThread?.title || 'RAG Chat';
+
   const renameThreadMutation = useMutation(api.threads.renameThread);
   const archiveThreadMutation = useMutation(api.threads.archiveThread);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -203,6 +207,7 @@ function RagBasicUI() {
           showContextPanel={showContextPanel}
           showLeftSidebar={showLeftSidebar}
           threadId={threadId}
+          threadTitle={threadTitle}
           toggleContextExpansion={toggleContextExpansion}
         />
 
@@ -225,32 +230,6 @@ function RagBasicUI() {
           showContextPanel={showContextPanel}
         />
 
-        <div
-          aria-label="Main controls"
-          className={`fixed top-3 z-60 hidden items-center gap-2 lg:flex ${showLeftSidebar ? 'left-72' : 'left-8'} ${showContextPanel ? 'right-84' : 'right-auto'}`}
-          role="toolbar"
-        >
-          <Button
-            aria-label={
-              showLeftSidebar ? 'Hide left sidebar' : 'Show left sidebar'
-            }
-            className="rounded-full border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-purple-100 dark:border-gray-600 dark:bg-gray-800/90 dark:hover:border-purple-400 dark:hover:bg-purple-900/20 dark:hover:shadow-purple-900/20"
-            onClick={() => {
-              setShowLeftSidebar(!showLeftSidebar);
-            }}
-            size="icon"
-            title={showLeftSidebar ? 'Hide sidebar' : 'Show sidebar'}
-            type="button"
-            variant="ghost"
-          >
-            <Menu
-              aria-hidden="true"
-              className="size-4 text-gray-700 dark:text-gray-300"
-            />
-          </Button>
-
-          <ThemeToggle />
-        </div>
       </div>
       {error && (
         <div

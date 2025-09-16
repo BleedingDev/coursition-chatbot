@@ -156,13 +156,17 @@ export const PromptInputSubmit = ({
   ...props
 }: PromptInputSubmitProps) => {
   let Icon = <IoPaperPlane className="size-4" />;
+  let ariaLabel = 'Send message';
 
   if (status === 'submitted') {
     Icon = <IoReload className="size-4 animate-spin" />;
+    ariaLabel = 'Sending message...';
   } else if (status === 'streaming') {
     Icon = <IoStop className="size-4" />;
+    ariaLabel = 'Stop generating response';
   } else if (status === 'error') {
     Icon = <IoClose className="size-4" />;
+    ariaLabel = 'Retry sending message';
   }
 
   return (
@@ -174,6 +178,7 @@ export const PromptInputSubmit = ({
       )}
       type="submit"
       variant={variant}
+      aria-label={props['aria-label'] || ariaLabel}
       {...props}
     >
       {children ?? Icon}
