@@ -2,6 +2,7 @@ import {
   Copy,
   RotateCcw,
   Share,
+  Share2,
   ThumbsDown,
   ThumbsUp,
   Zap,
@@ -94,23 +95,20 @@ export function ChatMessage({
             </div>
           )}
 
-          {/* Message Timestamp */}
-          <div className="mt-3 text-gray-500 text-xs dark:text-gray-400">
-            {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
-          </div>
-        </MessageContent>
-      </Message>
-
-      {/* Floating Message Actions */}
-      <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        <div className="rounded-lg border border-gray-200 bg-white/90 p-1 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90">
-          <Actions>
+          {/* Message Timestamp and Actions - appears on hover */}
+          <div className="mt-3 flex items-center justify-between opacity-30 transition-opacity duration-200 group-hover:opacity-100">
+            <div className="text-gray-700 text-xs dark:text-gray-500">
+              {new Date(message._creationTime || Date.now()).toLocaleTimeString()}
+            </div>
+            <Actions>
             <Action
               onClick={() => {
                 navigator.clipboard.writeText(messageText || '');
                 toast.success('Message copied to clipboard');
               }}
               tooltip="Copy message"
+              aria-label="Copy this message to clipboard"
+              className="bg-transparent hover:bg-transparent"
             >
               <Copy className="size-3" />
             </Action>
@@ -122,6 +120,8 @@ export function ChatMessage({
                     toast.success('Message marked as helpful');
                   }}
                   tooltip="Like message"
+                  aria-label="Mark this message as helpful"
+                  className="bg-transparent hover:bg-transparent"
                 >
                   <ThumbsUp className="size-3" />
                 </Action>
@@ -131,6 +131,8 @@ export function ChatMessage({
                     toast.error('Message marked as unhelpful');
                   }}
                   tooltip="Dislike message"
+                  aria-label="Mark this message as unhelpful"
+                  className="bg-transparent hover:bg-transparent"
                 >
                   <ThumbsDown className="size-3" />
                 </Action>
@@ -140,6 +142,8 @@ export function ChatMessage({
                     toast.info('Generating new response');
                   }}
                   tooltip="Regenerate response"
+                  aria-label="Generate a new response for this message"
+                  className="bg-transparent hover:bg-transparent"
                 >
                   <RotateCcw className="size-3" />
                 </Action>
@@ -159,12 +163,15 @@ export function ChatMessage({
                 }
               }}
               tooltip="Share message"
+              aria-label="Share this message with others"
+              className="bg-transparent hover:bg-transparent"
             >
-              <Share className="size-3" />
+              <Share2 className="size-3" />
             </Action>
-          </Actions>
-        </div>
-      </div>
+            </Actions>
+          </div>
+        </MessageContent>
+      </Message>
     </div>
   );
 }

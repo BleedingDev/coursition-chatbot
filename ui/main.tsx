@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { api } from '../convex/_generated/api';
 import RagBasic from './rag/rag-basic';
+import { TooltipProvider } from './components/ui/tooltip';
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
@@ -17,7 +18,9 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <ConvexProvider client={convex}>
-    <App />
+    <TooltipProvider>
+      <App />
+    </TooltipProvider>
   </ConvexProvider>
 );
 
