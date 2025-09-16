@@ -65,15 +65,15 @@ export function ChatSidebar({
       </div>
 
       <nav aria-label="Chat threads" className="min-h-0 flex-1 overflow-y-auto">
-        <div className="space-y-2 p-4">
+        <div className="space-y-1">
           {activeThreads.map((thread) => (
             <button
               aria-label={`Select chat: ${thread.title || 'Untitled Chat'}`}
               aria-pressed={threadId === thread._id}
-              className={`group relative cursor-pointer rounded-lg p-3 transition-colors ${
+              className={`group relative w-full cursor-pointer rounded-none p-4 transition-colors ${
                 threadId === thread._id
-                  ? 'border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800'
-                  : 'border border-transparent hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-900'
+                  ? 'border-r-2 border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                  : 'border-r-2 border-transparent hover:bg-gray-50 dark:hover:bg-gray-900'
               }`}
               key={thread._id}
               onClick={() => setThreadId(thread._id)}
