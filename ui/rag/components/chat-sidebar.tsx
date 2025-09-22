@@ -42,28 +42,15 @@ export function ChatSidebar({
   threadId,
   showLeftSidebar,
 }: ChatSidebarProps) {
-  if (!showLeftSidebar) {
-    return null;
-  }
-
   return (
     <aside
       aria-label="Chat sidebar"
-      className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-gray-200/50 border-r bg-white/95 shadow-xl backdrop-blur-md lg:relative lg:z-auto dark:border-gray-700/50 dark:bg-gray-900/95"
+      className={`fixed left-0 z-40 flex w-64 flex-col border-gray-200/50 border-r bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 ease-in-out dark:border-gray-700/50 dark:bg-gray-900/95 ${
+        showLeftSidebar 
+          ? 'translate-x-0 top-16 bottom-0 pt-6 opacity-100 h-[calc(100vh-4rem)]' 
+          : '-translate-x-full opacity-0 pointer-events-none'
+      }`}
     >
-      <div className="flex items-center justify-between border-gray-200/50 border-b p-4 dark:border-gray-700/50">
-        <div className="flex items-center gap-3">
-          <div
-            aria-hidden="true"
-            className="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-gray-600 to-gray-700 font-bold text-white shadow-lg"
-          >
-            <Mail className="size-4" />
-          </div>
-          <h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
-            Chats
-          </h2>
-        </div>
-      </div>
 
       <div className="border-gray-200/50 border-b p-4 dark:border-gray-700/50">
         <Button
@@ -78,15 +65,15 @@ export function ChatSidebar({
       </div>
 
       <nav aria-label="Chat threads" className="min-h-0 flex-1 overflow-y-auto">
-        <div className="space-y-2 p-4">
+        <div className="space-y-1">
           {activeThreads.map((thread) => (
             <button
               aria-label={`Select chat: ${thread.title || 'Untitled Chat'}`}
               aria-pressed={threadId === thread._id}
-              className={`group relative cursor-pointer rounded-lg p-3 transition-colors ${
+              className={`group relative w-full cursor-pointer rounded-none p-4 transition-colors ${
                 threadId === thread._id
-                  ? 'border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800'
-                  : 'border border-transparent hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-900'
+                  ? 'border-r-2 border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                  : 'border-r-2 border-transparent hover:bg-gray-50 dark:hover:bg-gray-900'
               }`}
               key={thread._id}
               onClick={() => setThreadId(thread._id)}
